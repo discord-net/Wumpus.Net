@@ -8,10 +8,7 @@ namespace Voltaic.Serialization.Utf8
         {
             var data = writer.GetSpan(4); // -256
             if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
-            {
-                DebugLog.WriteFailure("Utf8Formatter failed");
                 return false;
-            }
             writer.Write(data.Slice(0, bytesWritten));
             return true;
         }
@@ -20,10 +17,7 @@ namespace Voltaic.Serialization.Utf8
         {
             var data = writer.GetSpan(6); // -32768
             if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
-            {
-                DebugLog.WriteFailure("Utf8Formatter failed");
                 return false;
-            }
             writer.Write(data.Slice(0, bytesWritten));
             return true;
         }
@@ -32,10 +26,7 @@ namespace Voltaic.Serialization.Utf8
         {
             var data = writer.GetSpan(11); // -2147483648
             if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
-            {
-                DebugLog.WriteFailure("Utf8Formatter failed");
                 return false;
-            }
             writer.Write(data.Slice(0, bytesWritten));
             return true;
         }
@@ -44,10 +35,7 @@ namespace Voltaic.Serialization.Utf8
         {
             var data = writer.GetSpan(20); // -9223372036854775808
             if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
-            {
-                DebugLog.WriteFailure("Utf8Formatter failed");
                 return false;
-            }
             writer.Write(data.Slice(0, bytesWritten));
             return true;
         }

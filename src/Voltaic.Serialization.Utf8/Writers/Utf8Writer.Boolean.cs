@@ -8,10 +8,7 @@ namespace Voltaic.Serialization.Utf8
         {
             var data = writer.GetSpan(5); // False
             if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
-            {
-                DebugLog.WriteFailure("Utf8Formatter failed");
                 return false;
-            }
             writer.Write(data.Slice(0, bytesWritten));
             return true;
         }

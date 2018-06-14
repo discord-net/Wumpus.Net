@@ -8,10 +8,7 @@ namespace Voltaic.Serialization.Json
         {
             var data = writer.GetSpan(3); // 255
             if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
-            {
-                DebugLog.WriteFailure("Utf8Formatter failed");
                 return false;
-            }
             writer.Write(data.Slice(0, bytesWritten));
             return true;
         }
@@ -20,10 +17,7 @@ namespace Voltaic.Serialization.Json
         {
             var data = writer.GetSpan(5); // 65536
             if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
-            {
-                DebugLog.WriteFailure("Utf8Formatter failed");
                 return false;
-            }
             writer.Write(data.Slice(0, bytesWritten));
             return true;
         }
@@ -32,10 +26,7 @@ namespace Voltaic.Serialization.Json
         {
             var data = writer.GetSpan(10); // 4294967295
             if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
-            {
-                DebugLog.WriteFailure("Utf8Formatter failed");
                 return false;
-            }
             writer.Write(data.Slice(0, bytesWritten));
             return true;
         }
@@ -47,10 +38,7 @@ namespace Voltaic.Serialization.Json
                 var data = writer.GetSpan(22); // "18446744073709551615"
                 data[0] = (byte)'"';
                 if (!Utf8Formatter.TryFormat(value, data.Slice(1), out int bytesWritten))
-                {
-                    DebugLog.WriteFailure("Utf8Formatter failed");
                     return false;
-                }
                 data[bytesWritten + 1] = (byte)'"';
                 writer.Write(data.Slice(0, bytesWritten));
             }
@@ -58,10 +46,7 @@ namespace Voltaic.Serialization.Json
             {
                 var data = writer.GetSpan(20); // 18446744073709551615
                 if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
-                {
-                    DebugLog.WriteFailure("Utf8Formatter failed");
                     return false;
-                }
                 writer.Write(data.Slice(0, bytesWritten));
             }
             return true;

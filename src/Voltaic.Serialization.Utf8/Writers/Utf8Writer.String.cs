@@ -11,16 +11,10 @@ namespace Voltaic.Serialization.Utf8
             Span<char> chars = stackalloc char[] { value };
             var valueBytes = MemoryMarshal.AsBytes(chars);
             if (Encodings.Utf16.ToUtf8Length(valueBytes, out var length) != OperationStatus.Done)
-            {
-                DebugLog.WriteFailure("ToUtf8Length failed");
                 return false;
-            }
             var data = writer.GetSpan(length);
             if (Encodings.Utf16.ToUtf8(valueBytes, data, out _, out _) != OperationStatus.Done)
-            {
-                DebugLog.WriteFailure("ToUtf8 failed");
                 return false;
-            }
             writer.Write(data.Slice(0, length));
             return true;
         }
@@ -29,16 +23,10 @@ namespace Voltaic.Serialization.Utf8
         {
             var valueBytes = MemoryMarshal.AsBytes(value.AsSpan());
             if (Encodings.Utf16.ToUtf8Length(valueBytes, out var length) != OperationStatus.Done)
-            {
-                DebugLog.WriteFailure("ToUtf8Length failed");
                 return false;
-            }
             var data = writer.GetSpan(length);
             if (Encodings.Utf16.ToUtf8(valueBytes, data, out _, out _) != OperationStatus.Done)
-            {
-                DebugLog.WriteFailure("ToUtf8 failed");
                 return false;
-            }
             writer.Write(data.Slice(0, length));
             return true;
         }

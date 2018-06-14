@@ -11,23 +11,12 @@ namespace Voltaic.Serialization.Utf8
             result = default;
 
             if (Encodings.Utf8.ToUtf16Length(remaining, out var byteCount) != OperationStatus.Done || byteCount != 2)
-            {
-                DebugLog.WriteFailure("ToUtf16Length failed");
                 return false;
-            }
-            if (byteCount != 2)
-            {
-                DebugLog.WriteFailure("String too long");
-                return false;
-            }
 
             var tmpResult = new char[1];
             var resultBytes = MemoryMarshal.AsBytes(tmpResult.AsSpan());
             if (Encodings.Utf8.ToUtf16(remaining, resultBytes, out _, out _) != OperationStatus.Done)
-            {
-                DebugLog.WriteFailure("ToUtf16 failed");
                 return false;
-            }
             result = tmpResult[0];
             return true;
         }
@@ -36,7 +25,6 @@ namespace Voltaic.Serialization.Utf8
         {
             if (Encodings.Utf8.ToUtf16Length(remaining, out var byteCount) != OperationStatus.Done)
             {
-                DebugLog.WriteFailure("ToUtf16Length failed");
                 result = null;
                 return false;
             }
@@ -48,10 +36,7 @@ namespace Voltaic.Serialization.Utf8
                 {
                     var resultBytes = new Span<byte>(pResult, byteCount);
                     if (Encodings.Utf8.ToUtf16(remaining, resultBytes, out _, out _) != OperationStatus.Done)
-                    {
-                        DebugLog.WriteFailure("ToUtf16 failed");
                         return false;
-                    }
                 }
             }
             return true;
