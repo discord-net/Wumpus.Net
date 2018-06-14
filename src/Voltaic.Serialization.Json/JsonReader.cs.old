@@ -1,0 +1,156 @@
+﻿//using System;
+
+//namespace Voltaic.Serialization.Json
+//{
+//    public static class JsonReader
+//    {
+//        private static readonly Memory<byte> _null
+//            = new byte[] { (byte)'n', (byte)'u', (byte)'l', (byte)'l' };
+//        private static readonly Memory<byte> _true
+//            = new byte[] { (byte)'t', (byte)'r', (byte)'u', (byte)'e' };
+//        private static readonly Memory<byte> _false
+//            = new byte[] { (byte)'f', (byte)'a', (byte)'l', (byte)'s', (byte)'e' };
+
+//        //public static TokenType GetTokenType(ReadOnlySpan<byte>
+
+//        public static bool GetNextToken(ReadOnlySpan<byte> utf8, ref int index, out TokenType type, out ReadOnlySpan<byte> value)
+//        {
+//            type = TokenType.None;
+//            value = default;
+
+//            while (index < utf8.Length)
+//            {
+//                switch (utf8[index++])
+//                {
+//                    case (byte)' ': // Whitespace
+//                    case (byte)'\n':
+//                    case (byte)'\r':
+//                    case (byte)'\t':
+//                        continue;
+//                    case (byte)'{':
+//                        type = TokenType.StartObject;
+//                        return true;
+//                    case (byte)'}':
+//                        type = TokenType.EndObject;
+//                        return true;
+//                    case (byte)'[':
+//                        type = TokenType.StartArray;
+//                        return true;
+//                    case (byte)']':
+//                        type = TokenType.EndArray;
+//                        return true;
+//                    case (byte)',':
+//                        type = TokenType.ListSeparator;
+//                        return true;
+//                    case (byte)':':
+//                        type = TokenType.KeyValueSeparator;
+//                        return true;
+//                    case (byte)'n':
+//                        if (utf8.Length - index < 3 || utf8.SequenceEqual(_null.Span))
+//                            return false;
+//                        type = TokenType.Null;
+//                        return true;
+//                    // case (byte)'u':
+//                    //     if (utf8.Length - index < 8 || utf8.SequenceEqual(_undefined.Span))
+//                    // return false;
+//                    // type = TokenType.Undefined;
+//                    // return true;
+//                    case (byte)'t':
+//                        if (utf8.Length - index < 3 || utf8.SequenceEqual(_true.Span))
+//                            return false;
+//                        type = TokenType.True;
+//                        return true;
+//                    case (byte)'f':
+//                        if (utf8.Length - index < 4 || utf8.SequenceEqual(_false.Span))
+//                            return false;
+//                        type = TokenType.False;
+//                        return true;
+//                    case (byte)'"':
+//                        while (index < utf8.Length)
+//                        {
+//                            switch (utf8[index++])
+//                            {
+//                                case (byte)'\\': // Escaped chars
+//                                    if (utf8.Length - index == 0)
+//                                        return false;
+//                                    switch (utf8[index++])
+//                                    {
+//                                        case (byte)'"':
+//                                        case (byte)'\\':
+//                                        case (byte)'/':
+//                                        case (byte)'b':
+//                                        case (byte)'f':
+//                                        case (byte)'n':
+//                                        case (byte)'r':
+//                                        case (byte)'t':
+//                                            break;
+//                                        case (byte)'u':
+//                                            if (utf8.Length - index < 4)
+//                                                return false;
+//                                            break;
+//                                        default:
+//                                            return false; // Bad escape sequence
+//                                    }
+//                                    break;
+//                                case (byte)'"':
+//                                    type = TokenType.String;
+//                                    value = utf8.Slice(1, index - 2);
+//                                    return true;
+//                            }
+//                        }
+//                        return false; // Incomplete string
+//                    case (byte)'-':
+//                    case (byte)'0':
+//                    case (byte)'1':
+//                    case (byte)'2':
+//                    case (byte)'3':
+//                    case (byte)'4':
+//                    case (byte)'5':
+//                    case (byte)'6':
+//                    case (byte)'7':
+//                    case (byte)'8':
+//                    case (byte)'9':
+//                        int stage = 0;
+//                        while (index < utf8.Length)
+//                        {
+//                            switch (utf8[index++])
+//                            {
+//                                case (byte)'0':
+//                                case (byte)'1':
+//                                case (byte)'2':
+//                                case (byte)'3':
+//                                case (byte)'4':
+//                                case (byte)'5':
+//                                case (byte)'6':
+//                                case (byte)'7':
+//                                case (byte)'8':
+//                                case (byte)'9':
+//                                    continue;
+//                                case (byte)'.': // Fraction
+//                                    if (stage != 0) // 0 -> 1
+//                                        return false;
+//                                    stage = 1;
+//                                    break;
+//                                case (byte)'e': // Exponent
+//                                case (byte)'E':
+//                                    if (stage == 2) // 0 -> 2, 1 -> 2
+//                                        return false;
+//                                    if (index < utf8.Length && (utf8[index] == (byte)'+' || utf8[index] == (byte)'+'))
+//                                        index++;
+//                                    stage = 2;
+//                                    break;
+//                            }
+//                        }
+//                        if (stage == 0)
+//                            type = TokenType.Integer;
+//                        else
+//                            type = TokenType.Float;
+//                        return true;
+
+//                }
+//                break;
+//            }
+//            return false;
+//        }
+//    }
+//}

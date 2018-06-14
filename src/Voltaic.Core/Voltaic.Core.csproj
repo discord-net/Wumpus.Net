@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../Voltaic.targets" />
+  <PropertyGroup>
+    <RootNamespace>Voltaic</RootNamespace>
+    <AssemblyName>Voltaic.Core</AssemblyName>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <PackageTags>voltaic</PackageTags>
+    <PackageProjectUrl>https://github.com/RogueException/Voltaic</PackageProjectUrl>
+    <RepositoryUrl>git://github.com/RogueException/Voltaic</RepositoryUrl>
+    <Description>A collection of common types used by Voltaic libraries</Description>
+    <TargetFrameworks>netstandard1.1</TargetFrameworks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- TODO: Update to stable -->
+    <PackageReference Include="System.Buffers" Version="4.5.0-preview3-26409-05" />
+    <PackageReference Include="System.Memory" Version="4.5.0-preview3-26409-05" />
+    <!-- TODO: Remove -->
+    <PackageReference Include="System.Numerics.Vectors" Version="4.4.0" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0-preview3-26409-05" />
+  </ItemGroup>
+</Project>
