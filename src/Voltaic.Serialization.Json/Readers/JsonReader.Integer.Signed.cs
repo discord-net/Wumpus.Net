@@ -9,25 +9,13 @@ namespace Voltaic.Serialization.Json
         {
             result = default;
 
-            if (remaining.Length == 0)
-                return false;
-
-            switch (remaining[0])
+            switch (GetTokenType(ref remaining))
             {
-                case (byte)'0': // Integer
-                case (byte)'1':
-                case (byte)'2':
-                case (byte)'3':
-                case (byte)'4':
-                case (byte)'5':
-                case (byte)'6':
-                case (byte)'7':
-                case (byte)'8':
-                case (byte)'9':
+                case TokenType.Number:
                     if (!Utf8Reader.TryReadInt8(ref remaining, out result))
                         return false;
                     return true;
-                case (byte)'"': // String
+                case TokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadInt8(ref remaining, out result))
                         return false;
@@ -43,25 +31,13 @@ namespace Voltaic.Serialization.Json
         {
             result = default;
 
-            if (remaining.Length == 0)
-                return false;
-
-            switch (remaining[0])
+            switch (GetTokenType(ref remaining))
             {
-                case (byte)'0': // Integer
-                case (byte)'1':
-                case (byte)'2':
-                case (byte)'3':
-                case (byte)'4':
-                case (byte)'5':
-                case (byte)'6':
-                case (byte)'7':
-                case (byte)'8':
-                case (byte)'9':
+                case TokenType.Number:
                     if (!Utf8Reader.TryReadInt16(ref remaining, out result))
                         return false;
                     return true;
-                case (byte)'"': // String
+                case TokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadInt16(ref remaining, out result))
                         return false;
@@ -77,25 +53,13 @@ namespace Voltaic.Serialization.Json
         {
             result = default;
 
-            if (remaining.Length == 0)
-                return false;
-
-            switch (remaining[0])
+            switch (GetTokenType(ref remaining))
             {
-                case (byte)'0': // Integer
-                case (byte)'1':
-                case (byte)'2':
-                case (byte)'3':
-                case (byte)'4':
-                case (byte)'5':
-                case (byte)'6':
-                case (byte)'7':
-                case (byte)'8':
-                case (byte)'9':
+                case TokenType.Number:
                     if (!Utf8Reader.TryReadInt32(ref remaining, out result))
                         return false;
                     return true;
-                case (byte)'"': // String
+                case TokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadInt32(ref remaining, out result))
                         return false;
@@ -111,25 +75,13 @@ namespace Voltaic.Serialization.Json
         {
             result = default;
 
-            if (remaining.Length == 0)
-                return false;
-
-            switch (remaining[0])
+            switch (GetTokenType(ref remaining))
             {
-                case (byte)'0': // Integer
-                case (byte)'1':
-                case (byte)'2':
-                case (byte)'3':
-                case (byte)'4':
-                case (byte)'5':
-                case (byte)'6':
-                case (byte)'7':
-                case (byte)'8':
-                case (byte)'9':
+                case TokenType.Number:
                     if (!Utf8Reader.TryReadInt64(ref remaining, out result))
                         return false;
                     return true;
-                case (byte)'"': // String
+                case TokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadInt64(ref remaining, out result))
                         return false;

@@ -8,27 +8,22 @@ namespace Voltaic.Serialization.Json
         public static bool TryReadBoolean(ref ReadOnlySpan<byte> remaining, out bool result)
         {
             result = default;
-
-            if (remaining.Length == 0)
-                return false;
-
-            switch (remaining[0])
+            
+            switch (GetTokenType(ref remaining))
             {
-                case (byte)'t': // True
-                case (byte)'T':
+                case TokenType.True:
                     if (remaining.Length < 4)
                         return false;
                     result = true;
                     remaining = remaining.Slice(4);
                     return true;
-                case (byte)'f': // False
-                case (byte)'F':
+                case TokenType.False:
                     if (remaining.Length < 5)
                         return false;
                     result = false;
                     remaining = remaining.Slice(5);
                     return true;
-                case (byte)'"': // String
+                case TokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadBoolean(ref remaining, out result))
                         return false;

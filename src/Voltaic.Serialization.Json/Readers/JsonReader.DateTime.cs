@@ -9,12 +9,9 @@ namespace Voltaic.Serialization.Json
         {
             result = default;
 
-            if (remaining.Length == 0)
-                return false;
-
-            switch (remaining[0])
+            switch (GetTokenType(ref remaining))
             {
-                case (byte)'"': // String
+                case TokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadDateTime(ref remaining, out result))
                         return false;
@@ -30,12 +27,9 @@ namespace Voltaic.Serialization.Json
         {
             result = default;
 
-            if (remaining.Length == 0)
-                return false;
-
-            switch (remaining[0])
+            switch (GetTokenType(ref remaining))
             {
-                case (byte)'"': // String
+                case TokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadDateTimeOffset(ref remaining, out result))
                         return false;
@@ -51,12 +45,9 @@ namespace Voltaic.Serialization.Json
         {
             result = default;
 
-            if (remaining.Length == 0)
-                return false;
-
-            switch (remaining[0])
+            switch (GetTokenType(ref remaining))
             {
-                case (byte)'"': // String
+                case TokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadTimeSpan(ref remaining, out result))
                         return false;

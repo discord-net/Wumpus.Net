@@ -9,12 +9,9 @@ namespace Voltaic.Serialization.Json
         {
             result = default;
 
-            if (remaining.Length == 0)
-                return false;
-
-            switch (remaining[0])
+            switch (GetTokenType(ref remaining))
             {
-                case (byte)'"': // String
+                case TokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadGuid(ref remaining, out result))
                         return false;
