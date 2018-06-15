@@ -21,7 +21,7 @@ namespace Voltaic.Serialization.Json
 
         public static bool TryWrite(ref ResizableMemory<byte> writer, DateTimeOffset value)
         {
-            var data = writer.CreateBuffer(31); // "9999-12-31T11:59:59.999+00:00"
+            var data = writer.CreateBuffer(35); // "9999-12-31T11:59:59.999999+00:00"
             data[0] = (byte)'"';
             if (!Utf8Formatter.TryFormat(value, data.Slice(1), out int bytesWritten, _dateTimeFormat))
                 return false;

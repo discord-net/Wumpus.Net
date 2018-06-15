@@ -19,7 +19,7 @@ namespace Voltaic.Serialization.Utf8
 
         public static bool TryWrite(ref ResizableMemory<byte> writer, DateTimeOffset value)
         {
-            var data = writer.CreateBuffer(29); // 9999-12-31T11:59:59.999+00:00
+            var data = writer.CreateBuffer(33); // 9999-12-31T11:59:59.999999+00:00
             if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten, _dateTimeFormat))
                 return false;
             writer.Write(data.Slice(0, bytesWritten));
