@@ -74,22 +74,26 @@ namespace Voltaic.Serialization.Json.Tests
     {
         public static IEnumerable<object[]> GetData()
         {
-            yield return Fail("-9007199254740992"); // Min - 1
+            yield return Fail("-9223372036854775809"); // Min - 1
+            yield return Read("-9223372036854775808", -9223372036854775808); // Min
+            //yield return Fail("-9007199254740992"); // Min - 1
             yield return ReadWrite("-9007199254740991", -9007199254740991); // Min
             yield return ReadWrite("0", 0);
             yield return ReadWrite("9007199254740991", 9007199254740991);  // Max
-            yield return Fail("9007199254740992"); // Max + 1
+            //yield return Fail("9007199254740992"); // Max + 1
+            yield return Read("9223372036854775807", 9223372036854775807); // Max
+            yield return Fail("9223372036854775808"); // Max + 1
         }
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data, new Int64Utf8Converter());
+        public void Test(TestData data) => RunTest(data, new Int53JsonConverter());
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestQuotes(TestData data) => RunQuoteTest(data, new Int64Utf8Converter());
+        public void TestQuotes(TestData data) => RunQuoteTest(data, new Int53JsonConverter());
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestWhitespace(TestData data) => RunWhitespaceTest(data, new Int64Utf8Converter());
+        public void TestWhitespace(TestData data) => RunWhitespaceTest(data, new Int53JsonConverter());
     }
 
     public class Int64Tests : BaseTest<long>
