@@ -125,7 +125,7 @@ namespace Voltaic.Serialization
             if (openConverterType.IsConstructedGenericType)
                 throw new InvalidOperationException($"{nameof(openConverterType)} must be an open generic");
             if (innerTypeSelectors.Length != openConverterType.GetTypeInfo().GenericTypeParameters.Length)
-                throw new InvalidOperationException($"{nameof(innerTypeSelectors)} must be the same length as generic args in {nameof(openConverterType)}");
+                throw new InvalidOperationException($"{nameof(innerTypeSelectors)} must be the same length as generic params in {nameof(openConverterType)}");
 
             if (!_mappedGenericTypes.TryGetValue(openType, out var converters))
                 _mappedGenericTypes.Add(openType, converters = new GenericConverterTypeCollection());
@@ -138,7 +138,7 @@ namespace Voltaic.Serialization
             if (openConverterType.IsConstructedGenericType)
                 throw new InvalidOperationException($"{nameof(openConverterType)} must be an open generic");
             if (innerTypeSelectors.Length != openConverterType.GetTypeInfo().GenericTypeParameters.Length)
-                throw new InvalidOperationException($"{nameof(innerTypeSelectors)} must be the same length as generic args in {nameof(openConverterType)}");
+                throw new InvalidOperationException($"{nameof(innerTypeSelectors)} must be the same length as generic params in {nameof(openConverterType)}");
 
             if (!_mappedGenericTypes.TryGetValue(openType, out var converters))
                 _mappedGenericTypes.Add(openType, converters = new GenericConverterTypeCollection());

@@ -47,6 +47,7 @@ namespace Voltaic.Serialization.Json
             _converters.SetDefault<string, StringJsonConverter>();
             _converters.SetDefault<bool, BooleanJsonConverter>();
             _converters.SetDefault<Guid, GuidJsonConverter>();
+            _converters.SetGenericDefault(typeof(Nullable<>), typeof(NullableJsonConverter<>), t => t.GenericTypeArguments[0]);
         }
 
         public T Read<T>(ReadOnlyMemory<byte> utf8, ValueConverter<T> converter = null)

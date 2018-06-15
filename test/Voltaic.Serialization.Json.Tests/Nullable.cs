@@ -8,8 +8,10 @@ namespace Voltaic.Serialization.Json.Tests
         public static IEnumerable<object[]> GetData()
         {
             yield return ReadWrite("null", null);
-
-            // TODO: Impl more
+            yield return Fail("\"null\"");
+            yield return Fail("");
+            yield return ReadWrite("1", 1);
+            yield return Read("\"1\"", 1);
         }
 
         [Theory]

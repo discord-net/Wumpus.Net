@@ -10,6 +10,7 @@ namespace Voltaic.Serialization.Json.Tests
             yield return ReadWrite("null", null);
 
             // TODO: Impl more
+            // TODO: Add Optional<>
         }
 
         [Theory]
