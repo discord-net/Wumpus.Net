@@ -15,7 +15,7 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestByte(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
     }
 
     public class UInt16Tests : BaseTest<ushort>
@@ -30,7 +30,7 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestUInt16(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
     }
 
     public class UInt32Tests : BaseTest<uint>
@@ -45,7 +45,7 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestUInt32(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
     }
 
     public class UInt64Tests : BaseTest<ulong>
@@ -60,6 +60,6 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestUInt64(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
     }
 }

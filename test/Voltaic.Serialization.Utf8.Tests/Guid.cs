@@ -19,6 +19,6 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestGuid(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
     }
 }

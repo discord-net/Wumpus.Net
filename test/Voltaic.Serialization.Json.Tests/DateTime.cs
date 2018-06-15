@@ -30,7 +30,10 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestDateTime(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
+        [Theory]
+        [MemberData(nameof(GetData))]
+        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
     }
 
     public class DateTimeOffsetTests : BaseTest<DateTimeOffset>
@@ -70,7 +73,10 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestDateTimeOffset(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
+        [Theory]
+        [MemberData(nameof(GetData))]
+        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
     }
 
     public class TimeSpanTests : BaseTest<TimeSpan>
@@ -91,6 +97,9 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestTimeSpan(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
+        [Theory]
+        [MemberData(nameof(GetData))]
+        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
     }
 }

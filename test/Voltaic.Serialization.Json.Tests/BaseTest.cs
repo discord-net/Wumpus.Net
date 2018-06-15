@@ -21,31 +21,50 @@ namespace Voltaic.Serialization.Json.Tests
             _comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
-        public void Test(TestData test, ValueConverter<T> converter = null, bool testQuoted = false)
+        protected void RunTest(TestData test, ValueConverter<T> converter = null)
         {
             switch (test.Type)
             {
                 case TestType.Fail:
                     Assert.Throws<SerializationException>(() => _serializer.Read<T>(test.String, converter));
-                    if (testQuoted)
-                        Assert.Throws<SerializationException>(() => _serializer.Read<T>('"' + test.String + '"', converter));
                     break;
                 case TestType.Read:
                     Assert.Equal(test.Value, _serializer.Read<T>(test.String, converter), _comparer);
-                    if (testQuoted)
-                    {
-                        Assert.Equal(test.Value, _serializer.Read<T>('"' + test.String + '"', converter), _comparer);
-                        Assert.Throws<SerializationException>(() => _serializer.Read<T>('"' + test.String, converter));
-                    }
                     break;
                 case TestType.ReadWrite:
                     Assert.Equal(test.Value, _serializer.Read<T>(test.String, converter), _comparer);
                     Assert.Equal(test.String, _serializer.WriteString(test.Value, converter));
-                    if (testQuoted)
-                    {
-                        Assert.Equal(test.Value, _serializer.Read<T>('"' + test.String + '"', converter), _comparer);
-                        Assert.Throws<SerializationException>(() => _serializer.Read<T>('"' + test.String, converter));
-                    }
+                    break;
+            }
+        }
+
+        protected void RunQuoteTest(TestData test, ValueConverter<T> converter = null)
+        {
+            switch (test.Type)
+            {
+                case TestType.Fail:
+                    Assert.Throws<SerializationException>(() => _serializer.Read<T>('"' + test.String + '"', converter));
+                    break;
+                case TestType.Read:
+                case TestType.ReadWrite:
+                    Assert.Equal(test.Value, _serializer.Read<T>('"' + test.String + '"', converter), _comparer);
+                    Assert.Throws<SerializationException>(() => _serializer.Read<T>('"' + test.String, converter));
+                    break;
+            }
+        }
+
+        protected void RunWhitespaceTest(TestData test, ValueConverter<T> converter = null)
+        {
+            switch (test.Type)
+            {
+                case TestType.Fail:
+                    Assert.Throws<SerializationException>(() => _serializer.Read<T>(' ' + test.String + ' ', converter));
+                    break;
+                case TestType.Read:
+                case TestType.ReadWrite:
+                    Assert.Equal(test.Value, _serializer.Read<T>(' ' + test.String, converter), _comparer);
+                    Assert.Equal(test.Value, _serializer.Read<T>(test.String + ' ', converter), _comparer);
+                    Assert.Equal(test.Value, _serializer.Read<T>(' ' + test.String + ' ', converter), _comparer);
                     break;
             }
         }

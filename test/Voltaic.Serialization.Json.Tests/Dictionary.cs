@@ -14,6 +14,9 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestDictionary(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
+        [Theory]
+        [MemberData(nameof(GetData))]
+        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
     }
 }

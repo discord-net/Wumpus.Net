@@ -17,7 +17,13 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestSByte(TestData data) => Test(data, testQuoted: true);
+        public void Test(TestData data) => RunTest(data);
+        [Theory]
+        [MemberData(nameof(GetData))]
+        public void TestQuotes(TestData data) => RunQuoteTest(data);
+        [Theory]
+        [MemberData(nameof(GetData))]
+        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
     }
 
     public class Int16Tests : BaseTest<short>
@@ -33,7 +39,13 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestInt16(TestData data) => Test(data, testQuoted: true);
+        public void Test(TestData data) => RunTest(data);
+        [Theory]
+        [MemberData(nameof(GetData))]
+        public void TestQuotes(TestData data) => RunQuoteTest(data);
+        [Theory]
+        [MemberData(nameof(GetData))]
+        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
     }
 
     public class Int32Tests : BaseTest<int>
@@ -49,7 +61,13 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestInt32(TestData data) => Test(data, testQuoted: true);
+        public void Test(TestData data) => RunTest(data);
+        [Theory]
+        [MemberData(nameof(GetData))]
+        public void TestQuotes(TestData data) => RunQuoteTest(data);
+        [Theory]
+        [MemberData(nameof(GetData))]
+        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
     }
 
     public class Int53Tests : BaseTest<long>
@@ -65,7 +83,13 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestInt53(TestData data) => Test(data, new Int64Utf8Converter(), testQuoted: true);
+        public void Test(TestData data) => RunTest(data, new Int64Utf8Converter());
+        [Theory]
+        [MemberData(nameof(GetData))]
+        public void TestQuotes(TestData data) => RunQuoteTest(data, new Int64Utf8Converter());
+        [Theory]
+        [MemberData(nameof(GetData))]
+        public void TestWhitespace(TestData data) => RunWhitespaceTest(data, new Int64Utf8Converter());
     }
 
     public class Int64Tests : BaseTest<long>
@@ -89,6 +113,9 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestInt64(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
+        [Theory]
+        [MemberData(nameof(GetData))]
+        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
     }
 }

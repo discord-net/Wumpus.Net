@@ -21,7 +21,7 @@ namespace Voltaic.Serialization.Utf8.Tests
             _comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
-        public void Test(TestData test, ValueConverter<T> converter = null)
+        protected void RunTest(TestData test, ValueConverter<T> converter = null)
         {
             switch (test.Type)
             {

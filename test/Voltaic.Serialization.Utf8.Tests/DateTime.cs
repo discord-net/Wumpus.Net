@@ -26,7 +26,7 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestDateTime(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
     }
 
     public class DateTimeOffsetTests : BaseTest<DateTimeOffset>
@@ -63,7 +63,7 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestDateTimeOffset(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
     }
 
     public class TimeSpanTests : BaseTest<TimeSpan>
@@ -81,6 +81,6 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestTimeSpan(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
     }
 }

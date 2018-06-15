@@ -14,6 +14,6 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestNullable(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
     }
 }

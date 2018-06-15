@@ -26,7 +26,7 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestSingle(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
     }
 
     public class DoubleTests : BaseTest<double>
@@ -52,7 +52,7 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestDouble(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
     }
 
     public class DecimalTests : BaseTest<decimal>
@@ -74,6 +74,6 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestDecimal(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
     }
 }

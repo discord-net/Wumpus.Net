@@ -16,7 +16,7 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestChar(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
     }
 
     public class StringTests : BaseTest<string>
@@ -47,6 +47,6 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void TestString(TestData data) => Test(data);
+        public void Test(TestData data) => RunTest(data);
     }
 }
