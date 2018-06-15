@@ -4,27 +4,27 @@ namespace Voltaic.Serialization.Json
 {
     public static partial class JsonWriter
     {
-        public static bool TryWrite(ref MemoryBufferWriter<byte> writer, float value)
+        public static bool TryWrite(ref ResizableMemory<byte> writer, float value)
         {
-            var data = writer.GetSpan(13); // -3.402823E+38
+            var data = writer.CreateBuffer(13); // -3.402823E+38
             if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
                 return false;
             writer.Write(data.Slice(0, bytesWritten));
             return true;
         }
 
-        public static bool TryWrite(ref MemoryBufferWriter<byte> writer, double value)
+        public static bool TryWrite(ref ResizableMemory<byte> writer, double value)
         {
-            var data = writer.GetSpan(22); // -1.79769313486232E+308
+            var data = writer.CreateBuffer(22); // -1.79769313486232E+308
             if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
                 return false;
             writer.Write(data.Slice(0, bytesWritten));
             return true;
         }
 
-        public static bool TryWrite(ref MemoryBufferWriter<byte> writer, decimal value)
+        public static bool TryWrite(ref ResizableMemory<byte> writer, decimal value)
         {
-            var data = writer.GetSpan(64); // ???
+            var data = writer.CreateBuffer(64); // ???
             if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
                 return false;
             writer.Write(data.Slice(0, bytesWritten));

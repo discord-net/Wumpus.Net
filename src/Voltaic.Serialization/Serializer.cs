@@ -19,7 +19,7 @@ namespace Voltaic.Serialization
         // public event Action<string> UnmappedProperty;
 
         protected readonly ConcurrentDictionary<Type, ModelMap> _modelMaps;
-        protected readonly ConcurrentDictionary<Type, Func<object, object, ArraySegment<byte>>> _writeMethods;
+        protected readonly ConcurrentDictionary<Type, Func<object, object, ResizableMemory<byte>>> _writeMethods;
         protected readonly ConverterCollection _converters;
 
         protected Serializer(ConverterCollection converters = null, ArrayPool<byte> pool = null)
@@ -38,25 +38,25 @@ namespace Voltaic.Serialization
             return result;
         }
 
-        protected ArraySegment<byte> Write(object value, object converter = null)
+        protected ResizableMemory<byte> Write(object value, object converter = null)
         {
             var type = value.GetType();
             var method = _writeMethods.GetOrAdd(type, t =>
             {
                 return _writeMethod.MakeGenericMethod(t)
-                    .CreateDelegate(typeof(Func<object, object, ArraySegment<byte>>))
-                    as Func<object, object, ArraySegment<byte>>;
+                    .CreateDelegate(typeof(Func<object, object, ResizableMemory<byte>>))
+                    as Func<object, object, ResizableMemory<byte>>;
             });
             return method.Invoke(value, converter);
         }
-        protected ArraySegment<byte> Write<T>(T value, ValueConverter<T> converter = null)
+        protected ResizableMemory<byte> Write<T>(T value, ValueConverter<T> converter = null)
         {
-            var writer = new MemoryBufferWriter<byte>(pool: _pool);
+            var writer = new ResizableMemory<byte>(pool: _pool);
             if (converter == null)
                 converter = _converters.Get<T>(this);
             if (!converter.TryWrite(this, ref writer, value))
                 throw new SerializationException($"Failed to serialize {typeof(T).Name}");
-            return writer.Formatted;
+            return writer;
         }
 
         public ModelMap GetMap(Type modelType)

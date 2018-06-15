@@ -56,7 +56,7 @@ namespace Voltaic.Serialization
             _setFunc(model, result);
         }
 
-        public void Write(TModel model, ref MemoryBufferWriter<byte> buffer)
+        public void Write(TModel model, ref ResizableMemory<byte> buffer)
         {
             if (!_converter.TryWrite(Serializer, ref buffer, _getFunc(model), this))
                 throw new SerializationException($"Failed to serialize property {Path}");

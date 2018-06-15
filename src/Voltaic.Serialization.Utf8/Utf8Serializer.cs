@@ -70,10 +70,11 @@ namespace Voltaic.Serialization.Utf8
             var data = base.Write<T>(value, converter);
             try
             {
-                if (Encodings.Utf8.ToUtf16Length(data, out int bytes) != OperationStatus.Done)
+                var span = data.AsSpan();
+                if (Encodings.Utf8.ToUtf16Length(span, out int bytes) != OperationStatus.Done)
                     throw new SerializationException("Failed to convert to UTF16");
                 var utf16 = new char[bytes / 2];
-                if (Encodings.Utf8.ToUtf16(data, MemoryMarshal.AsBytes(utf16.AsSpan()), out _, out _) != OperationStatus.Done)
+                if (Encodings.Utf8.ToUtf16(span, MemoryMarshal.AsBytes(utf16.AsSpan()), out _, out _) != OperationStatus.Done)
                     throw new SerializationException("Failed to convert to UTF16");
                 return utf16.AsMemory();
             }
@@ -87,7 +88,8 @@ namespace Voltaic.Serialization.Utf8
             var data = base.Write<T>(value, converter);
             try
             {
-                if (Encodings.Utf8.ToUtf16Length(data, out int bytes) != OperationStatus.Done)
+                var span = data.AsSpan();
+                if (Encodings.Utf8.ToUtf16Length(span, out int bytes) != OperationStatus.Done)
                     throw new SerializationException("Failed to convert to UTF16");
 
                 var result = new String(' ', bytes / 2);
@@ -96,7 +98,7 @@ namespace Voltaic.Serialization.Utf8
                     fixed (char* pResult = result)
                     {
                         var resultBytes = new Span<byte>((void*)pResult, bytes);
-                        if (Encodings.Utf8.ToUtf16(data.AsSpan(), resultBytes, out _, out _) != OperationStatus.Done)
+                        if (Encodings.Utf8.ToUtf16(span, resultBytes, out _, out _) != OperationStatus.Done)
                             throw new SerializationException("Failed to convert to UTF16");
                     }
                 }

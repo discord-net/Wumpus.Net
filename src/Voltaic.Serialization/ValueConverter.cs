@@ -12,7 +12,7 @@ namespace Voltaic.Serialization
 
         public abstract bool TryWrite(
             Serializer serializer,
-            ref MemoryBufferWriter<byte> writer,
+            ref ResizableMemory<byte> writer,
             TValue value,
             PropertyMap propMap = null);
     }

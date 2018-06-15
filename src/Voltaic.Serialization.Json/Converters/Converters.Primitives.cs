@@ -6,7 +6,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out bool result, PropertyMap propMap = null)
             => JsonReader.TryReadBoolean(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, bool value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, bool value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -14,7 +14,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out DateTime result, PropertyMap propMap = null)
             => JsonReader.TryReadDateTime(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, DateTime value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, DateTime value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -22,7 +22,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out DateTimeOffset result, PropertyMap propMap = null)
             => JsonReader.TryReadDateTimeOffset(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, DateTimeOffset value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, DateTimeOffset value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -30,7 +30,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out TimeSpan result, PropertyMap propMap = null)
             => JsonReader.TryReadTimeSpan(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, TimeSpan value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, TimeSpan value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -38,7 +38,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out float result, PropertyMap propMap = null)
             => JsonReader.TryReadSingle(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, float value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, float value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -46,7 +46,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out double result, PropertyMap propMap = null)
             => JsonReader.TryReadDouble(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, double value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, double value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -54,7 +54,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out decimal result, PropertyMap propMap = null)
             => JsonReader.TryReadDecimal(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, decimal value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, decimal value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -62,7 +62,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out Guid result, PropertyMap propMap = null)
             => JsonReader.TryReadGuid(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, Guid value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, Guid value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -70,7 +70,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out sbyte result, PropertyMap propMap = null)
             => JsonReader.TryReadInt8(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, sbyte value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, sbyte value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -78,7 +78,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out short result, PropertyMap propMap = null)
             => JsonReader.TryReadInt16(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, short value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, short value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -86,7 +86,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out int result, PropertyMap propMap = null)
             => JsonReader.TryReadInt32(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, int value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, int value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -94,7 +94,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out long result, PropertyMap propMap = null)
             => JsonReader.TryReadInt64(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, long value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, long value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value, useQuotes: false);
     }
 
@@ -102,7 +102,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out long result, PropertyMap propMap = null)
             => JsonReader.TryReadInt64(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, long value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, long value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -110,7 +110,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out byte result, PropertyMap propMap = null)
             => JsonReader.TryReadUInt8(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, byte value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, byte value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -118,7 +118,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out ushort result, PropertyMap propMap = null)
             => JsonReader.TryReadUInt16(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, ushort value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, ushort value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -126,7 +126,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out uint result, PropertyMap propMap = null)
             => JsonReader.TryReadUInt32(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, uint value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, uint value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -134,7 +134,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out ulong result, PropertyMap propMap = null)
             => JsonReader.TryReadUInt64(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, ulong value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, ulong value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value, useQuotes: false);
     }
 
@@ -142,7 +142,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out ulong result, PropertyMap propMap = null)
             => JsonReader.TryReadUInt64(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, ulong value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, ulong value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -150,7 +150,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out char result, PropertyMap propMap = null)
             => JsonReader.TryReadChar(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, char value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, char value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 
@@ -158,7 +158,7 @@ namespace Voltaic.Serialization.Json
     {
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out string result, PropertyMap propMap = null)
             => JsonReader.TryReadString(ref remaining, out result);
-        public override bool TryWrite(Serializer serializer, ref MemoryBufferWriter<byte> writer, string value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, string value, PropertyMap propMap = null)
             => JsonWriter.TryWrite(ref writer, value);
     }
 }
