@@ -6,13 +6,13 @@ namespace Voltaic.Serialization
     {
         public abstract bool TryRead(
             Serializer serializer,
-            ref ReadOnlySpan<byte> data,
+            ref ReadOnlySpan<byte> remaining,
             out TValue result,
             PropertyMap propMap = null);
 
         public abstract bool TryWrite(
             Serializer serializer,
-            ref ResizableMemory<byte> writer,
+            ref ResizableMemory<byte> remaining,
             TValue value,
             PropertyMap propMap = null);
     }

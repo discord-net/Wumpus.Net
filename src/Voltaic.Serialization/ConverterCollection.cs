@@ -24,7 +24,7 @@ namespace Voltaic.Serialization
                 var innerTypes = new Type[InnerTypeSelectors.Length];
                 for (int i = 0; i < InnerTypeSelectors.Length; i++)
                     innerTypes[i] = InnerTypeSelectors[i](valueType);
-                return valueType.MakeGenericType(innerTypes);
+                return Type.MakeGenericType(innerTypes);
             }
         }
 
@@ -102,8 +102,8 @@ namespace Voltaic.Serialization
         {
             if (openConverterType.IsConstructedGenericType)
                 throw new InvalidOperationException($"{nameof(openConverterType)} must be an open generic");
-            if (openConverterType.GenericTypeArguments.Length != 1)
-                throw new InvalidOperationException($"{nameof(openConverterType)} must have 1 generic argument");
+            if (openConverterType.GetTypeInfo().GenericTypeParameters.Length != 1)
+                throw new InvalidOperationException($"{nameof(openConverterType)} must have 1 generic parameter");
 
             _globalGenericTypes.DefaultConverter = new GenericConverterType(openConverterType, innerTypeSelectors);
         }
@@ -111,8 +111,8 @@ namespace Voltaic.Serialization
         {
             if (openConverterType.IsConstructedGenericType)
                 throw new InvalidOperationException($"{nameof(openConverterType)} must be an open generic");
-            if (openConverterType.GenericTypeArguments.Length != 1)
-                throw new InvalidOperationException($"{nameof(openConverterType)} must have 1 generic argument");
+            if (openConverterType.GetTypeInfo().GenericTypeParameters.Length != 1)
+                throw new InvalidOperationException($"{nameof(openConverterType)} must have 1 generic parameter");
 
             _globalGenericTypes.ConditionalConverters.Add(new GenericConditionalConverter(new GenericConverterType(openConverterType, innerTypeSelectors), condition));
         }
@@ -124,7 +124,7 @@ namespace Voltaic.Serialization
                 throw new InvalidOperationException($"{nameof(openType)} must be an open generic");
             if (openConverterType.IsConstructedGenericType)
                 throw new InvalidOperationException($"{nameof(openConverterType)} must be an open generic");
-            if (innerTypeSelectors.Length != openConverterType.GenericTypeArguments.Length)
+            if (innerTypeSelectors.Length != openConverterType.GetTypeInfo().GenericTypeParameters.Length)
                 throw new InvalidOperationException($"{nameof(innerTypeSelectors)} must be the same length as generic args in {nameof(openConverterType)}");
 
             if (!_mappedGenericTypes.TryGetValue(openType, out var converters))
@@ -137,7 +137,7 @@ namespace Voltaic.Serialization
                 throw new InvalidOperationException($"{nameof(openType)} must be an open generic");
             if (openConverterType.IsConstructedGenericType)
                 throw new InvalidOperationException($"{nameof(openConverterType)} must be an open generic");
-            if (innerTypeSelectors.Length != openConverterType.GenericTypeArguments.Length)
+            if (innerTypeSelectors.Length != openConverterType.GetTypeInfo().GenericTypeParameters.Length)
                 throw new InvalidOperationException($"{nameof(innerTypeSelectors)} must be the same length as generic args in {nameof(openConverterType)}");
 
             if (!_mappedGenericTypes.TryGetValue(openType, out var converters))
@@ -175,16 +175,22 @@ namespace Voltaic.Serialization
                 throw new SerializationException($"{converterType.Name} has multiple constructors");
             var constructor = constructors[0];
             var parameters = constructor.GetParameters();
+            if (parameters.Length < converterTypeInfo.GenericTypeArguments.Length)
+            {
+                throw new SerializationException($"The constructor for {converterType.Name} must have one ValueConverter<T> " +
+                    $"parameter for each generic parameter in the converter.");
+            }
 
             var args = new object[parameters.Length];
-            for (int i = 0; i < args.Length; i++)
+            int i = 0;
+            for (; i < converterTypeInfo.GenericTypeArguments.Length; i++)
+                args[i] = Get(serializer, converterTypeInfo.GenericTypeArguments[i], null, throwOnNotFound);
+            for (; i < args.Length; i++)
             {
                 var paramType = parameters[i].ParameterType;
-                if (parameters[i].Name == "innerConverters")
-                    args[i] = converterTypeInfo.GenericTypeArguments.Select(x => Get(serializer, x, null, throwOnNotFound)).ToArray();
-                else if (_serializerType.IsAssignableFrom(paramType.GetTypeInfo()))
+                if (_serializerType.IsAssignableFrom(paramType.GetTypeInfo()))
                     args[i] = serializer;
-                else
+                else if (!parameters[i].HasDefaultValue)
                     throw new SerializationException($"{converterType.Name} has an unsupported constructor");
             }
 
