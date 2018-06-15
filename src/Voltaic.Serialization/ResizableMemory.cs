@@ -13,14 +13,20 @@ namespace Voltaic.Serialization
             Array = _pool.Rent(initalCapacity);
             Length = 0;
         }
+        public ResizableMemory(T[] array, ArrayPool<T> pool = null)
+        {
+            _pool = pool ?? ArrayPool<T>.Shared;
+            Array = array;
+            Length = 0;
+        }
 
         public T[] Array { get; private set; }
         public int Length { get; private set; }
 
-        public void Add(T item)
+        public void Append(T item)
         {
             RequestLength(1);
-            Length++;
+            Array[Length++] = item;
         }
 
         public Span<T> CreateBuffer(int minimumLength)
@@ -51,7 +57,7 @@ namespace Voltaic.Serialization
             if (Length == Array.Length)
                 return Array;
             var result = new T[Length];
-            Array.AsSpan().CopyTo(result);
+            Array.AsSpan(0, Length).CopyTo(result);
             return result;
         }
 
