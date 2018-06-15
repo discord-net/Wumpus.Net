@@ -8,7 +8,7 @@ namespace Voltaic.Serialization.Json.Tests
     {
         private class Comparer : IEqualityComparer<int[]>
         {
-            public bool Equals(int[] x, int[] y) => x.SequenceEqual(y);
+            public bool Equals(int[] x, int[] y) => (x == null && y == null) || (x != null && y != null && x.SequenceEqual(y));
             public int GetHashCode(int[] obj) => 0; // Ignore
         }
 
@@ -19,10 +19,10 @@ namespace Voltaic.Serialization.Json.Tests
             yield return ReadWrite("[]", new int[0]);
             yield return ReadWrite("[1]", new int[] { 1 });
             yield return ReadWrite("[1,2,3]", new int[] { 1, 2, 3 });
-            yield return ReadWrite("[1, 2, 3]", new int[] { 1, 2, 3 });
-            yield return ReadWrite("[1 ,2 ,3]", new int[] { 1, 2, 3 });
-            yield return ReadWrite("[1 , 2 , 3]", new int[] { 1, 2, 3 });
-            yield return ReadWrite("[1  ,  2  ,  3]", new int[] { 1, 2, 3 });
+            yield return Read("[1, 2, 3]", new int[] { 1, 2, 3 });
+            yield return Read("[1 ,2 ,3]", new int[] { 1, 2, 3 });
+            yield return Read("[1 , 2 , 3]", new int[] { 1, 2, 3 });
+            yield return Read("[1  ,  2  ,  3]", new int[] { 1, 2, 3 });
             yield return Fail("[1,]");
             yield return Fail("[,1]");
             yield return Fail("[");
@@ -37,6 +37,48 @@ namespace Voltaic.Serialization.Json.Tests
         }
 
         public ArrayTests() : base(new Comparer()) { }
+
+        [Theory]
+        [MemberData(nameof(GetData))]
+        public void Test(TestData data) => RunTest(data);
+        [Theory]
+        [MemberData(nameof(GetData))]
+        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
+    }
+
+    public class ListTests : BaseTest<List<int>>
+    {
+        private class Comparer : IEqualityComparer<List<int>>
+        {
+            public bool Equals(List<int> x, List<int> y) => (x == null && y == null) || (x != null && y != null && x.SequenceEqual(y));
+            public int GetHashCode(List<int> obj) => 0; // Ignore
+        }
+
+        public static IEnumerable<object[]> GetData()
+        {
+            yield return ReadWrite("null", null);
+
+            yield return ReadWrite("[]", new List<int>());
+            yield return ReadWrite("[1]", new List<int> { 1 });
+            yield return ReadWrite("[1,2,3]", new List<int> { 1, 2, 3 });
+            yield return Read("[1, 2, 3]", new List<int> { 1, 2, 3 });
+            yield return Read("[1 ,2 ,3]", new List<int> { 1, 2, 3 });
+            yield return Read("[1 , 2 , 3]", new List<int> { 1, 2, 3 });
+            yield return Read("[1  ,  2  ,  3]", new List<int> { 1, 2, 3 });
+            yield return Fail("[1,]");
+            yield return Fail("[,1]");
+            yield return Fail("[");
+            yield return Fail("[1");
+            yield return Fail("]");
+            yield return Fail("1]");
+            yield return Fail("[1 2 3]");
+            yield return Fail("[1   2   3]");
+            yield return Fail("[1:2:3]");
+            yield return Fail("[1 : 2 : 3]");
+            yield return Fail("[1 :  2  :  3]");
+        }
+
+        public ListTests() : base(new Comparer()) { }
 
         [Theory]
         [MemberData(nameof(GetData))]

@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
@@ -17,8 +18,10 @@ namespace Voltaic.Serialization.Json
             _converters.SetDefault<ushort, UInt16JsonConverter>();
             _converters.SetDefault<int, Int32JsonConverter>();
             _converters.SetDefault<uint, UInt32JsonConverter>();
-            _converters.AddConditional<long, Int53JsonConverter>((t, p) => p?.GetCustomAttribute<Int53Attribute>() != null);
-            _converters.AddConditional<ulong, UInt53JsonConverter>((t, p) => p?.GetCustomAttribute<Int53Attribute>() != null);
+            _converters.AddConditional<long, Int53JsonConverter>(
+                (t, p) => p?.GetCustomAttribute<Int53Attribute>() != null);
+            _converters.AddConditional<ulong, UInt53JsonConverter>
+                ((t, p) => p?.GetCustomAttribute<Int53Attribute>() != null);
             _converters.SetDefault<long, Int64JsonConverter>();
             _converters.SetDefault<ulong, UInt64JsonConverter>();
 
@@ -31,6 +34,13 @@ namespace Voltaic.Serialization.Json
             _converters.SetDefault<DateTime, DateTimeJsonConverter>();
             _converters.SetDefault<DateTimeOffset, DateTimeOffsetJsonConverter>();
             _converters.SetDefault<TimeSpan, TimeSpanJsonConverter>();
+
+            // Collections
+            _converters.AddGlobalConditional(typeof(ArrayJsonConverter<>), 
+                (t, p) => t.IsArray, t => t.GetElementType());
+            _converters.SetGenericDefault(typeof(List<>), typeof(ListJsonConverter<>), t => t.GenericTypeArguments[0]);
+            _converters.AddGenericConditional(typeof(Dictionary<,>), typeof(DictionaryJsonConverter<>), 
+                (t, p) => t.GenericTypeArguments[0] == typeof(string), t => t.GenericTypeArguments[1]);
 
             // Others
             _converters.SetDefault<char, CharJsonConverter>();
@@ -72,10 +82,11 @@ namespace Voltaic.Serialization.Json
             var data = base.Write<T>(value, converter);
             try
             {
-                if (Encodings.Utf8.ToUtf16Length(data, out int bytes) != OperationStatus.Done)
+                var span = data.AsSpan();
+                if (Encodings.Utf8.ToUtf16Length(span, out int bytes) != OperationStatus.Done)
                     throw new SerializationException("Failed to convert to UTF16");
                 var utf16 = new char[bytes / 2];
-                if (Encodings.Utf8.ToUtf16(data, MemoryMarshal.AsBytes(utf16.AsSpan()), out _, out _) != OperationStatus.Done)
+                if (Encodings.Utf8.ToUtf16(span, MemoryMarshal.AsBytes(utf16.AsSpan()), out _, out _) != OperationStatus.Done)
                     throw new SerializationException("Failed to convert to UTF16");
                 return utf16.AsMemory();
             }
@@ -89,7 +100,8 @@ namespace Voltaic.Serialization.Json
             var data = base.Write<T>(value, converter);
             try
             {
-                if (Encodings.Utf8.ToUtf16Length(data, out int bytes) != OperationStatus.Done)
+                var span = data.AsSpan();
+                if (Encodings.Utf8.ToUtf16Length(span, out int bytes) != OperationStatus.Done)
                     throw new SerializationException("Failed to convert to UTF16");
 
                 var result = new String(' ', bytes / 2);
@@ -98,7 +110,7 @@ namespace Voltaic.Serialization.Json
                     fixed (char* pResult = result)
                     {
                         var resultBytes = new Span<byte>((void*)pResult, bytes);
-                        if (Encodings.Utf8.ToUtf16(data.AsSpan(), resultBytes, out _, out _) != OperationStatus.Done)
+                        if (Encodings.Utf8.ToUtf16(span, resultBytes, out _, out _) != OperationStatus.Done)
                             throw new SerializationException("Failed to convert to UTF16");
                     }
                 }
