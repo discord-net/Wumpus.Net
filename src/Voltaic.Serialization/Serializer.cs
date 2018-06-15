@@ -51,7 +51,7 @@ namespace Voltaic.Serialization
         }
         protected ResizableMemory<byte> Write<T>(T value, ValueConverter<T> converter = null)
         {
-            var writer = new ResizableMemory<byte>(pool: _pool);
+            var writer = new ResizableMemory<byte>(1024, pool: _pool);
             if (converter == null)
                 converter = _converters.Get<T>(this);
             if (!converter.TryWrite(this, ref writer, value))
