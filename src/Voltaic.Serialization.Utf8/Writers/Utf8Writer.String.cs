@@ -8,14 +8,14 @@ namespace Voltaic.Serialization.Utf8
     {
         public static bool TryWrite(ref ResizableMemory<byte> writer, char value)
         {
-            Span<char> chars = stackalloc char[] { value };
+            ReadOnlySpan<char> chars = stackalloc char[] { value };
             var valueBytes = MemoryMarshal.AsBytes(chars);
             if (Encodings.Utf16.ToUtf8Length(valueBytes, out var length) != OperationStatus.Done)
                 return false;
-            var data = writer.CreateBuffer(length);
+            var data = writer.GetSpan(length);
             if (Encodings.Utf16.ToUtf8(valueBytes, data, out _, out _) != OperationStatus.Done)
                 return false;
-            writer.Write(data.Slice(0, length));
+            writer.Advance(length);
             return true;
         }
 
@@ -24,10 +24,10 @@ namespace Voltaic.Serialization.Utf8
             var valueBytes = MemoryMarshal.AsBytes(value.AsSpan());
             if (Encodings.Utf16.ToUtf8Length(valueBytes, out var length) != OperationStatus.Done)
                 return false;
-            var data = writer.CreateBuffer(length);
+            var data = writer.GetSpan(length);
             if (Encodings.Utf16.ToUtf8(valueBytes, data, out _, out _) != OperationStatus.Done)
                 return false;
-            writer.Write(data.Slice(0, length));
+            writer.Advance(length);
             return true;
         }
     }

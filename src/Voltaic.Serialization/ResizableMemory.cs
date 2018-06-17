@@ -5,21 +5,21 @@ namespace Voltaic.Serialization
 {
     public struct ResizableMemory<T>
     {
-        private readonly ArrayPool<T> _pool;
 
-        public ResizableMemory(int initalCapacity = 16, ArrayPool<T> pool = null)
+        public ResizableMemory(int initalCapacity, ArrayPool<T> pool = null)
         {
-            _pool = pool ?? ArrayPool<T>.Shared;
-            Array = _pool.Rent(initalCapacity);
+            Pool = pool ?? ArrayPool<T>.Shared;
+            Array = Pool.Rent(initalCapacity);
             Length = 0;
         }
         public ResizableMemory(T[] array, ArrayPool<T> pool = null)
         {
-            _pool = pool ?? ArrayPool<T>.Shared;
+            Pool = pool ?? ArrayPool<T>.Shared;
             Array = array;
             Length = 0;
         }
 
+        public ArrayPool<T> Pool { get; private set; }
         public T[] Array { get; private set; }
         public int Length { get; private set; }
 
@@ -29,16 +29,16 @@ namespace Voltaic.Serialization
             Array[Length++] = item;
         }
 
-        public Span<T> CreateBuffer(int minimumLength)
+        public Span<T> GetSpan(int minimumLength)
         {
             RequestLength(minimumLength);
             return new Span<T>(Array, Length, Array.Length - Length);
         }
-        public void Write(Span<T> span)
-        {
-            Length += span.Length;
-        }
-        public void Write(Span<T> span, int count)
+        //public void Advance(Span<T> span)
+        //{
+        //    Length += span.Length;
+        //}
+        public void Advance(int count)
         {
             Length += count;
         }
@@ -50,8 +50,10 @@ namespace Voltaic.Serialization
 
         public ArraySegment<T> AsSegment() => new ArraySegment<T>(Array);
         public Memory<T> AsMemory() => new Memory<T>(Array, 0, Length);
+        public ReadOnlyMemory<T> AsReadOnlyMemory() => new ReadOnlyMemory<T>(Array, 0, Length);
         public Span<T> AsSpan() => new Span<T>(Array, 0, Length);
-        
+        public ReadOnlySpan<T> AsReadOnlySpan() => new ReadOnlySpan<T>(Array, 0, Length);
+
         public T[] ToArray()
         {
             if (Length == Array.Length)
@@ -70,9 +72,18 @@ namespace Voltaic.Serialization
                 while (newSize < length)
                     newSize *= 2;
                 var oldArray = Array;
-                Array = _pool.Rent(newSize);
+                Array = Pool.Rent(newSize);
                 oldArray.AsSpan(0, Length).CopyTo(Array);
-                _pool.Return(oldArray);
+                Pool.Return(oldArray);
+            }
+        }
+
+        public void Return()
+        {
+            if (Array != null)
+            {
+                Pool.Return(Array);
+                Array = null;
             }
         }
     }

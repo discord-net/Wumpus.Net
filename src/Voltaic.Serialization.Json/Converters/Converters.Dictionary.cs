@@ -65,7 +65,9 @@ namespace Voltaic.Serialization.Json
                 remaining = remaining.Slice(1);
                 if (!_innerConverter.TryRead(serializer, ref remaining, out var value, propMap))
                     return false;
-                result.Add(key, value);
+                if (result.ContainsKey(key))
+                    return false;
+                result[key] = value;
             }
         }
 
@@ -74,22 +76,21 @@ namespace Voltaic.Serialization.Json
             if (value == null)
                 return JsonWriter.TryWriteNull(ref writer);
 
-            writer.Append((byte)'[');
+            writer.Append((byte)'{');
             bool isFirst = true;
             foreach (var pair in value)
             {
-                if (isFirst)
-                {
+                if (!isFirst)
                     writer.Append((byte)',');
+                else
                     isFirst = false;
-                }
                 if (!JsonWriter.TryWrite(ref writer, pair.Key))
                     return false;
                 writer.Append((byte)':');
                 if (!_innerConverter.TryWrite(serializer, ref writer, pair.Value, propMap))
                     return false;
             }
-            writer.Append((byte)']');
+            writer.Append((byte)'}');
             return true;
         }
     }
