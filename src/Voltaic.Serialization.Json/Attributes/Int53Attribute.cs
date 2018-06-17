@@ -3,5 +3,5 @@
 namespace Voltaic.Serialization.Json
 {
     [AttributeUsage(AttributeTargets.Property)]
-    internal class Int53Attribute : Attribute { }
+    public class Int53Attribute : Attribute { }
 }

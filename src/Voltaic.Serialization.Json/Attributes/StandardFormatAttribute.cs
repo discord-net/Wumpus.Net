@@ -4,13 +4,13 @@ using System.Buffers;
 namespace Voltaic.Serialization.Json
 {
     [AttributeUsage(AttributeTargets.Property)]
-    internal class StandardFormatAttribute : Attribute
+    public class StandardFormatAttribute : Attribute
     {
         public StandardFormat Format { get; }
 
-        public StandardFormatAttribute(StandardFormat format)
+        public StandardFormatAttribute(char symbol, byte precision = 255)
         {
-            Format = format;
+            Format = new StandardFormat(symbol, precision);
         }
     }
 }
