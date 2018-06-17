@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Voltaic.Serialization.Tests;
 using Xunit;
 
 namespace Voltaic.Serialization.Utf8.Tests
@@ -7,16 +8,16 @@ namespace Voltaic.Serialization.Utf8.Tests
     {
         public static IEnumerable<object[]> GetData()
         {
-            yield return Fail("");
+            yield return FailRead("");
             yield return ReadWrite("a", 'a');
-            yield return Fail("aa");
+            yield return FailRead("aa");
             yield return ReadWrite("\0", '\0');
             yield return ReadWrite("☑", '☑');
         }
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data);
+        public void Test(TestData<char> data) => RunTest(data);
     }
 
     public class StringTests : BaseTest<string>
@@ -47,6 +48,6 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data);
+        public void Test(TestData<string> data) => RunTest(data);
     }
 }

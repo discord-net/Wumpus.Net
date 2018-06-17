@@ -1,33 +1,58 @@
-﻿using System.Buffers.Text;
+﻿using System.Buffers;
+using Voltaic.Serialization.Utf8;
 
 namespace Voltaic.Serialization.Json
 {
     public static partial class JsonWriter
     {
-        public static bool TryWrite(ref ResizableMemory<byte> writer, float value)
+        public static bool TryWrite(ref ResizableMemory<byte> writer, float value, StandardFormat standardFormat)
         {
-            var data = writer.CreateBuffer(13); // -3.402823E+38
-            if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
-                return false;
-            writer.Write(data.Slice(0, bytesWritten));
+            if (standardFormat.Symbol != JsonSerializer.FloatFormat.Symbol || float.IsInfinity(value) || float.IsNaN(value))
+            {
+                writer.Append((byte)'"');
+                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                    return false;
+                writer.Append((byte)'"');
+            }
+            else
+            {
+                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                    return false;
+            }
             return true;
         }
 
-        public static bool TryWrite(ref ResizableMemory<byte> writer, double value)
+        public static bool TryWrite(ref ResizableMemory<byte> writer, double value, StandardFormat standardFormat)
         {
-            var data = writer.CreateBuffer(22); // -1.79769313486232E+308
-            if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
-                return false;
-            writer.Write(data.Slice(0, bytesWritten));
+            if (standardFormat.Symbol != JsonSerializer.FloatFormat.Symbol || double.IsInfinity(value) || double.IsNaN(value))
+            {
+                writer.Append((byte)'"');
+                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                    return false;
+                writer.Append((byte)'"');
+            }
+            else
+            {
+                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                    return false;
+            }
             return true;
         }
 
-        public static bool TryWrite(ref ResizableMemory<byte> writer, decimal value)
+        public static bool TryWrite(ref ResizableMemory<byte> writer, decimal value, StandardFormat standardFormat)
         {
-            var data = writer.CreateBuffer(64); // ???
-            if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
-                return false;
-            writer.Write(data.Slice(0, bytesWritten));
+            if (standardFormat.Symbol != JsonSerializer.FloatFormat.Symbol)
+            {
+                writer.Append((byte)'"');
+                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                    return false;
+                writer.Append((byte)'"');
+            }
+            else
+            {
+                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                    return false;
+            }
             return true;
         }
     }

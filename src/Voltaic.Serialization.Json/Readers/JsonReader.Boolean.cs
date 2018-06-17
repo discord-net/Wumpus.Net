@@ -5,7 +5,7 @@ namespace Voltaic.Serialization.Json
 {
     public static partial class JsonReader
     {
-        public static bool TryReadBoolean(ref ReadOnlySpan<byte> remaining, out bool result)
+        public static bool TryReadBoolean(ref ReadOnlySpan<byte> remaining, out bool result, char standardFormat)
         {
             result = default;
             
@@ -25,7 +25,7 @@ namespace Voltaic.Serialization.Json
                     return true;
                 case TokenType.String:
                     remaining = remaining.Slice(1);
-                    if (!Utf8Reader.TryReadBoolean(ref remaining, out result))
+                    if (!Utf8Reader.TryReadBoolean(ref remaining, out result, standardFormat))
                         return false;
                     if (remaining.Length == 0 || remaining[0] != '"')
                         return false;

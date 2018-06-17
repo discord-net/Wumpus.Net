@@ -1,117 +1,103 @@
 using System.Collections.Generic;
-using Voltaic.Serialization.Utf8;
+using Voltaic.Serialization.Tests;
 using Xunit;
 
 namespace Voltaic.Serialization.Json.Tests
 {
     public class ByteTests : BaseTest<byte>
     {
-        public static IEnumerable<object[]> GetData()
-        {
-            yield return Fail("-1"); // Min -1
-            yield return ReadWrite("0", 0);
-            yield return ReadWrite("255", 255); // Max
-            yield return Fail("256"); // Max + 1
-        }
+        public static IEnumerable<object[]> GetDData() => Utf8.Tests.ByteTests.GetDData();
+        public static IEnumerable<object[]> GetNData() => Utf8.Tests.ByteTests.GetNData();
+        public static IEnumerable<object[]> GetXData() => Utf8.Tests.ByteTests.GetXData();
 
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data);
+        [MemberData(nameof(GetDData))]
+        public void Number(TestData<byte> data) => RunTest(data);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestQuotes(TestData data) => RunQuoteTest(data);
+        [MemberData(nameof(GetDData))]
+        public void Format_D(TestData<byte> data) => RunQuoteTest(data, onlyReads: true);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
+        [MemberData(nameof(GetNData))]
+        public void Format_N(TestData<byte> data) => RunQuoteTest(data, new ByteJsonConverter('N'));
+        [Theory]
+        [MemberData(nameof(GetXData))]
+        public void Format_X(TestData<byte> data) => RunQuoteTest(data, new ByteJsonConverter('X'));
     }
 
     public class UInt16Tests : BaseTest<ushort>
     {
-        public static IEnumerable<object[]> GetData()
-        {
-            yield return Fail("-1"); // Min -1
-            yield return ReadWrite("0", 0);
-            yield return ReadWrite("65535", 65535); // Max
-            yield return Fail("65536"); // Max + 1
-        }
+        public static IEnumerable<object[]> GetDData() => Utf8.Tests.UInt16Tests.GetDData();
+        public static IEnumerable<object[]> GetNData() => Utf8.Tests.UInt16Tests.GetNData();
+        public static IEnumerable<object[]> GetXData() => Utf8.Tests.UInt16Tests.GetXData();
 
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data);
+        [MemberData(nameof(GetDData))]
+        public void Number(TestData<ushort> data) => RunTest(data);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestQuotes(TestData data) => RunQuoteTest(data);
+        [MemberData(nameof(GetDData))]
+        public void Format_D(TestData<ushort> data) => RunQuoteTest(data, onlyReads: true);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
+        [MemberData(nameof(GetNData))]
+        public void Format_N(TestData<ushort> data) => RunQuoteTest(data, new UInt16JsonConverter('N'));
+        [Theory]
+        [MemberData(nameof(GetXData))]
+        public void Format_X(TestData<ushort> data) => RunQuoteTest(data, new UInt16JsonConverter('X'));
     }
 
     public class UInt32Tests : BaseTest<uint>
     {
-        public static IEnumerable<object[]> GetData()
-        {
-            yield return Fail("-1"); // Min -1
-            yield return ReadWrite("0", 0);
-            yield return ReadWrite("4294967295", 4294967295); // Max
-            yield return Fail("4294967296"); // Max + 1
-        }
+        public static IEnumerable<object[]> GetDData() => Utf8.Tests.UInt32Tests.GetDData();
+        public static IEnumerable<object[]> GetNData() => Utf8.Tests.UInt32Tests.GetNData();
+        public static IEnumerable<object[]> GetXData() => Utf8.Tests.UInt32Tests.GetXData();
 
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data);
+        [MemberData(nameof(GetDData))]
+        public void Number(TestData<uint> data) => RunTest(data);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestQuotes(TestData data) => RunQuoteTest(data);
+        [MemberData(nameof(GetDData))]
+        public void Format_D(TestData<uint> data) => RunQuoteTest(data, onlyReads: true);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
+        [MemberData(nameof(GetNData))]
+        public void Format_N(TestData<uint> data) => RunQuoteTest(data, new UInt32JsonConverter('N'));
+        [Theory]
+        [MemberData(nameof(GetXData))]
+        public void Format_X(TestData<uint> data) => RunQuoteTest(data, new UInt32JsonConverter('X'));
     }
 
     public class UInt53Tests : BaseTest<ulong>
     {
-        public static IEnumerable<object[]> GetData()
-        {
-            yield return Fail("-1"); // Min - 1
-            yield return ReadWrite("0", 0);
-            yield return ReadWrite("9007199254740991", 9007199254740991); // Max
-            //yield return Fail("9007199254740992"); // Max + 1
-            yield return Read("18446744073709551615", 18446744073709551615); // Max
-            yield return Fail("18446744073709551616"); // Max + 1
-        }
+        public static IEnumerable<object[]> GetDData() => Utf8.Tests.UInt64Tests.GetDData();
+        public static IEnumerable<object[]> GetNData() => Utf8.Tests.UInt64Tests.GetNData();
+        public static IEnumerable<object[]> GetXData() => Utf8.Tests.UInt64Tests.GetXData();
 
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data, new UInt53JsonConverter());
+        [MemberData(nameof(GetDData))]
+        public void Number(TestData<ulong> data) => RunTest(data, new UInt53JsonConverter());
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestQuotes(TestData data) => RunQuoteTest(data, new UInt53JsonConverter());
+        [MemberData(nameof(GetDData))]
+        public void Format_D(TestData<ulong> data) => RunQuoteTest(data, new UInt53JsonConverter(), onlyReads: true);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestWhitespace(TestData data) => RunWhitespaceTest(data, new UInt53JsonConverter());
+        [MemberData(nameof(GetNData))]
+        public void Format_N(TestData<ulong> data) => RunQuoteTest(data, new UInt53JsonConverter('N'));
+        [Theory]
+        [MemberData(nameof(GetXData))]
+        public void Format_X(TestData<ulong> data) => RunQuoteTest(data, new UInt53JsonConverter('X'));
     }
 
     public class UInt64Tests : BaseTest<ulong>
     {
-        public static IEnumerable<object[]> GetData()
-        {
-            yield return Fail("-1"); // Min -1
-            yield return Read("0", 0);
-            yield return Read("18446744073709551615", 18446744073709551615); // Max
-            yield return Fail("18446744073709551616"); // Max + 1
-
-            yield return Fail("\"-1\""); // Min -1
-            yield return ReadWrite("\"0\"", 0);
-            yield return ReadWrite("\"18446744073709551615\"", 18446744073709551615); // Max
-            yield return Fail("\"18446744073709551616\""); // Max + 1
-
-            yield return Fail("\"0"); // Unclosed quote
-        }
+        public static IEnumerable<object[]> GetDData() => Utf8.Tests.UInt64Tests.GetDData();
+        public static IEnumerable<object[]> GetNData() => Utf8.Tests.UInt64Tests.GetNData();
+        public static IEnumerable<object[]> GetXData() => Utf8.Tests.UInt64Tests.GetXData();
 
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data);
+        [MemberData(nameof(GetDData))]
+        public void Format_D(TestData<ulong> data) => RunQuoteTest(data, onlyReads: true);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
+        [MemberData(nameof(GetNData))]
+        public void Format_N(TestData<ulong> data) => RunQuoteTest(data, new UInt64JsonConverter('N'));
+        [Theory]
+        [MemberData(nameof(GetXData))]
+        public void Format_X(TestData<ulong> data) => RunQuoteTest(data, new UInt64JsonConverter('X'));
     }
 }

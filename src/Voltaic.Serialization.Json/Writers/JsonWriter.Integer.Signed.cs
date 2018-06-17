@@ -1,53 +1,74 @@
-﻿using System.Buffers.Text;
+﻿using System.Buffers;
+using Voltaic.Serialization.Utf8;
 
 namespace Voltaic.Serialization.Json
 {
     public static partial class JsonWriter
     {
-        public static bool TryWrite(ref ResizableMemory<byte> writer, sbyte value)
+        public static bool TryWrite(ref ResizableMemory<byte> writer, sbyte value, StandardFormat standardFormat)
         {
-            var data = writer.CreateBuffer(4); // -256
-            if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
-                return false;
-            writer.Write(data.Slice(0, bytesWritten));
-            return true;
-        }
-
-        public static bool TryWrite(ref ResizableMemory<byte> writer, short value)
-        {
-            var data = writer.CreateBuffer(6); // -32768
-            if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
-                return false;
-            writer.Write(data.Slice(0, bytesWritten));
-            return true;
-        }
-
-        public static bool TryWrite(ref ResizableMemory<byte> writer, int value)
-        {
-            var data = writer.CreateBuffer(11); // -2147483648
-            if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
-                return false;
-            writer.Write(data.Slice(0, bytesWritten));
-            return true;
-        }
-
-        public static bool TryWrite(ref ResizableMemory<byte> writer, long value, bool useQuotes = true)
-        {
-            if (useQuotes)
+            if (standardFormat.Symbol != JsonSerializer.IntFormat.Symbol)
             {
-                var data = writer.CreateBuffer(22); // "-9223372036854775808"
-                data[0] = (byte)'"';
-                if (!Utf8Formatter.TryFormat(value, data.Slice(1), out int bytesWritten))
+                writer.Append((byte)'"');
+                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
-                data[bytesWritten + 1] = (byte)'"';
-                writer.Write(data.Slice(0, bytesWritten + 2));
+                writer.Append((byte)'"');
             }
             else
             {
-                var data = writer.CreateBuffer(20); // -9223372036854775808
-                if (!Utf8Formatter.TryFormat(value, data, out int bytesWritten))
+                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
-                writer.Write(data.Slice(0, bytesWritten));
+            }
+            return true;
+        }
+
+        public static bool TryWrite(ref ResizableMemory<byte> writer, short value, StandardFormat standardFormat)
+        {
+            if (standardFormat.Symbol != JsonSerializer.IntFormat.Symbol)
+            {
+                writer.Append((byte)'"');
+                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                    return false;
+                writer.Append((byte)'"');
+            }
+            else
+            {
+                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                    return false;
+            }
+            return true;
+        }
+
+        public static bool TryWrite(ref ResizableMemory<byte> writer, int value, StandardFormat standardFormat)
+        {
+            if (standardFormat.Symbol != JsonSerializer.IntFormat.Symbol)
+            {
+                writer.Append((byte)'"');
+                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                    return false;
+                writer.Append((byte)'"');
+            }
+            else
+            {
+                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                    return false;
+            }
+            return true;
+        }
+
+        public static bool TryWrite(ref ResizableMemory<byte> writer, long value, StandardFormat standardFormat, bool useQuotes = true)
+        {
+            if (useQuotes || standardFormat.Symbol != JsonSerializer.IntFormat.Symbol)
+            {
+                writer.Append((byte)'"');
+                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                    return false;
+                writer.Append((byte)'"');
+            }
+            else
+            {
+                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                    return false;
             }
             return true;
         }

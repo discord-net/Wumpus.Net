@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Buffers.Text;
+using System.Buffers;
+using Voltaic.Serialization.Utf8;
 
 namespace Voltaic.Serialization.Json
 {
     public static partial class JsonWriter
     {
-        public static bool TryWrite(ref ResizableMemory<byte> writer, Guid value)
+        public static bool TryWrite(ref ResizableMemory<byte> writer, Guid value, StandardFormat standardFormat)
         {
-            var data = writer.CreateBuffer(40);  // "{ABCDEFGH-ABCD-ABCD-ABCD-ABCDEFGHIJKL}"
-            data[0] = (byte)'"';
-            if (!Utf8Formatter.TryFormat(value, data.Slice(1), out int bytesWritten))
+            writer.Append((byte)'"');
+            if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                 return false;
-            data[bytesWritten + 1] = (byte)'"';
-            writer.Write(data.Slice(0, bytesWritten + 2));
+            writer.Append((byte)'"');
             return true;
         }
     }

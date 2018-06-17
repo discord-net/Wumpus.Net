@@ -1,27 +1,23 @@
 using System.Collections.Generic;
+using Voltaic.Serialization.Tests;
 using Xunit;
 
 namespace Voltaic.Serialization.Json.Tests
 {
     public class BooleanTests : BaseTest<bool>
     {
-        public static IEnumerable<object[]> GetData()
-        {
-            yield return Fail("null");
-            yield return ReadWrite("false", false);
-            yield return Read("False", false);
-            yield return ReadWrite("true", true);
-            yield return Read("True", true);
-        }
+        public static IEnumerable<object[]> GetGData() => Utf8.Tests.BooleanTests.GetGData();
+        public static IEnumerable<object[]> GetLittleLData() => Utf8.Tests.BooleanTests.GetLittleLData();
 
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data);
+        [MemberData(nameof(GetLittleLData))]
+        public void Boolean(TestData<bool> data) => RunTest(data);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestQuotes(TestData data) => RunQuoteTest(data);
+        [MemberData(nameof(GetLittleLData))]
+        public void Format_LittleL(TestData<bool> data) => RunQuoteTest(data, onlyReads: true);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
+        [MemberData(nameof(GetGData))]
+        public void Format_G(TestData<bool> data) => RunQuoteTest(data, new BooleanJsonConverter('G'));
+
     }
 }

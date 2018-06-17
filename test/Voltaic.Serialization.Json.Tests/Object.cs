@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Voltaic.Serialization.Tests;
 using Xunit;
 
 namespace Voltaic.Serialization.Json.Tests
@@ -15,9 +16,6 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data);
-        [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
+        public void Object(TestData<object> data) => RunTest(data);
     }
 }

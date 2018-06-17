@@ -1,10 +1,11 @@
 using System;
 using System.Buffers;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Voltaic.Serialization.Utf8
 {
+    // TODO: Adjust writer buffers based on StandardFormat's max length
+
     public class Utf8Serializer : Serializer
     {
         public Utf8Serializer(ConverterCollection converters = null, ArrayPool<byte> bytePool = null)

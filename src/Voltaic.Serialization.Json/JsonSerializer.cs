@@ -8,32 +8,52 @@ namespace Voltaic.Serialization.Json
 {
     public class JsonSerializer : Serializer
     {
+        public static StandardFormat BooleanFormat { get; } = new StandardFormat('l'); // true/false
+        public static StandardFormat FloatFormat { get; } = new StandardFormat('g'); // 1.245000e+1
+        public static StandardFormat IntFormat { get; } = new StandardFormat('d'); // 32767
+
         public JsonSerializer(ConverterCollection converters = null, ArrayPool<byte> bytePool = null)
           : base(converters, bytePool)
         {
             // Integers
-            _converters.SetDefault<sbyte, SByteJsonConverter>();
-            _converters.SetDefault<byte, ByteJsonConverter>();
-            _converters.SetDefault<short, Int16JsonConverter>();
-            _converters.SetDefault<ushort, UInt16JsonConverter>();
-            _converters.SetDefault<int, Int32JsonConverter>();
-            _converters.SetDefault<uint, UInt32JsonConverter>();
+            _converters.SetDefault<sbyte, SByteJsonConverter>(
+                (s, t, p) => new SByteJsonConverter(GetStandardFormat(p)));
+            _converters.SetDefault<byte, ByteJsonConverter>(
+                (s, t, p) => new ByteJsonConverter(GetStandardFormat(p)));
+            _converters.SetDefault<short, Int16JsonConverter>(
+                (s, t, p) => new Int16JsonConverter(GetStandardFormat(p)));
+            _converters.SetDefault<ushort, UInt16JsonConverter>(
+                (s, t, p) => new UInt16JsonConverter(GetStandardFormat(p)));
+            _converters.SetDefault<int, Int32JsonConverter>(
+                (s, t, p) => new Int32JsonConverter(GetStandardFormat(p)));
+            _converters.SetDefault<uint, UInt32JsonConverter>(
+                (s, t, p) => new UInt32JsonConverter(GetStandardFormat(p)));
             _converters.AddConditional<long, Int53JsonConverter>(
-                (t, p) => p?.GetCustomAttribute<Int53Attribute>() != null);
-            _converters.AddConditional<ulong, UInt53JsonConverter>
-                ((t, p) => p?.GetCustomAttribute<Int53Attribute>() != null);
-            _converters.SetDefault<long, Int64JsonConverter>();
-            _converters.SetDefault<ulong, UInt64JsonConverter>();
+                (t, p) => p?.GetCustomAttribute<Int53Attribute>() != null,
+                (s, t, p) => new Int53JsonConverter(GetStandardFormat(p)));
+            _converters.AddConditional<ulong, UInt53JsonConverter>(
+                (t, p) => p?.GetCustomAttribute<Int53Attribute>() != null,
+                (s, t, p) => new UInt53JsonConverter(GetStandardFormat(p)));
+            _converters.SetDefault<long, Int64JsonConverter>(
+                (s, t, p) => new Int64JsonConverter(GetStandardFormat(p)));
+            _converters.SetDefault<ulong, UInt64JsonConverter>(
+                (s, t, p) => new UInt64JsonConverter(GetStandardFormat(p)));
 
             // Floats
-            _converters.SetDefault<float, SingleJsonConverter>();
-            _converters.SetDefault<double, DoubleJsonConverter>();
-            _converters.SetDefault<decimal, DecimalJsonConverter>();
+            _converters.SetDefault<float, SingleJsonConverter>(
+                (s, t, p) => new SingleJsonConverter(GetStandardFormat(p)));
+            _converters.SetDefault<double, DoubleJsonConverter>(
+                (s, t, p) => new DoubleJsonConverter(GetStandardFormat(p)));
+            _converters.SetDefault<decimal, DecimalJsonConverter>(
+                (s, t, p) => new DecimalJsonConverter(GetStandardFormat(p)));
 
             // Dates/TimeSpans
-            _converters.SetDefault<DateTime, DateTimeJsonConverter>();
-            _converters.SetDefault<DateTimeOffset, DateTimeOffsetJsonConverter>();
-            _converters.SetDefault<TimeSpan, TimeSpanJsonConverter>();
+            _converters.SetDefault<DateTime, DateTimeJsonConverter>(
+                (s, t, p) => new DateTimeJsonConverter(GetStandardFormat(p)));
+            _converters.SetDefault<DateTimeOffset, DateTimeOffsetJsonConverter>(
+                (s, t, p) => new DateTimeOffsetJsonConverter(GetStandardFormat(p)));
+            _converters.SetDefault<TimeSpan, TimeSpanJsonConverter>(
+                (s, t, p) => new TimeSpanJsonConverter(GetStandardFormat(p)));
 
             // Collections
             _converters.AddGlobalConditional(typeof(ArrayJsonConverter<>), 
@@ -45,8 +65,10 @@ namespace Voltaic.Serialization.Json
             // Others
             _converters.SetDefault<char, CharJsonConverter>();
             _converters.SetDefault<string, StringJsonConverter>();
-            _converters.SetDefault<bool, BooleanJsonConverter>();
-            _converters.SetDefault<Guid, GuidJsonConverter>();
+            _converters.SetDefault<bool, BooleanJsonConverter>(
+                (s, t, p) => new BooleanJsonConverter(GetStandardFormat(p)));
+            _converters.SetDefault<Guid, GuidJsonConverter>(
+                (s, t, p) => new GuidJsonConverter(GetStandardFormat(p)));
             _converters.SetGenericDefault(typeof(Nullable<>), typeof(NullableJsonConverter<>), t => t.GenericTypeArguments[0]);
         }
 
@@ -121,6 +143,14 @@ namespace Voltaic.Serialization.Json
             {
                 _pool.Return(data.Array);
             }
+        }
+
+        private StandardFormat GetStandardFormat(PropertyInfo propInfo)
+        {
+            var attr = propInfo?.GetCustomAttribute<StandardFormatAttribute>();
+            if (attr == null)
+                return default;
+            return attr.Format;
         }
     }
 }

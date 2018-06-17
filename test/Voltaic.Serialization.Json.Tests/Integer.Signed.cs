@@ -1,125 +1,103 @@
 using System.Collections.Generic;
-using Voltaic.Serialization.Utf8;
+using Voltaic.Serialization.Tests;
 using Xunit;
 
 namespace Voltaic.Serialization.Json.Tests
 {
     public class SByteTests : BaseTest<sbyte>
     {
-        public static IEnumerable<object[]> GetData()
-        {
-            yield return Fail("-129"); // Min - 1
-            yield return ReadWrite("-128", -128); // Min
-            yield return ReadWrite("0", 0);
-            yield return ReadWrite("127", 127); // Max
-            yield return Fail("128"); // Max + 1
-        }
+        public static IEnumerable<object[]> GetDData() => Utf8.Tests.SByteTests.GetDData();
+        public static IEnumerable<object[]> GetNData() => Utf8.Tests.SByteTests.GetNData();
+        public static IEnumerable<object[]> GetXData() => Utf8.Tests.SByteTests.GetXData();
 
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data);
+        [MemberData(nameof(GetDData))]
+        public void Number(TestData<sbyte> data) => RunTest(data);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestQuotes(TestData data) => RunQuoteTest(data);
+        [MemberData(nameof(GetDData))]
+        public void Format_D(TestData<sbyte> data) => RunQuoteTest(data, onlyReads: true);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
+        [MemberData(nameof(GetNData))]
+        public void Format_N(TestData<sbyte> data) => RunQuoteTest(data, new SByteJsonConverter('N'));
+        [Theory]
+        [MemberData(nameof(GetXData))]
+        public void Format_X(TestData<sbyte> data) => RunQuoteTest(data, new SByteJsonConverter('X'));
     }
 
     public class Int16Tests : BaseTest<short>
     {
-        public static IEnumerable<object[]> GetData()
-        {
-            yield return Fail("-32769"); // Min - 1
-            yield return ReadWrite("-32768", -32768); // Min
-            yield return ReadWrite("0", 0);
-            yield return ReadWrite("32767", 32767); // Max
-            yield return Fail("32768"); // Max + 1
-        }
+        public static IEnumerable<object[]> GetDData() => Utf8.Tests.Int16Tests.GetDData();
+        public static IEnumerable<object[]> GetNData() => Utf8.Tests.Int16Tests.GetNData();
+        public static IEnumerable<object[]> GetXData() => Utf8.Tests.Int16Tests.GetXData();
 
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data);
+        [MemberData(nameof(GetDData))]
+        public void Number(TestData<short> data) => RunTest(data);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestQuotes(TestData data) => RunQuoteTest(data);
+        [MemberData(nameof(GetDData))]
+        public void Format_D(TestData<short> data) => RunQuoteTest(data, onlyReads: true);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
+        [MemberData(nameof(GetNData))]
+        public void Format_N(TestData<short> data) => RunQuoteTest(data, new Int16JsonConverter('N'));
+        [Theory]
+        [MemberData(nameof(GetXData))]
+        public void Format_X(TestData<short> data) => RunQuoteTest(data, new Int16JsonConverter('X'));
     }
 
     public class Int32Tests : BaseTest<int>
     {
-        public static IEnumerable<object[]> GetData()
-        {
-            yield return Fail("-2147483649"); // Min - 1
-            yield return ReadWrite("-2147483648", -2147483648); // Min
-            yield return ReadWrite("0", 0);
-            yield return ReadWrite("2147483647", 2147483647); // Max
-            yield return Fail("2147483648"); // Max + 1
-        }
+        public static IEnumerable<object[]> GetDData() => Utf8.Tests.Int32Tests.GetDData();
+        public static IEnumerable<object[]> GetNData() => Utf8.Tests.Int32Tests.GetNData();
+        public static IEnumerable<object[]> GetXData() => Utf8.Tests.Int32Tests.GetXData();
 
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data);
+        [MemberData(nameof(GetDData))]
+        public void Number(TestData<int> data) => RunTest(data);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestQuotes(TestData data) => RunQuoteTest(data);
+        [MemberData(nameof(GetDData))]
+        public void Format_D(TestData<int> data) => RunQuoteTest(data, onlyReads: true);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
+        [MemberData(nameof(GetNData))]
+        public void Format_N(TestData<int> data) => RunQuoteTest(data, new Int32JsonConverter('N'));
+        [Theory]
+        [MemberData(nameof(GetXData))]
+        public void Format_X(TestData<int> data) => RunQuoteTest(data, new Int32JsonConverter('X'));
     }
 
     public class Int53Tests : BaseTest<long>
     {
-        public static IEnumerable<object[]> GetData()
-        {
-            yield return Fail("-9223372036854775809"); // Min - 1
-            yield return Read("-9223372036854775808", -9223372036854775808); // Min
-            //yield return Fail("-9007199254740992"); // Min - 1
-            yield return ReadWrite("-9007199254740991", -9007199254740991); // Min
-            yield return ReadWrite("0", 0);
-            yield return ReadWrite("9007199254740991", 9007199254740991);  // Max
-            //yield return Fail("9007199254740992"); // Max + 1
-            yield return Read("9223372036854775807", 9223372036854775807); // Max
-            yield return Fail("9223372036854775808"); // Max + 1
-        }
+        public static IEnumerable<object[]> GetDData() => Utf8.Tests.Int64Tests.GetDData();
+        public static IEnumerable<object[]> GetNData() => Utf8.Tests.Int64Tests.GetNData();
+        public static IEnumerable<object[]> GetXData() => Utf8.Tests.Int64Tests.GetXData();
 
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data, new Int53JsonConverter());
+        [MemberData(nameof(GetDData))]
+        public void Number(TestData<long> data) => RunTest(data, new Int53JsonConverter());
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestQuotes(TestData data) => RunQuoteTest(data, new Int53JsonConverter());
+        [MemberData(nameof(GetDData))]
+        public void Format_D(TestData<long> data) => RunQuoteTest(data, new Int53JsonConverter(), onlyReads: true);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestWhitespace(TestData data) => RunWhitespaceTest(data, new Int53JsonConverter());
+        [MemberData(nameof(GetNData))]
+        public void Format_N(TestData<long> data) => RunQuoteTest(data, new Int53JsonConverter('N'));
+        [Theory]
+        [MemberData(nameof(GetXData))]
+        public void Format_X(TestData<long> data) => RunQuoteTest(data, new Int53JsonConverter('X'));
     }
 
     public class Int64Tests : BaseTest<long>
     {
-        public static IEnumerable<object[]> GetData()
-        {
-            yield return Fail("-9223372036854775809"); // Min - 1
-            yield return Read("-9223372036854775808", -9223372036854775808); // Min
-            yield return Read("0", 0);
-            yield return Read("9223372036854775807", 9223372036854775807); // Max
-            yield return Fail("9223372036854775808"); // Max + 1
-
-            yield return Fail("\"-9223372036854775809\""); // Min - 1
-            yield return ReadWrite("\"-9223372036854775808\"", -9223372036854775808); // Min
-            yield return ReadWrite("\"0\"", 0);
-            yield return ReadWrite("\"9223372036854775807\"", 9223372036854775807); // Max
-            yield return Fail("\"9223372036854775808\""); // Max + 1
-
-            yield return Fail("\"0"); // Unclosed quote
-        }
+        public static IEnumerable<object[]> GetDData() => Utf8.Tests.Int64Tests.GetDData();
+        public static IEnumerable<object[]> GetNData() => Utf8.Tests.Int64Tests.GetNData();
+        public static IEnumerable<object[]> GetXData() => Utf8.Tests.Int64Tests.GetXData();
 
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data);
+        [MemberData(nameof(GetDData))]
+        public void Format_D(TestData<long> data) => RunQuoteTest(data);
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
+        [MemberData(nameof(GetNData))]
+        public void Format_N(TestData<long> data) => RunQuoteTest(data, new Int64JsonConverter('N'));
+        [Theory]
+        [MemberData(nameof(GetXData))]
+        public void Format_X(TestData<long> data) => RunQuoteTest(data, new Int64JsonConverter('X'));
     }
 }

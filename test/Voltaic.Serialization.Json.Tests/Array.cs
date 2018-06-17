@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Voltaic.Serialization.Tests;
 using Xunit;
 
 namespace Voltaic.Serialization.Json.Tests
@@ -23,27 +24,24 @@ namespace Voltaic.Serialization.Json.Tests
             yield return Read("[1 ,2 ,3]", new int[] { 1, 2, 3 });
             yield return Read("[1 , 2 , 3]", new int[] { 1, 2, 3 });
             yield return Read("[1  ,  2  ,  3]", new int[] { 1, 2, 3 });
-            yield return Fail("[1,]");
-            yield return Fail("[,1]");
-            yield return Fail("[");
-            yield return Fail("[1");
-            yield return Fail("]");
-            yield return Fail("1]");
-            yield return Fail("[1 2 3]");
-            yield return Fail("[1   2   3]");
-            yield return Fail("[1:2:3]");
-            yield return Fail("[1 : 2 : 3]");
-            yield return Fail("[1 :  2  :  3]");
+            yield return FailRead("[1,]");
+            yield return FailRead("[,1]");
+            yield return FailRead("[");
+            yield return FailRead("[1");
+            yield return FailRead("]");
+            yield return FailRead("1]");
+            yield return FailRead("[1 2 3]");
+            yield return FailRead("[1   2   3]");
+            yield return FailRead("[1:2:3]");
+            yield return FailRead("[1 : 2 : 3]");
+            yield return FailRead("[1 :  2  :  3]");
         }
 
         public ArrayTests() : base(new Comparer()) { }
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data);
-        [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
+        public void Array(TestData<int[]> data) => RunTest(data);
     }
 
     public class ListTests : BaseTest<List<int>>
@@ -65,26 +63,23 @@ namespace Voltaic.Serialization.Json.Tests
             yield return Read("[1 ,2 ,3]", new List<int> { 1, 2, 3 });
             yield return Read("[1 , 2 , 3]", new List<int> { 1, 2, 3 });
             yield return Read("[1  ,  2  ,  3]", new List<int> { 1, 2, 3 });
-            yield return Fail("[1,]");
-            yield return Fail("[,1]");
-            yield return Fail("[");
-            yield return Fail("[1");
-            yield return Fail("]");
-            yield return Fail("1]");
-            yield return Fail("[1 2 3]");
-            yield return Fail("[1   2   3]");
-            yield return Fail("[1:2:3]");
-            yield return Fail("[1 : 2 : 3]");
-            yield return Fail("[1 :  2  :  3]");
+            yield return FailRead("[1,]");
+            yield return FailRead("[,1]");
+            yield return FailRead("[");
+            yield return FailRead("[1");
+            yield return FailRead("]");
+            yield return FailRead("1]");
+            yield return FailRead("[1 2 3]");
+            yield return FailRead("[1   2   3]");
+            yield return FailRead("[1:2:3]");
+            yield return FailRead("[1 : 2 : 3]");
+            yield return FailRead("[1 :  2  :  3]");
         }
 
         public ListTests() : base(new Comparer()) { }
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void Test(TestData data) => RunTest(data);
-        [Theory]
-        [MemberData(nameof(GetData))]
-        public void TestWhitespace(TestData data) => RunWhitespaceTest(data);
+        public void Array(TestData<List<int>> data) => RunTest(data);
     }
 }
