@@ -8,7 +8,7 @@ namespace Voltaic
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
     public struct Optional<T>
     {
-        public static Optional<T> Unspecified => default(Optional<T>);
+        public static Optional<T> Unspecified => default;
         private readonly T _value;
 
         /// <summary> Gets the value for this paramter. </summary>

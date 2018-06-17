@@ -1,24 +1,14 @@
 ﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
 
 namespace Voltaic.Serialization.Json
 {
-    public class DictionaryJsonConverter<T> : ValueConverter<Dictionary<string, T>>
+    public class ObjectJsonConverter<T> : ValueConverter<T>
+        where T : class, new()
     {
-        private readonly ValueConverter<T> _innerConverter;
-        private readonly ArrayPool<T> _pool;
-
-        public DictionaryJsonConverter(ValueConverter<T> innerConverter, ArrayPool<T> pool = null)
-        {
-            _innerConverter = innerConverter;
-            _pool = pool;
-        }
-
-        public override bool CanWrite(Dictionary<string, T> value, PropertyMap propMap)
+        public override bool CanWrite(T value, PropertyMap propMap)
             => (!propMap.ExcludeNull && !propMap.ExcludeDefault) || value != null;
 
-        public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out Dictionary<string, T> result, PropertyMap propMap = null)
+        public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out T result, PropertyMap propMap = null)
         {
             result = default;
 
@@ -34,14 +24,14 @@ namespace Voltaic.Serialization.Json
             }
             remaining = remaining.Slice(1);
 
+            result = new T();
             if (JsonReader.GetTokenType(ref remaining) == TokenType.EndObject)
             {
-                result = new Dictionary<string, T>(0); // EmptyDictionary?
                 remaining = remaining.Slice(1);
                 return true;
             }
-            result = new Dictionary<string, T>(); // TODO: We need a resizable dictionary w/ pooling
 
+            var map = serializer.GetMap<T>();
             for (int i = 0; ; i++)
             {
                 switch (JsonReader.GetTokenType(ref remaining))
@@ -61,36 +51,50 @@ namespace Voltaic.Serialization.Json
                             return false;
                         break;
                 }
-                if (!JsonReader.TryReadString(ref remaining, out var key))
+                if (!JsonReader.TryReadUtf8String(ref remaining, out var key))
                     return false;
                 if (JsonReader.GetTokenType(ref remaining) != TokenType.KeyValueSeparator)
                     return false;
+
                 remaining = remaining.Slice(1);
-                if (!_innerConverter.TryRead(serializer, ref remaining, out var value, propMap))
+                if (!map.TryGetProperty(key, out var innerPropMap))
                     return false;
-                if (result.ContainsKey(key))
+                if (!innerPropMap.CanRead)
                     return false;
-                result[key] = value;
+                if (!innerPropMap.TryRead(result, ref remaining))
+                    return false;
             }
         }
 
-        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, Dictionary<string, T> value, PropertyMap propMap = null)
+        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, T value, PropertyMap propMap = null)
         {
             if (value == null)
                 return JsonWriter.TryWriteNull(ref writer);
 
             writer.Append((byte)'{');
             bool isFirst = true;
-            foreach (var pair in value)
+            var map = serializer.GetMap(typeof(T));
+
+            var properties = map.Properties;
+            for (int i = 0; i < properties.Count; i++)
             {
+                var key = properties[i].Key;
+                var innerPropMap = properties[i].Value as PropertyMap<T>;
+                if (!innerPropMap.CanWrite(value))
+                    continue;
+
                 if (!isFirst)
                     writer.Append((byte)',');
                 else
                     isFirst = false;
-                if (!JsonWriter.TryWrite(ref writer, pair.Key))
+
+                writer.Append((byte)'"');
+                if (!JsonWriter.TryWriteUtf8String(ref writer, key.Span))
                     return false;
+                writer.Append((byte)'"');
+
                 writer.Append((byte)':');
-                if (!_innerConverter.TryWrite(serializer, ref writer, pair.Value, propMap))
+                if (!innerPropMap.TryWrite(value, ref writer))
                     return false;
             }
             writer.Append((byte)'}');

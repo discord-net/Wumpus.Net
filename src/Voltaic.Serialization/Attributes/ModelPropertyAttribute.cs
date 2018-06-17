@@ -6,6 +6,7 @@ namespace Voltaic.Serialization
     public class ModelPropertyAttribute : Attribute
     {
         public string Key { get; }
+        public bool ExcludeDefault { get; set; }
         public bool ExcludeNull { get; set; }
 
         public ModelPropertyAttribute()

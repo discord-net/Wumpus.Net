@@ -15,6 +15,9 @@ namespace Voltaic.Serialization.Json
             _pool = pool;
         }
 
+        public override bool CanWrite(T[] value, PropertyMap propMap)
+            => (!propMap.ExcludeNull && !propMap.ExcludeDefault) || value != null;
+
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out T[] result, PropertyMap propMap = null)
         {
             if (!JsonCollectionReader.TryRead(serializer, ref remaining, out var resultBuilder, propMap, _innerConverter, _pool))
@@ -57,6 +60,9 @@ namespace Voltaic.Serialization.Json
             _innerConverter = innerConverter;
             _pool = pool;
         }
+
+        public override bool CanWrite(List<T> value, PropertyMap propMap)
+            => (!propMap.ExcludeNull && !propMap.ExcludeDefault) || value != null;
 
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out List<T> result, PropertyMap propMap = null)
         {

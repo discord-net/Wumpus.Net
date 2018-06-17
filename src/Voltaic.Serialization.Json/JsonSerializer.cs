@@ -57,10 +57,13 @@ namespace Voltaic.Serialization.Json
 
             // Collections
             _converters.AddGlobalConditional(typeof(ArrayJsonConverter<>), 
-                (t, p) => t.IsArray, t => t.GetElementType());
-            _converters.SetGenericDefault(typeof(List<>), typeof(ListJsonConverter<>), t => t.GenericTypeArguments[0]);
+                (t, p) => t.IsArray, 
+                (t) => t.GetElementType());
+            _converters.SetGenericDefault(typeof(List<>), typeof(ListJsonConverter<>), 
+                (t) => t.GenericTypeArguments[0]);
             _converters.AddGenericConditional(typeof(Dictionary<,>), typeof(DictionaryJsonConverter<>), 
-                (t, p) => t.GenericTypeArguments[0] == typeof(string), t => t.GenericTypeArguments[1]);
+                (t, p) => t.GenericTypeArguments[0] == typeof(string), 
+                (t) => t.GenericTypeArguments[1]);
 
             // Others
             _converters.SetDefault<char, CharJsonConverter>();
@@ -69,7 +72,13 @@ namespace Voltaic.Serialization.Json
                 (s, t, p) => new BooleanJsonConverter(GetStandardFormat(p)));
             _converters.SetDefault<Guid, GuidJsonConverter>(
                 (s, t, p) => new GuidJsonConverter(GetStandardFormat(p)));
-            _converters.SetGenericDefault(typeof(Nullable<>), typeof(NullableJsonConverter<>), t => t.GenericTypeArguments[0]);
+            _converters.SetGenericDefault(typeof(Nullable<>), typeof(NullableJsonConverter<>), 
+                (t) => t.GenericTypeArguments[0]);
+            _converters.SetGenericDefault(typeof(Optional<>), typeof(OptionalJsonConverter<>),
+                (t) => t.GenericTypeArguments[0]);
+            _converters.AddGlobalConditional(typeof(ObjectJsonConverter<>),
+                (t, p) => t.IsClass,
+                (t) => t.AsType());
         }
 
         public T Read<T>(ReadOnlyMemory<byte> utf8, ValueConverter<T> converter = null)

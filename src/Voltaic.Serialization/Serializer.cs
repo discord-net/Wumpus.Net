@@ -14,9 +14,8 @@ namespace Voltaic.Serialization
             = typeof(Serializer).GetTypeInfo().GetDeclaredMethod(nameof(CreatePropertyMap));
         private static readonly MethodInfo _writeMethod
             = typeof(Serializer).GetTypeInfo().GetDeclaredMethods(nameof(Write)).Single(x => x.IsGenericMethodDefinition);
-
-        // public event Action<string, Exception> ModelError;
-        // public event Action<string> UnmappedProperty;
+        private static readonly MethodInfo _createModelMapMethod
+            = typeof(Serializer).GetTypeInfo().GetDeclaredMethod(nameof(CreateModelMap));
 
         protected readonly ConcurrentDictionary<Type, ModelMap> _modelMaps;
         protected readonly ConcurrentDictionary<Type, Func<object, object, ResizableMemory<byte>>> _writeMethods;
@@ -63,26 +62,11 @@ namespace Voltaic.Serialization
         {
             return _modelMaps.GetOrAdd(modelType, _ =>
             {
-                var type = modelType.GetTypeInfo();
-                var map = new ModelMap(type.Name);
-
-                while (type != null)
-                {
-                    foreach (var propInfo in type.DeclaredProperties)
-                    {
-                        if (propInfo.GetCustomAttribute<ModelPropertyAttribute>() != null)
-                        {
-                            var propMap = MapProperty(map, modelType, propInfo);
-                            if (propMap != null)
-                                map.AddProperty(propMap);
-                        }
-                    }
-
-                    type = type.BaseType?.GetTypeInfo();
-                }
-                return map;
+                var method = _createModelMapMethod.MakeGenericMethod(modelType);
+                return method.Invoke(this, null) as ModelMap;
             });
         }
+        public ModelMap<T> GetMap<T>() => GetMap(typeof(T)) as ModelMap<T>;
 
         // Only used for top-level converters
         public ValueConverter<T> GetConverter<T>()
@@ -97,6 +81,28 @@ namespace Voltaic.Serialization
         {
             var converter = _converters.Get(this, typeof(TValue), propInfo) as ValueConverter<TValue>;
             return new PropertyMap<TModel, TValue>(this, modelMap, propInfo, converter);
+        }
+
+        private ModelMap<T> CreateModelMap<T>()
+        {
+            var type = typeof(T).GetTypeInfo();
+            var map = new ModelMap<T>(type.Name);
+
+            while (type != null)
+            {
+                foreach (var propInfo in type.DeclaredProperties)
+                {
+                    if (propInfo.GetCustomAttribute<ModelPropertyAttribute>() != null)
+                    {
+                        var propMap = MapProperty(map, typeof(T), propInfo);
+                        if (propMap != null)
+                            map.AddProperty(propMap);
+                    }
+                }
+
+                type = type.BaseType?.GetTypeInfo();
+            }
+            return map;
         }
     }
 }

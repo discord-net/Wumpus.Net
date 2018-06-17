@@ -55,7 +55,7 @@ namespace Voltaic.Serialization.Json
             return true;
         }
 
-        private static bool TryWriteUtf8String(ref ResizableMemory<byte> writer, ReadOnlySpan<byte> value)
+        public static bool TryWriteUtf8String(ref ResizableMemory<byte> writer, ReadOnlySpan<byte> value)
         {            
             int i = 0;
             int start = 0;

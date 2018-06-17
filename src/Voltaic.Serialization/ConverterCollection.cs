@@ -208,7 +208,7 @@ namespace Voltaic.Serialization
                 if (converterType.Value.Factory != null)
                     return converterType.Value.Factory(serializer, valueTypeInfo, propInfo);
                 else
-                    return BuildConverter(serializer, converterType.Value.Type, throwOnNotFound);
+                    return BuildConverter(serializer, converterType.Value.Type, propInfo, throwOnNotFound);
             }
 
             if (valueTypeInfo.IsGenericType && valueTypeInfo.GenericTypeArguments.Length != 0)
@@ -219,7 +219,7 @@ namespace Voltaic.Serialization
                     if (genericType.Value.Factory != null)
                         return genericType.Value.Factory(serializer, valueTypeInfo, propInfo);
                     else
-                        return BuildConverter(serializer, genericType.Value.BuildClosedType(valueTypeInfo), throwOnNotFound);
+                        return BuildConverter(serializer, genericType.Value.BuildClosedType(valueTypeInfo), propInfo, throwOnNotFound);
                 }
             }
 
@@ -229,12 +229,12 @@ namespace Voltaic.Serialization
                 if (globalType.Value.Factory != null)
                     return globalType.Value.Factory(serializer, valueTypeInfo, propInfo);
                 else
-                    return BuildConverter(serializer, globalType.Value.BuildClosedType(valueTypeInfo), throwOnNotFound);
+                    return BuildConverter(serializer, globalType.Value.BuildClosedType(valueTypeInfo), propInfo, throwOnNotFound);
             }
             return null;
         }
 
-        private object BuildConverter(Serializer serializer, Type converterType, bool throwOnNotFound)
+        private object BuildConverter(Serializer serializer, Type converterType, PropertyInfo propInfo, bool throwOnNotFound)
         {
             var converterTypeInfo = converterType.GetTypeInfo();
 
@@ -243,22 +243,18 @@ namespace Voltaic.Serialization
                 throw new SerializationException($"{converterType.Name} is missing a constructor");
             if (constructors.Length > 1)
                 throw new SerializationException($"{converterType.Name} has multiple constructors");
+
             var constructor = constructors[0];
             var parameters = constructor.GetParameters();
-            if (parameters.Length < converterTypeInfo.GenericTypeArguments.Length)
-            {
-                throw new SerializationException($"The constructor for {converterType.Name} must have one ValueConverter<T> " +
-                    $"parameter for each generic parameter in the converter.");
-            }
-
             var args = new object[parameters.Length];
-            int i = 0;
-            for (; i < converterTypeInfo.GenericTypeArguments.Length; i++)
-                args[i] = Get(serializer, converterTypeInfo.GenericTypeArguments[i], null, throwOnNotFound);
-            for (; i < args.Length; i++)
+            int innerConverters = 0;
+            for (int i = 0; i < args.Length; i++)
             {
                 var paramType = parameters[i].ParameterType;
-                if (_serializerType.IsAssignableFrom(paramType.GetTypeInfo()))
+                var paramInfo = paramType.GetTypeInfo();
+                if (paramInfo.IsGenericType && paramInfo.GetGenericTypeDefinition() == typeof(ValueConverter<>))
+                    args[i] = Get(serializer, converterTypeInfo.GenericTypeArguments[innerConverters++], propInfo, throwOnNotFound);
+                else if (_serializerType.IsAssignableFrom(paramInfo))
                     args[i] = serializer;
                 else if (!parameters[i].HasDefaultValue)
                     throw new SerializationException($"{converterType.Name} has an unsupported constructor");

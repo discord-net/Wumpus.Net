@@ -10,10 +10,11 @@ namespace Voltaic.Serialization
         public ReadOnlyMemory<byte> Key { get; }
         public string Name { get; }
         public string Path { get; }
-        public bool CanWrite { get; }
-        public bool CanRead { get; }
+        public bool ExcludeDefault { get; }
         public bool ExcludeNull { get; }
 
+        protected bool _supportsRead, _supportsWrite;
+        
         protected PropertyMap(Serializer serializer, ModelMap modelMap, PropertyInfo propInfo)
         {
             Serializer = serializer;
@@ -21,17 +22,30 @@ namespace Voltaic.Serialization
             Name = propInfo.Name;
             Path = $"{modelMap.Path}.{propInfo.Name}";
 
-            CanWrite = propInfo.GetMethod != null;
-            CanRead = propInfo.SetMethod != null;
+            _supportsWrite = propInfo.GetMethod != null;
+            _supportsRead = propInfo.SetMethod != null;
 
             var attr = propInfo.GetCustomAttribute<ModelPropertyAttribute>();
             // TODO: Add support for other key types
             Key = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(attr.Key));
             ExcludeNull = attr.ExcludeNull;
+            ExcludeDefault = attr.ExcludeDefault;
         }
     }
 
-    public class PropertyMap<TModel, TValue> : PropertyMap
+    public abstract class PropertyMap<TModel> : PropertyMap
+    {
+        protected PropertyMap(Serializer serializer, ModelMap modelMap, PropertyInfo propInfo)
+            : base(serializer, modelMap, propInfo) { }
+        
+        public bool CanRead => _supportsRead;
+        public abstract bool TryRead(TModel model, ref ReadOnlySpan<byte> data);
+
+        public abstract bool CanWrite(TModel model);
+        public abstract bool TryWrite(TModel model, ref ResizableMemory<byte> buffer);
+    }
+
+    public class PropertyMap<TModel, TValue> : PropertyMap<TModel>
     {
         private readonly ValueConverter<TValue> _converter;
         private readonly Func<TModel, TValue> _getFunc;
@@ -49,17 +63,20 @@ namespace Voltaic.Serialization
             _setFunc = propInfo.SetMethod?.CreateDelegate(typeof(Action<TModel, TValue>)) as Action<TModel, TValue>;
         }
 
-        public void Read(TModel model, ref ReadOnlySpan<byte> data)
+        public override bool TryRead(TModel model, ref ReadOnlySpan<byte> data)
         {
             if (!_converter.TryRead(Serializer, ref data, out var result, this))
-                throw new SerializationException($"Failed to deserialize property {Path}");
+                return false;
             _setFunc(model, result);
+            return true;
         }
 
-        public void Write(TModel model, ref ResizableMemory<byte> buffer)
+        public override bool CanWrite(TModel model) => _supportsWrite && _converter.CanWrite(_getFunc(model), this);
+        public override bool TryWrite(TModel model, ref ResizableMemory<byte> buffer)
         {
             if (!_converter.TryWrite(Serializer, ref buffer, _getFunc(model), this))
-                throw new SerializationException($"Failed to serialize property {Path}");
+                return false;
+            return true;
         }
     }
 }

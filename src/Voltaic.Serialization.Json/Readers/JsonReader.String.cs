@@ -63,6 +63,31 @@ namespace Voltaic.Serialization.Json
             return false;
         }
 
+        public static bool TryReadUtf8String(ref ReadOnlySpan<byte> remaining, out ReadOnlySpan<byte> result)
+        {
+            result = default;
+
+            switch (TryReadUtf8String(ref remaining, out var builder, out var direct))
+            {
+                case StringOperationStatus.Failed:
+                    return false;
+                case StringOperationStatus.Builder:
+                    try
+                    {
+                        result = builder.AsReadOnlySpan();
+                        return true;
+                    }
+                    finally
+                    {
+                        builder.Return();
+                    }
+                case StringOperationStatus.Direct:
+                    result = direct;
+                    return true;
+            }
+            return false;
+        }
+
         private enum StringOperationStatus
         {
             Failed,
