@@ -108,6 +108,7 @@ namespace Voltaic.Serialization
 
                 type = type.BaseType?.GetTypeInfo();
             }
+            map.MapTypeSelectors();
             return map;
         }
     }

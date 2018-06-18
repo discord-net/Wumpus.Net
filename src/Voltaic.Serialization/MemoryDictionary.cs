@@ -15,9 +15,10 @@ namespace Voltaic.Serialization
             public TValue Value;
         }
 
+        public int Count { get; private set; }
+
         private int[] _buckets;
         private PropertyEntry[] _entries;
-        private int _count;
         private int _freeList;
         private int _freeCount;
 
@@ -70,13 +71,13 @@ namespace Voltaic.Serialization
             }
             else
             {
-                if (_count == _entries.Length)
+                if (Count == _entries.Length)
                 {
                     Resize();
                     targetBucket = hashCode % _buckets.Length;
                 }
-                index = _count;
-                _count++;
+                index = Count;
+                Count++;
             }
 
             _entries[index].HashCode = hashCode;
@@ -89,16 +90,16 @@ namespace Voltaic.Serialization
 
         private void Resize()
         {
-            int newSize = HashHelpers.ExpandPrime(_count);
+            int newSize = HashHelpers.ExpandPrime(Count);
 
             var newBuckets = new int[newSize];
             for (int i = 0; i < newBuckets.Length; i++)
                 newBuckets[i] = -1;
 
             var newEntries = new PropertyEntry[newSize];
-            Array.Copy(_entries, 0, newEntries, 0, _count);
+            Array.Copy(_entries, 0, newEntries, 0, Count);
 
-            for (int i = 0; i < _count; i++)
+            for (int i = 0; i < Count; i++)
             {
                 if (newEntries[i].HashCode >= 0)
                 {

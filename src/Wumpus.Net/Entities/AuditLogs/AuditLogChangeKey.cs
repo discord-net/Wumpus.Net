@@ -5,6 +5,11 @@ namespace Wumpus.Entities
     [ModelStringEnum]
     public enum AuditLogChangeKey
     {
+        // General
+
+        [ModelEnumValue("id")] Id,
+        [ModelEnumValue("type")] Type,
+
         // Guild
 
         [ModelEnumValue("name")] Name,
@@ -58,11 +63,6 @@ namespace Wumpus.Entities
         [ModelEnumValue("deaf")] Deaf,
         [ModelEnumValue("mute")] Mute,
         [ModelEnumValue("nick")] Nick,
-        [ModelEnumValue("avatar_hash")] AvatarHash,
-
-        // Any
-
-        [ModelEnumValue("id")] Id,
-        [ModelEnumValue("type")] Type
+        [ModelEnumValue("avatar_hash")] AvatarHash
     }
 }
