@@ -4,67 +4,67 @@ namespace Voltaic.Serialization.Etf
 {
     public static partial class EtfReader
     {
-        public static TokenType GetTokenType(ref ReadOnlySpan<byte> remaining)
+        public static EtfTokenType GetTokenType(ref ReadOnlySpan<byte> remaining)
         {
             byte b = remaining[0];
             switch (b)
             {
                 case 68:
-                    return TokenType.DistributionHeader;
+                    return EtfTokenType.DistributionHeader;
                 case 70:
-                    return TokenType.NewFloatExt;
+                    return EtfTokenType.NewFloatExt;
                 case 77:
-                    return TokenType.BitBinaryExt;
+                    return EtfTokenType.BitBinaryExt;
                 case 80:
-                    return TokenType.Compressed;
+                    return EtfTokenType.Compressed;
                 case 82:
-                    return TokenType.AtomCacheRef;
+                    return EtfTokenType.AtomCacheRef;
                 case 97:
-                    return TokenType.SmallIntegerExt;
+                    return EtfTokenType.SmallIntegerExt;
                 case 98:
-                    return TokenType.IntegerExt;
+                    return EtfTokenType.IntegerExt;
                 case 99:
-                    return TokenType.FloatExt;
+                    return EtfTokenType.FloatExt;
                 case 100:
-                    return TokenType.AtomExt;
+                    return EtfTokenType.AtomExt;
                 case 101:
-                    return TokenType.ReferenceExt;
+                    return EtfTokenType.ReferenceExt;
                 case 102:
-                    return TokenType.PortExt;
+                    return EtfTokenType.PortExt;
                 case 103:
-                    return TokenType.PidExt;
+                    return EtfTokenType.PidExt;
                 case 104:
-                    return TokenType.SmallTupleExt;
+                    return EtfTokenType.SmallTupleExt;
                 case 105:
-                    return TokenType.LargeTupleExt;
+                    return EtfTokenType.LargeTupleExt;
                 case 106:
-                    return TokenType.NilExt;
+                    return EtfTokenType.NilExt;
                 case 107:
-                    return TokenType.StringExt;
+                    return EtfTokenType.StringExt;
                 case 108:
-                    return TokenType.ListExt;
+                    return EtfTokenType.ListExt;
                 case 109:
-                    return TokenType.BinaryExt;
+                    return EtfTokenType.BinaryExt;
                 case 110:
-                    return TokenType.SmallBigExt;
+                    return EtfTokenType.SmallBigExt;
                 case 111:
-                    return TokenType.LargeBigExt;
+                    return EtfTokenType.LargeBigExt;
                 case 112:
-                    return TokenType.NewFunExt;
+                    return EtfTokenType.NewFunExt;
                 case 113:
-                    return TokenType.ExportExt;
+                    return EtfTokenType.ExportExt;
                 case 114:
-                    return TokenType.NewReferenceExt;
+                    return EtfTokenType.NewReferenceExt;
                 case 115:
-                    return TokenType.SmallAtomExt;
+                    return EtfTokenType.SmallAtomExt;
                 case 116:
-                    return TokenType.MapExt;
+                    return EtfTokenType.MapExt;
                 case 117:
-                    return TokenType.FunExt;
+                    return EtfTokenType.FunExt;
                 case 118:
-                    return TokenType.AtomUtf8Ext;
+                    return EtfTokenType.AtomUtf8Ext;
                 case 119:
-                    return TokenType.SmallAtomUtf8Ext;
+                    return EtfTokenType.SmallAtomUtf8Ext;
                 default:
                     throw new SerializationException($"Unexpected type id ({b})");
             }

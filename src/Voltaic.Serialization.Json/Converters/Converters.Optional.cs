@@ -17,7 +17,7 @@ namespace Voltaic.Serialization.Json
         public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out Optional<T> result, PropertyMap propMap = null)
         {
             result = default;
-            if (JsonReader.GetTokenType(ref remaining) == TokenType.Null)
+            if (JsonReader.GetTokenType(ref remaining) == JsonTokenType.Null)
                 return true;
             if (!_innerConverter.TryRead(serializer, ref remaining, out var resultValue, propMap))
                 return false;

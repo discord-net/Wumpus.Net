@@ -11,7 +11,7 @@ namespace Voltaic.Serialization.Json
 
             switch (GetTokenType(ref remaining))
             {
-                case TokenType.String:
+                case JsonTokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadDateTime(ref remaining, out result, standardFormat))
                         return false;
@@ -29,7 +29,7 @@ namespace Voltaic.Serialization.Json
 
             switch (GetTokenType(ref remaining))
             {
-                case TokenType.String:
+                case JsonTokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadDateTimeOffset(ref remaining, out result, standardFormat))
                         return false;
@@ -47,7 +47,7 @@ namespace Voltaic.Serialization.Json
 
             switch (GetTokenType(ref remaining))
             {
-                case TokenType.String:
+                case JsonTokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadTimeSpan(ref remaining, out result, standardFormat))
                         return false;

@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../Voltaic.targets" />
+  <PropertyGroup>
+    <AssemblyName>Wumpus.Net</AssemblyName>
+    <RootNamespace>Wumpus.Net</RootNamespace>
+    <Description>A low-level Discord API wrapper</Description>
+    <TargetFrameworks>net46;netstandard1.3</TargetFrameworks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Entities\Rpc\**" />
+    <Compile Remove="Entities\WebSocket\**" />
+    <Compile Remove="Events\Rpc\**" />
+    <Compile Remove="Events\WebSocket\**" />
+    <Compile Remove="Requests\Rpc\**" />
+    <Compile Remove="Requests\WebSocket\**" />
+    <Compile Remove="Responses\Rpc\**" />
+    <Compile Remove="Responses\WebSocket\**" />
+    <Compile Remove="Serialization\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="RestEase" Version="1.4.3" />
+    <PackageReference Include="System.Net.WebSockets.Client" Version="4.3.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Voltaic.Core\Voltaic.Core.csproj" />
+    <ProjectReference Include="..\Voltaic.Serialization.Etf\Voltaic.Serialization.Etf.csproj" />
+    <ProjectReference Include="..\Voltaic.Serialization.Json\Voltaic.Serialization.Json.csproj" />
+    <ProjectReference Include="..\Voltaic.Serialization\Voltaic.Serialization.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Events\" />
+  </ItemGroup>
+</Project>

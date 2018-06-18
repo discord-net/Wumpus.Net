@@ -11,11 +11,14 @@ namespace Voltaic.Serialization
         protected readonly ArrayPool<byte> _pool;
 
         private static readonly MethodInfo _createPropertyMapMethod
-            = typeof(Serializer).GetTypeInfo().GetDeclaredMethod(nameof(CreatePropertyMap));
+            = typeof(Serializer).GetTypeInfo().GetDeclaredMethods(nameof(CreatePropertyMap))
+            .Single(x => x.IsGenericMethodDefinition);
         private static readonly MethodInfo _writeMethod
-            = typeof(Serializer).GetTypeInfo().GetDeclaredMethods(nameof(Write)).Single(x => x.IsGenericMethodDefinition);
+            = typeof(Serializer).GetTypeInfo().GetDeclaredMethods(nameof(WriteInternal))
+            .Single(x => x.IsGenericMethodDefinition);
         private static readonly MethodInfo _createModelMapMethod
-            = typeof(Serializer).GetTypeInfo().GetDeclaredMethod(nameof(CreateModelMap));
+            = typeof(Serializer).GetTypeInfo().GetDeclaredMethods(nameof(CreateModelMap))
+            .Single(x => x.IsGenericMethodDefinition);
 
         protected readonly ConcurrentDictionary<Type, ModelMap> _modelMaps;
         protected readonly ConcurrentDictionary<Type, Func<object, object, ResizableMemory<byte>>> _writeMethods;
@@ -25,10 +28,11 @@ namespace Voltaic.Serialization
         {
             _pool = pool ?? ArrayPool<byte>.Shared;
             _modelMaps = new ConcurrentDictionary<Type, ModelMap>();
+            _writeMethods = new ConcurrentDictionary<Type, Func<object, object, ResizableMemory<byte>>>();
             _converters = converters ?? new ConverterCollection();
         }
 
-        protected T Read<T>(ReadOnlySpan<byte> data, ValueConverter<T> converter = null)
+        public T Read<T>(ReadOnlySpan<byte> data, ValueConverter<T> converter = null)
         {
             if (converter == null)
                 converter = _converters.Get<T>(this);
@@ -37,18 +41,20 @@ namespace Voltaic.Serialization
             return result;
         }
 
-        protected ResizableMemory<byte> Write(object value, object converter = null)
+        public ResizableMemory<byte> Write(object value, object converter = null)
         {
             var type = value.GetType();
             var method = _writeMethods.GetOrAdd(type, t =>
             {
                 return _writeMethod.MakeGenericMethod(t)
-                    .CreateDelegate(typeof(Func<object, object, ResizableMemory<byte>>))
+                    .CreateDelegate(typeof(Func<object, object, ResizableMemory<byte>>), this) 
                     as Func<object, object, ResizableMemory<byte>>;
             });
             return method.Invoke(value, converter);
         }
-        protected ResizableMemory<byte> Write<T>(T value, ValueConverter<T> converter = null)
+        private ResizableMemory<byte> WriteInternal<T>(object value, object converter = null)
+            => Write((T)value, (ValueConverter<T>)converter);
+        public ResizableMemory<byte> Write<T>(T value, ValueConverter<T> converter = null)
         {
             var writer = new ResizableMemory<byte>(1024, pool: _pool);
             if (converter == null)

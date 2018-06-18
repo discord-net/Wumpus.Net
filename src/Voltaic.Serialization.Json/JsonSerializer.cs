@@ -109,9 +109,21 @@ namespace Voltaic.Serialization.Json
 
         public ReadOnlyMemory<byte> WriteUtf8<T>(T value, ValueConverter<T> converter = null)
             => base.Write<T>(value, converter).AsMemory();
+        public ReadOnlyMemory<byte> WriteUtf8(object value, object converter = null)
+            => base.Write(value, converter).AsMemory();
+
         public ReadOnlyMemory<char> WriteUtf16<T>(T value, ValueConverter<T> converter = null)
         {
             var data = base.Write<T>(value, converter);
+            return FinishWriteUtf16(data);
+        }
+        public ReadOnlyMemory<char> WriteUtf16(object value, object converter = null)
+        {
+            var data = base.Write(value, converter);
+            return FinishWriteUtf16(data);
+        }
+        private ReadOnlyMemory<char> FinishWriteUtf16(ResizableMemory<byte> data)
+        {
             try
             {
                 var span = data.AsSpan();
@@ -127,9 +139,19 @@ namespace Voltaic.Serialization.Json
                 _pool.Return(data.Array);
             }
         }
+
         public string WriteString<T>(T value, ValueConverter<T> converter = null)
         {
-            var data = base.Write<T>(value, converter);
+            var data = base.Write(value, converter);
+            return FinishWriteString(data);
+        }
+        public string WriteString(object value, object converter = null)
+        {
+            var data = base.Write(value, converter);
+            return FinishWriteString(data);
+        }
+        private string FinishWriteString(ResizableMemory<byte> data)
+        {
             try
             {
                 var span = data.AsSpan();

@@ -11,11 +11,11 @@ namespace Voltaic.Serialization.Json
 
             switch (GetTokenType(ref remaining))
             {
-                case TokenType.Number:
+                case JsonTokenType.Number:
                     if (!Utf8Reader.TryReadUInt8(ref remaining, out result, JsonSerializer.IntFormat.Symbol))
                         return false;
                     return true;
-                case TokenType.String:
+                case JsonTokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadUInt8(ref remaining, out result, standardFormat))
                         return false;
@@ -33,11 +33,11 @@ namespace Voltaic.Serialization.Json
 
             switch (GetTokenType(ref remaining))
             {
-                case TokenType.Number:
+                case JsonTokenType.Number:
                     if (!Utf8Reader.TryReadUInt16(ref remaining, out result, JsonSerializer.IntFormat.Symbol))
                         return false;
                     return true;
-                case TokenType.String:
+                case JsonTokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadUInt16(ref remaining, out result, standardFormat))
                         return false;
@@ -55,11 +55,11 @@ namespace Voltaic.Serialization.Json
 
             switch (GetTokenType(ref remaining))
             {
-                case TokenType.Number:
+                case JsonTokenType.Number:
                     if (!Utf8Reader.TryReadUInt32(ref remaining, out result, JsonSerializer.IntFormat.Symbol))
                         return false;
                     return true;
-                case TokenType.String:
+                case JsonTokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadUInt32(ref remaining, out result, standardFormat))
                         return false;
@@ -77,11 +77,11 @@ namespace Voltaic.Serialization.Json
 
             switch (GetTokenType(ref remaining))
             {
-                case TokenType.Number:
+                case JsonTokenType.Number:
                     if (!Utf8Reader.TryReadUInt64(ref remaining, out result, JsonSerializer.IntFormat.Symbol))
                         return false;
                     return true;
-                case TokenType.String:
+                case JsonTokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadUInt64(ref remaining, out result, standardFormat))
                         return false;

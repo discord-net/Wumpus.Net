@@ -11,7 +11,7 @@ namespace Voltaic.Serialization.Json
 
             switch (GetTokenType(ref remaining))
             {
-                case TokenType.String:
+                case JsonTokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadGuid(ref remaining, out result, standardFormat))
                         return false;

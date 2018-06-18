@@ -5,7 +5,7 @@ namespace Voltaic.Serialization
 {
     public abstract class ModelMap
     {
-        internal readonly BufferDictionary<PropertyMap> _propDict;
+        internal readonly MemoryDictionary<PropertyMap> _propDict;
         internal readonly List<KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>> _propList;
 
         public string Path { get; }
@@ -14,7 +14,7 @@ namespace Voltaic.Serialization
         internal ModelMap(string path)
         {
             Path = path;
-            _propDict = new BufferDictionary<PropertyMap>();
+            _propDict = new MemoryDictionary<PropertyMap>();
             _propList = new List<KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>>();
         }
 

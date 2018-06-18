@@ -8,7 +8,7 @@
     <ProjectReference Include="../../src/Voltaic.Core/Voltaic.Core.csproj" />
     <ProjectReference Include="../../src/Voltaic.Serialization/Voltaic.Serialization.csproj" />
     <ProjectReference Include="../../src/Voltaic.Serialization.Etf/Voltaic.Serialization.Etf.csproj" />
-    <ProjectReference Include="..\..\Voltaic.Serialization.Tests\Voltaic.Serialization.Tests.csproj" />
+    <ProjectReference Include="..\Voltaic.Serialization.Tests\Voltaic.Serialization.Tests.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />

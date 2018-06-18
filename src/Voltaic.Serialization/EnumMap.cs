@@ -16,7 +16,7 @@ namespace Voltaic.Serialization
         public static readonly EnumMap<T> Instance = new EnumMap<T>();
 
         private readonly Dictionary<string, T> _keyToValue;
-        private readonly BufferDictionary<T> _utf8KeyToValue;
+        private readonly MemoryDictionary<T> _utf8KeyToValue;
         private readonly Dictionary<long, T> _intToValue;
 
         private readonly Dictionary<T, string> _valueToKey;
@@ -29,7 +29,7 @@ namespace Voltaic.Serialization
                 throw new InvalidOperationException($"{typeInfo.Name} is not an Enum");
 
             _keyToValue = new Dictionary<string, T>();
-            _utf8KeyToValue = new BufferDictionary<T>();
+            _utf8KeyToValue = new MemoryDictionary<T>();
             _intToValue = new Dictionary<long, T>();
 
             _valueToKey = new Dictionary<T, string>();

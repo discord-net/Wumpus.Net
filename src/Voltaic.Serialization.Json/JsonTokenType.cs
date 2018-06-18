@@ -1,6 +1,6 @@
 ﻿namespace Voltaic.Serialization.Json
 {
-    public enum TokenType : byte
+    public enum JsonTokenType : byte
     {
         None = 0,
         Null,

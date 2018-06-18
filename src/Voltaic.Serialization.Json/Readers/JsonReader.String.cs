@@ -101,7 +101,7 @@ namespace Voltaic.Serialization.Json
 
             switch (GetTokenType(ref remaining))
             {
-                case TokenType.String:
+                case JsonTokenType.String:
                     remaining = remaining.Slice(1);
 
                     int start = 0;

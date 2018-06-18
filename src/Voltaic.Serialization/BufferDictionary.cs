@@ -5,7 +5,7 @@ using System.Linq;
 namespace Voltaic.Serialization
 {
     //Based on Dictionary<,>
-    internal class BufferDictionary<TValue>
+    internal class MemoryDictionary<TValue>
     {
         private struct PropertyEntry
         {
@@ -21,7 +21,7 @@ namespace Voltaic.Serialization
         private int _freeList;
         private int _freeCount;
 
-        public BufferDictionary()
+        public MemoryDictionary()
         {
             int size = HashHelpers.GetPrime(0);
             _buckets = new int[size];
@@ -29,7 +29,7 @@ namespace Voltaic.Serialization
             _entries = new PropertyEntry[size];
             _freeList = -1;
         }
-        public BufferDictionary(IReadOnlyDictionary<ReadOnlyMemory<byte>, TValue> values)
+        public MemoryDictionary(IReadOnlyDictionary<ReadOnlyMemory<byte>, TValue> values)
         {
             int size = HashHelpers.GetPrime(values.Count);
             _buckets = new int[size];

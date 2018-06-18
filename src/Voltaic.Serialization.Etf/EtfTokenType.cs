@@ -1,6 +1,6 @@
 namespace Voltaic.Serialization.Etf
 {
-    public enum TokenType : byte
+    public enum EtfTokenType : byte
     {
         None = 0,
         DistributionHeader,

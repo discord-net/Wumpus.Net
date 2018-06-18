@@ -4,7 +4,7 @@ namespace Voltaic.Serialization.Json
 {
     public static partial class JsonReader
     {
-        public static TokenType GetTokenType(ref ReadOnlySpan<byte> remaining)
+        public static JsonTokenType GetTokenType(ref ReadOnlySpan<byte> remaining)
         {
             for (int i = 0; i < remaining.Length; i++)
             {
@@ -18,37 +18,37 @@ namespace Voltaic.Serialization.Json
                         continue;
                     case (byte)'{':
                         remaining = remaining.Slice(i); // Strip whitespace
-                        return TokenType.StartObject;
+                        return JsonTokenType.StartObject;
                     case (byte)'}':
                         remaining = remaining.Slice(i);
-                        return TokenType.EndObject;
+                        return JsonTokenType.EndObject;
                     case (byte)'[':
                         remaining = remaining.Slice(i);
-                        return TokenType.StartArray;
+                        return JsonTokenType.StartArray;
                     case (byte)']':
                         remaining = remaining.Slice(i);
-                        return TokenType.EndArray;
+                        return JsonTokenType.EndArray;
                     case (byte)',':
                         remaining = remaining.Slice(i);
-                        return TokenType.ListSeparator;
+                        return JsonTokenType.ListSeparator;
                     case (byte)':':
                         remaining = remaining.Slice(i);
-                        return TokenType.KeyValueSeparator;
+                        return JsonTokenType.KeyValueSeparator;
                     case (byte)'n':
                     case (byte)'N':
                         remaining = remaining.Slice(i);
-                        return TokenType.Null;
+                        return JsonTokenType.Null;
                     case (byte)'t':
                     case (byte)'T':
                         remaining = remaining.Slice(i);
-                        return TokenType.True;
+                        return JsonTokenType.True;
                     case (byte)'f':
                     case (byte)'F':
                         remaining = remaining.Slice(i);
-                        return TokenType.False;
+                        return JsonTokenType.False;
                     case (byte)'"':
                         remaining = remaining.Slice(i);
-                        return TokenType.String;
+                        return JsonTokenType.String;
                     case (byte)'-':
                     case (byte)'0':
                     case (byte)'1':
@@ -61,7 +61,7 @@ namespace Voltaic.Serialization.Json
                     case (byte)'8':
                     case (byte)'9':
                         remaining = remaining.Slice(i);
-                        return TokenType.Number;
+                        return JsonTokenType.Number;
                     default:
                         if (c < 32)
                             throw new SerializationException($"Unexpected control char ({remaining[i]})");
@@ -69,7 +69,7 @@ namespace Voltaic.Serialization.Json
                             throw new SerializationException($"Unexpected char: {(char)remaining[i]} ({remaining[i]})");
                 }
             }
-            return TokenType.None;
+            return JsonTokenType.None;
         }
 
     }

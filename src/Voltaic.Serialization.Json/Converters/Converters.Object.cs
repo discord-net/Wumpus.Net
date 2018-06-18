@@ -14,9 +14,9 @@ namespace Voltaic.Serialization.Json
 
             switch (JsonReader.GetTokenType(ref remaining))
             {
-                case TokenType.StartObject:
+                case JsonTokenType.StartObject:
                     break;
-                case TokenType.Null:
+                case JsonTokenType.Null:
                     result = null;
                     return true;
                 default:
@@ -25,7 +25,7 @@ namespace Voltaic.Serialization.Json
             remaining = remaining.Slice(1);
 
             result = new T();
-            if (JsonReader.GetTokenType(ref remaining) == TokenType.EndObject)
+            if (JsonReader.GetTokenType(ref remaining) == JsonTokenType.EndObject)
             {
                 remaining = remaining.Slice(1);
                 return true;
@@ -36,12 +36,12 @@ namespace Voltaic.Serialization.Json
             {
                 switch (JsonReader.GetTokenType(ref remaining))
                 {
-                    case TokenType.None:
+                    case JsonTokenType.None:
                         return false;
-                    case TokenType.EndObject:
+                    case JsonTokenType.EndObject:
                         remaining = remaining.Slice(1);
                         return true;
-                    case TokenType.ListSeparator:
+                    case JsonTokenType.ListSeparator:
                         if (i == 0)
                             return false;
                         remaining = remaining.Slice(1);
@@ -53,7 +53,7 @@ namespace Voltaic.Serialization.Json
                 }
                 if (!JsonReader.TryReadUtf8String(ref remaining, out var key))
                     return false;
-                if (JsonReader.GetTokenType(ref remaining) != TokenType.KeyValueSeparator)
+                if (JsonReader.GetTokenType(ref remaining) != JsonTokenType.KeyValueSeparator)
                     return false;
 
                 remaining = remaining.Slice(1);

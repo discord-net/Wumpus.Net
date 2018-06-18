@@ -12,11 +12,11 @@ namespace Voltaic.Serialization.Json
 
             switch (GetTokenType(ref remaining))
             {
-                case TokenType.Number:
+                case JsonTokenType.Number:
                     if (!Utf8Reader.TryReadSingle(ref remaining, out result, JsonSerializer.FloatFormat.Symbol))
                         return false;
                     return true;
-                case TokenType.String:
+                case JsonTokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadSingle(ref remaining, out result, standardFormat))
                         return false;
@@ -34,11 +34,11 @@ namespace Voltaic.Serialization.Json
 
             switch (GetTokenType(ref remaining))
             {
-                case TokenType.Number:
+                case JsonTokenType.Number:
                     if (!Utf8Reader.TryReadDouble(ref remaining, out result, JsonSerializer.FloatFormat.Symbol))
                         return false;
                     return true;
-                case TokenType.String:
+                case JsonTokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadDouble(ref remaining, out result, standardFormat))
                         return false;
@@ -56,11 +56,11 @@ namespace Voltaic.Serialization.Json
 
             switch (GetTokenType(ref remaining))
             {
-                case TokenType.Number:
+                case JsonTokenType.Number:
                     if (!Utf8Reader.TryReadDecimal(ref remaining, out result, JsonSerializer.FloatFormat.Symbol))
                         return false;
                     return true;
-                case TokenType.String:
+                case JsonTokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadDecimal(ref remaining, out result, standardFormat))
                         return false;

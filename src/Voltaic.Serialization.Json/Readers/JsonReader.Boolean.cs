@@ -11,19 +11,19 @@ namespace Voltaic.Serialization.Json
             
             switch (GetTokenType(ref remaining))
             {
-                case TokenType.True:
+                case JsonTokenType.True:
                     if (remaining.Length < 4)
                         return false;
                     result = true;
                     remaining = remaining.Slice(4);
                     return true;
-                case TokenType.False:
+                case JsonTokenType.False:
                     if (remaining.Length < 5)
                         return false;
                     result = false;
                     remaining = remaining.Slice(5);
                     return true;
-                case TokenType.String:
+                case JsonTokenType.String:
                     remaining = remaining.Slice(1);
                     if (!Utf8Reader.TryReadBoolean(ref remaining, out result, standardFormat))
                         return false;

@@ -112,9 +112,9 @@ namespace Voltaic.Serialization.Json
             
             switch (JsonReader.GetTokenType(ref remaining))
             {
-                case TokenType.StartArray:
+                case JsonTokenType.StartArray:
                     break;
-                case TokenType.Null:
+                case JsonTokenType.Null:
                     result = default;
                     return true;
                 default:
@@ -122,7 +122,7 @@ namespace Voltaic.Serialization.Json
             }
             remaining = remaining.Slice(1);
 
-            if (JsonReader.GetTokenType(ref remaining) == TokenType.EndArray)
+            if (JsonReader.GetTokenType(ref remaining) == JsonTokenType.EndArray)
             {
                 result = new ResizableMemory<T>(EmptyArray<T>.Value, pool);
                 remaining = remaining.Slice(1);
@@ -134,12 +134,12 @@ namespace Voltaic.Serialization.Json
             {
                 switch (JsonReader.GetTokenType(ref remaining))
                 {
-                    case TokenType.None:
+                    case JsonTokenType.None:
                         return false;
-                    case TokenType.EndArray:
+                    case JsonTokenType.EndArray:
                         remaining = remaining.Slice(1);
                         return true;
-                    case TokenType.ListSeparator:
+                    case JsonTokenType.ListSeparator:
                         if (i == 0)
                             return false;
                         remaining = remaining.Slice(1);
