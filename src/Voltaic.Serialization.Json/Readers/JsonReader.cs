@@ -35,15 +35,12 @@ namespace Voltaic.Serialization.Json
                         remaining = remaining.Slice(i);
                         return JsonTokenType.KeyValueSeparator;
                     case (byte)'n':
-                    case (byte)'N':
                         remaining = remaining.Slice(i);
                         return JsonTokenType.Null;
                     case (byte)'t':
-                    case (byte)'T':
                         remaining = remaining.Slice(i);
                         return JsonTokenType.True;
                     case (byte)'f':
-                    case (byte)'F':
                         remaining = remaining.Slice(i);
                         return JsonTokenType.False;
                     case (byte)'"':

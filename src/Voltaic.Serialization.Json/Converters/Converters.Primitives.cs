@@ -23,7 +23,7 @@ namespace Voltaic.Serialization.Json
         private readonly StandardFormat _format;
         public DateTimeJsonConverter(StandardFormat format = default)
         {
-            // Offsets using the default parser has unpredicatble behavior with quotes. Since it's ignored anyway, default to no offsets.
+            // Offsets using the default parser has unpredicatble behavior with quotes. Since it's ignored anyway, default to no offsets (G).
             _format = !format.IsDefault ? format : 'G';
         }
         public override bool CanWrite(DateTime value, PropertyMap propMap)
