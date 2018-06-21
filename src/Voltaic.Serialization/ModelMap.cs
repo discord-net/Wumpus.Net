@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 
 namespace Voltaic.Serialization
 {
@@ -15,7 +13,6 @@ namespace Voltaic.Serialization
 
         internal readonly MemoryDictionary<PropertyMap> _propDict;
         internal readonly List<KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>> _propList;
-        internal readonly MemoryDictionary<int> _selectorDict;
 
         public IReadOnlyList<KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>> Properties => _propList;
 
@@ -23,7 +20,6 @@ namespace Voltaic.Serialization
         {
             _propDict = new MemoryDictionary<PropertyMap>();
             _propList = new List<KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>>();
-            _selectorDict = new MemoryDictionary<int>();
         }
 
         public bool TryGetProperty(ReadOnlySpan<byte> key, out PropertyMap value)
@@ -36,48 +32,72 @@ namespace Voltaic.Serialization
             : base(path)
         {
             var type = typeof(T).GetTypeInfo();
-            var dependencies = new List<KeyValuePair<PropertyMap, ModelTypeSelectorAttribute>>();
-            while (type != null)
+            var normalProps = new Dictionary<string, PropertyMap<T>>();
+            var selectorProps = new MemoryDictionary<int>();
+
+            // Normal props
+            var currentType = type;
+            while (currentType != null)
             {
-                foreach (var itemPropInfo in type.DeclaredProperties)
+                foreach (var itemPropInfo in currentType.DeclaredProperties)
                 {
                     var propAttr = itemPropInfo.GetCustomAttribute<ModelPropertyAttribute>();
-                    if (propAttr != null)
+                    if (propAttr != null && itemPropInfo.GetCustomAttribute<ModelTypeSelectorAttribute>() == null)
                     {
-                        var constructor = typeof(PropertyMap<,>).MakeGenericType(typeof(T), itemPropInfo.PropertyType).GetTypeInfo().DeclaredConstructors.Single();
+                        var propMapType = typeof(PropertyMap<,>).MakeGenericType(typeof(T), itemPropInfo.PropertyType).GetTypeInfo();
+                        var constructor = propMapType.DeclaredConstructors.Single();
                         var converter = serializer.GetConverter(itemPropInfo);
-                        var propMap = constructor.Invoke(new object[] { serializer, this, propAttr, propAttr, converter }) as PropertyMap<T>;
+                        var propMap = constructor.Invoke(new object[] { serializer, this, itemPropInfo, propAttr, converter }) as PropertyMap<T>;
+
+                        _propDict.Add(propMap.Key, propMap);
+                        _propList.Add(new KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>(propMap.Key, propMap));
+                        normalProps.Add(itemPropInfo.Name, propMap);
+                    }
+                }
+                currentType = currentType.BaseType?.GetTypeInfo();
+            }
+
+            // Dependent props
+            currentType = type;
+            while (currentType != null)
+            {
+                foreach (var itemPropInfo in currentType.DeclaredProperties)
+                {
+                    var propAttr = itemPropInfo.GetCustomAttribute<ModelPropertyAttribute>();
+                    var typeSelectorAttr = itemPropInfo.GetCustomAttribute<ModelTypeSelectorAttribute>();
+                    if (propAttr != null && typeSelectorAttr != null)
+                    {
+                        if (!normalProps.TryGetValue(typeSelectorAttr.KeyProperty, out var depProp))
+                            throw new InvalidOperationException($"Unable to find dependency \"{typeSelectorAttr.KeyProperty}\"");
+
+                        // TODO: Does this search subtypes?
+                        var typeMapAccessor = currentType.GetDeclaredProperty(typeSelectorAttr.MapProperty);
+                        if (typeMapAccessor == null)
+                            throw new InvalidOperationException($"Unable to find map \"{typeSelectorAttr.MapProperty}\"");
+                        if (!typeMapAccessor.PropertyType.IsConstructedGenericType || 
+                            typeMapAccessor.PropertyType.GetGenericTypeDefinition() != typeof(IReadOnlyDictionary<,>) ||
+                            typeMapAccessor.PropertyType.GenericTypeArguments[1] != typeof(Type))
+                            throw new InvalidOperationException($"Map must return an IReadOnlyDictionary<TKey,Type>");
+                        var keyType = typeMapAccessor.PropertyType.GenericTypeArguments[0];
+                        var converters = new object(); // TODO: Impl
+
+                        var propMapType = typeof(DependentPropertyMap<,,>).MakeGenericType(typeof(T), keyType, itemPropInfo.PropertyType).GetTypeInfo();
+                        var constructor = propMapType.DeclaredConstructors.Single();
+                        var propMap = constructor.Invoke(new object[] { serializer, this, itemPropInfo, propAttr, depProp, converters }) as PropertyMap<T>;
+
                         _propDict.Add(propMap.Key, propMap);
                         _propList.Add(new KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>(propMap.Key, propMap));
 
-                        var typeSelectorAttr = itemPropInfo.GetCustomAttribute<ModelTypeSelectorAttribute>();
-                        if (typeSelectorAttr != null)
-                            dependencies.Add(new KeyValuePair<PropertyMap, ModelTypeSelectorAttribute>(propMap, typeSelectorAttr));
+                        if (depProp.Index == 0)
+                        {
+                            depProp.Index = selectorProps.Count;
+                            if (depProp.Index >= MaxDependencies)
+                                throw new InvalidOperationException($"Model has more than {MaxDependencies} dependencies");
+                            selectorProps.Add(depProp.Key, depProp.Index.Value);
+                        }
                     }
                 }
-            }
-
-            for (int i = 0; i < dependencies.Count; i++)
-            {
-                var depInfo = dependencies[i];
-
-                var bytes = MemoryMarshal.AsBytes(depInfo.Value.KeyProperty.AsSpan());
-                if (Encodings.Utf16.ToUtf8Length(bytes, out int length) != OperationStatus.Done)
-                    throw new InvalidOperationException("Failed to convert dependency key to UTF8");
-                var utf8Key = new Memory<byte>(new byte[length]);
-                if (Encodings.Utf16.ToUtf8(bytes, utf8Key.Span, out _, out _) != OperationStatus.Done)
-                    throw new InvalidOperationException("Failed to convert dependency key to UTF8");
-                if (!_propDict.TryGetValue(utf8Key, out var depProp))
-                    throw new InvalidOperationException($"Unable to find dependency \"{depInfo.Value.KeyProperty}\"");
-                depInfo.Key.Dependency = depProp;
-
-                if (depProp.Index == 0)
-                {
-                    depProp.Index = _selectorDict.Count;
-                    if (depProp.Index >= MaxDependencies)
-                        throw new InvalidOperationException($"Model has more than {MaxDependencies} dependencies");
-                    _selectorDict.Add(utf8Key, depProp.Index.Value);
-                }
+                currentType = currentType.BaseType?.GetTypeInfo();
             }
         }
 

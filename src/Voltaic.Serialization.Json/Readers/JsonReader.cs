@@ -60,14 +60,134 @@ namespace Voltaic.Serialization.Json
                         remaining = remaining.Slice(i);
                         return JsonTokenType.Number;
                     default:
-                        if (c < 32)
-                            throw new SerializationException($"Unexpected control char ({remaining[i]})");
-                        else
-                            throw new SerializationException($"Unexpected char: {(char)remaining[i]} ({remaining[i]})");
+                        return JsonTokenType.None;
+                        //if (c < 32)
+                        //    throw new SerializationException($"Unexpected control char ({remaining[i]})");
+                        //else
+                        //    throw new SerializationException($"Unexpected char: {(char)remaining[i]} ({remaining[i]})");
                 }
             }
             return JsonTokenType.None;
         }
 
+        // TODO: Add tests
+        public static bool Skip(ref ReadOnlySpan<byte> remaining)
+        {
+            var stack = new ResizableMemory<byte>(32);
+            var currentToken = JsonTokenType.None;
+
+            int i = 0;
+            for (; i < remaining.Length; i++)
+            {
+                byte c = remaining[i];
+                switch (c)
+                {
+                    case (byte)' ': // Whitespace
+                    case (byte)'\n':
+                    case (byte)'\r':
+                    case (byte)'\t':
+                        continue;
+                    case (byte)'{':
+                        stack.Push((byte)currentToken);
+                        currentToken = JsonTokenType.StartObject;
+                        break;
+                    case (byte)'}':
+                        if (currentToken != JsonTokenType.StartObject)
+                            return false;
+                        currentToken = (JsonTokenType)stack.Pop();
+                        break;
+                    case (byte)'[':
+                        stack.Push((byte)currentToken);
+                        currentToken = JsonTokenType.StartArray;
+                        break;
+                    case (byte)']':
+                        if (currentToken != JsonTokenType.StartArray)
+                            return false;
+                        currentToken = (JsonTokenType)stack.Pop();
+                        break;
+                    case (byte)',':
+                        if (currentToken != JsonTokenType.StartObject && currentToken != JsonTokenType.StartArray)
+                            return false;
+                        break;
+                    case (byte)':':
+                        if (currentToken != JsonTokenType.StartObject)
+                            return false;
+                        break;
+                    case (byte)'n':
+                        i += 3; // ull
+                        break;
+                    case (byte)'t':
+                        i += 3; // rue
+                        break;
+                    case (byte)'f':
+                        i += 4; // alse
+                        break;
+                    case (byte)'"':
+                        while (i < remaining.Length)
+                        {
+                            switch (remaining[i])
+                            {
+                                case (byte)'\\':
+                                    i += 2; // Skip next char
+                                    continue;
+                                case (byte)'"':
+                                    break;
+                                default:
+                                    i++;
+                                    continue;
+                            }
+                            break;
+                        }
+                        break;
+                    case (byte)'-':
+                    case (byte)'0':
+                    case (byte)'1':
+                    case (byte)'2':
+                    case (byte)'3':
+                    case (byte)'4':
+                    case (byte)'5':
+                    case (byte)'6':
+                    case (byte)'7':
+                    case (byte)'8':
+                    case (byte)'9':
+                        while (i < remaining.Length)
+                        {
+                            switch (remaining[i])
+                            {
+                                case (byte)'+':
+                                case (byte)'-':
+                                case (byte)'.':
+                                case (byte)'0':
+                                case (byte)'1':
+                                case (byte)'2':
+                                case (byte)'3':
+                                case (byte)'4':
+                                case (byte)'5':
+                                case (byte)'6':
+                                case (byte)'7':
+                                case (byte)'8':
+                                case (byte)'9':
+                                case (byte)'e':
+                                case (byte)'E':
+                                    i++;
+                                    continue;
+                                default:
+                                    i--; // Crossed into next token
+                                    break;
+                            }
+                            break;
+                        }
+                        break;
+                    default:
+                        return false;
+                }
+            }
+
+            // Incomplete object/array
+            if (currentToken != JsonTokenType.None)
+                return false;
+            remaining = remaining.Slice(i);
+            return true;
+        }
     }
 }

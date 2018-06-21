@@ -9,10 +9,10 @@ namespace Voltaic.Serialization.Json
         {
             if (standardFormat.Symbol != JsonSerializer.IntFormat.Symbol)
             {
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
             }
             else
             {
@@ -26,10 +26,10 @@ namespace Voltaic.Serialization.Json
         {
             if (standardFormat.Symbol != JsonSerializer.IntFormat.Symbol)
             {
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
             }
             else
             {
@@ -43,10 +43,10 @@ namespace Voltaic.Serialization.Json
         {
             if (standardFormat.Symbol != JsonSerializer.IntFormat.Symbol)
             {
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
             }
             else
             {
@@ -60,10 +60,10 @@ namespace Voltaic.Serialization.Json
         {
             if (useQuotes || standardFormat.Symbol != JsonSerializer.IntFormat.Symbol)
             {
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
             }
             else
             {

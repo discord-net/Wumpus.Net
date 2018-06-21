@@ -18,9 +18,7 @@ namespace Voltaic.Serialization.Utf8.Tests
         {
             yield return FailRead("null");
             yield return ReadWrite("false", false);
-            yield return Read("False", false);
             yield return ReadWrite("true", true);
-            yield return Read("True", true);
         }
 
         [Theory]

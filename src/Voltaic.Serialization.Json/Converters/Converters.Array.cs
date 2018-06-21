@@ -37,15 +37,15 @@ namespace Voltaic.Serialization.Json
             if (value == null)
                 return JsonWriter.TryWriteNull(ref writer);
 
-            writer.Append((byte)'[');
+            writer.Push((byte)'[');
             for (int i = 0; i < value.Length; i++)
             {
                 if (i != 0)
-                    writer.Append((byte)',');
+                    writer.Push((byte)',');
                 if (!_innerConverter.TryWrite(serializer, ref writer, value[i], propMap))
                     return false;
             }
-            writer.Append((byte)']');
+            writer.Push((byte)']');
             return true;
         }
     }
@@ -83,15 +83,15 @@ namespace Voltaic.Serialization.Json
             if (value == null)
                 return JsonWriter.TryWriteNull(ref writer);
 
-            writer.Append((byte)'[');
+            writer.Push((byte)'[');
             for (int i = 0; i < value.Count; i++)
             {
                 if (i != 0)
-                    writer.Append((byte)',');
+                    writer.Push((byte)',');
                 if (!_innerConverter.TryWrite(serializer, ref writer, value[i], propMap))
                     return false;
             }
-            writer.Append((byte)']');
+            writer.Push((byte)']');
             return true;
         }
     }
@@ -151,7 +151,7 @@ namespace Voltaic.Serialization.Json
                 }
                 if (!innerConverter.TryRead(serializer, ref remaining, out var item, propMap))
                     return false;
-                result.Append(item);
+                result.Push(item);
             }
         }
     }

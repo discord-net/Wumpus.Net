@@ -79,21 +79,21 @@ namespace Voltaic.Serialization.Json
             if (value == null)
                 return JsonWriter.TryWriteNull(ref writer);
 
-            writer.Append((byte)'{');
+            writer.Push((byte)'{');
             bool isFirst = true;
             foreach (var pair in value)
             {
                 if (!isFirst)
-                    writer.Append((byte)',');
+                    writer.Push((byte)',');
                 else
                     isFirst = false;
                 if (!JsonWriter.TryWrite(ref writer, pair.Key))
                     return false;
-                writer.Append((byte)':');
+                writer.Push((byte)':');
                 if (!_innerConverter.TryWrite(serializer, ref writer, pair.Value, propMap))
                     return false;
             }
-            writer.Append((byte)'}');
+            writer.Push((byte)'}');
             return true;
         }
     }

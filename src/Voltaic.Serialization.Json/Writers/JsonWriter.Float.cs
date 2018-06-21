@@ -9,10 +9,10 @@ namespace Voltaic.Serialization.Json
         {
             if (standardFormat.Symbol != JsonSerializer.FloatFormat.Symbol || float.IsInfinity(value) || float.IsNaN(value))
             {
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
             }
             else
             {
@@ -26,10 +26,10 @@ namespace Voltaic.Serialization.Json
         {
             if (standardFormat.Symbol != JsonSerializer.FloatFormat.Symbol || double.IsInfinity(value) || double.IsNaN(value))
             {
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
             }
             else
             {
@@ -43,10 +43,10 @@ namespace Voltaic.Serialization.Json
         {
             if (standardFormat.Symbol != JsonSerializer.FloatFormat.Symbol)
             {
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
             }
             else
             {

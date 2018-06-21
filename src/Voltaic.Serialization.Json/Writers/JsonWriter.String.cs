@@ -19,10 +19,10 @@ namespace Voltaic.Serialization.Json
                 if (Encodings.Utf16.ToUtf8(charBytes, data, out _, out _) != OperationStatus.Done)
                     return false;
 
-                writer.Append((byte)'\"');
+                writer.Push((byte)'\"');
                 if (!TryWriteUtf8String(ref writer, data.AsSpan(0, length)))
                     return false;
-                writer.Append((byte)'\"');
+                writer.Push((byte)'\"');
             }
             finally
             {
@@ -43,10 +43,10 @@ namespace Voltaic.Serialization.Json
                 if (Encodings.Utf16.ToUtf8(charBytes, data, out _, out _) != OperationStatus.Done)
                     return false;
 
-                writer.Append((byte)'\"');
+                writer.Push((byte)'\"');
                 if (!TryWriteUtf8String(ref writer, data.AsSpan(0, length)))
                     return false;
-                writer.Append((byte)'\"');
+                writer.Push((byte)'\"');
             }
             finally
             {
@@ -76,8 +76,8 @@ namespace Voltaic.Serialization.Json
                             value.Slice(start, bytes).CopyTo(buffer);
                             writer.Advance(bytes);
                         }
-                        writer.Append((byte)'\\');
-                        writer.Append(b);
+                        writer.Push((byte)'\\');
+                        writer.Push(b);
 
                         start = i + 1;
                         continue;
@@ -96,24 +96,24 @@ namespace Voltaic.Serialization.Json
                     switch (b)
                     {
                         case (byte)'\b':
-                            writer.Append((byte)'\\');
-                            writer.Append((byte)'b');
+                            writer.Push((byte)'\\');
+                            writer.Push((byte)'b');
                             break;
                         case (byte)'\f':
-                            writer.Append((byte)'\\');
-                            writer.Append((byte)'f');
+                            writer.Push((byte)'\\');
+                            writer.Push((byte)'f');
                             break;
                         case (byte)'\n':
-                            writer.Append((byte)'\\');
-                            writer.Append((byte)'n');
+                            writer.Push((byte)'\\');
+                            writer.Push((byte)'n');
                             break;
                         case (byte)'\r':
-                            writer.Append((byte)'\\');
-                            writer.Append((byte)'r');
+                            writer.Push((byte)'\\');
+                            writer.Push((byte)'r');
                             break;
                         case (byte)'\t':
-                            writer.Append((byte)'\\');
-                            writer.Append((byte)'t');
+                            writer.Push((byte)'\\');
+                            writer.Push((byte)'t');
                             break;
                         default:
                             var escape = writer.GetSpan(6);

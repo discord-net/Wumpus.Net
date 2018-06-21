@@ -8,10 +8,10 @@ namespace Voltaic.Serialization.Json
     {
         public static bool TryWrite(ref ResizableMemory<byte> writer, Guid value, StandardFormat standardFormat)
         {
-            writer.Append((byte)'"');
+            writer.Push((byte)'"');
             if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                 return false;
-            writer.Append((byte)'"');
+            writer.Push((byte)'"');
             return true;
         }
     }

@@ -23,10 +23,14 @@ namespace Voltaic.Serialization
         public T[] Array { get; private set; }
         public int Length { get; private set; }
 
-        public void Append(T item)
+        public void Push(T item)
         {
             RequestLength(1);
             Array[Length++] = item;
+        }
+        public T Pop()
+        {
+            return Array[--Length];
         }
 
         public Span<T> GetSpan(int minimumLength)

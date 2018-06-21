@@ -9,10 +9,10 @@ namespace Voltaic.Serialization.Json
         {
             if (standardFormat.Symbol != JsonSerializer.BooleanFormat.Symbol)
             {
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
             }
             else
             {

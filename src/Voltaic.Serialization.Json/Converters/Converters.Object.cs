@@ -36,7 +36,8 @@ namespace Voltaic.Serialization.Json
 
             var map = serializer.GetMap<T>();
             bool isFirst = true;
-            while (true)
+            bool incomplete = true;
+            while (incomplete)
             {
                 switch (JsonReader.GetTokenType(ref remaining))
                 {
@@ -44,7 +45,8 @@ namespace Voltaic.Serialization.Json
                         return false;
                     case JsonTokenType.EndObject:
                         remaining = remaining.Slice(1);
-                        return true;
+                        incomplete = false;
+                        continue;
                     case JsonTokenType.ListSeparator:
                         if (isFirst)
                             return false;
@@ -67,7 +69,8 @@ namespace Voltaic.Serialization.Json
                 // Unknown Property
                 if (!map.TryGetProperty(key, out var innerPropMap))
                 {
-                    JsonReader.Skip(ref remaining);
+                    if (!JsonReader.Skip(ref remaining))
+                        return false;
                     continue;
                 }
 
@@ -75,11 +78,12 @@ namespace Voltaic.Serialization.Json
                     return false;
 
                 // Property depends on another that hasn't been deserialized yet
-                if (!dependencies[innerPropMap.Dependency.Index.Value])
+                if (innerPropMap.Dependency != null && !dependencies[innerPropMap.Dependency.Index.Value])
                 {
                     if (!deferred.Add(start))
                         return false;
-                    JsonReader.Skip(ref remaining);
+                    if (!JsonReader.Skip(ref remaining))
+                        return false;
                     continue;
                 }
 
@@ -89,6 +93,18 @@ namespace Voltaic.Serialization.Json
                 if (innerPropMap.Index != null)
                     dependencies[innerPropMap.Index.Value] = true;
             }
+
+            for (int i = 0; i < deferred.Count; i++)
+            {
+                if (!JsonReader.TryReadUtf8String(ref remaining, out var key))
+                    return false;
+                remaining = remaining.Slice(1); // JsonTokenType.KeyValueSeparator
+                if (!map.TryGetProperty(key, out var innerPropMap))
+                    return false;
+                if (!innerPropMap.TryRead(result, ref remaining))
+                    return false;
+            }
+            return true;
         }
 
         public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, T value, PropertyMap propMap = null)
@@ -96,7 +112,7 @@ namespace Voltaic.Serialization.Json
             if (value == null)
                 return JsonWriter.TryWriteNull(ref writer);
 
-            writer.Append((byte)'{');
+            writer.Push((byte)'{');
             bool isFirst = true;
             var map = serializer.GetMap(typeof(T));
 
@@ -109,20 +125,20 @@ namespace Voltaic.Serialization.Json
                     continue;
 
                 if (!isFirst)
-                    writer.Append((byte)',');
+                    writer.Push((byte)',');
                 else
                     isFirst = false;
 
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
                 if (!JsonWriter.TryWriteUtf8String(ref writer, key.Span))
                     return false;
-                writer.Append((byte)'"');
+                writer.Push((byte)'"');
 
-                writer.Append((byte)':');
+                writer.Push((byte)':');
                 if (!innerPropMap.TryWrite(value, ref writer))
                     return false;
             }
-            writer.Append((byte)'}');
+            writer.Push((byte)'}');
             return true;
         }
     }

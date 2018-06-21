@@ -133,28 +133,28 @@ namespace Voltaic.Serialization.Json
                             switch (remaining[++i])
                             {
                                 case (byte)'\"':
-                                    builder.Append((byte)'\"');
+                                    builder.Push((byte)'\"');
                                     break;
                                 case (byte)'\\':
-                                    builder.Append((byte)'\\');
+                                    builder.Push((byte)'\\');
                                     break;
                                 case (byte)'/':
-                                    builder.Append((byte)'/');
+                                    builder.Push((byte)'/');
                                     break;
                                 case (byte)'b':
-                                    builder.Append((byte)'\b');
+                                    builder.Push((byte)'\b');
                                     break;
                                 case (byte)'f':
-                                    builder.Append((byte)'\f');
+                                    builder.Push((byte)'\f');
                                     break;
                                 case (byte)'n':
-                                    builder.Append((byte)'\n');
+                                    builder.Push((byte)'\n');
                                     break;
                                 case (byte)'r':
-                                    builder.Append((byte)'\r');
+                                    builder.Push((byte)'\r');
                                     break;
                                 case (byte)'t':
-                                    builder.Append((byte)'\t');
+                                    builder.Push((byte)'\t');
                                     break;
                                 case (byte)'u':
                                     var sequenceWriter = new ResizableMemory<ushort>(128);
@@ -186,7 +186,7 @@ namespace Voltaic.Serialization.Json
                                                 (bytes[1] << 8) |
                                                 (bytes[2] << 4) |
                                                 bytes[3]);
-                                            sequenceWriter.Append(value);
+                                            sequenceWriter.Push(value);
                                         }
 
                                         var buffer = builder.GetSpan(sequenceWriter.Length * 2);
