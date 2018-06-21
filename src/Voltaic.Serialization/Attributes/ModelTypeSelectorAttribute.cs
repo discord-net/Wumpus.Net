@@ -5,13 +5,13 @@ namespace Voltaic.Serialization
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class ModelTypeSelectorAttribute : Attribute
     {
-        public string SelectorProperty { get; }
+        public string KeyProperty { get; }
         public string MapProperty { get; }
 
-        public ModelTypeSelectorAttribute(string selectorKey, string mapKey)
+        public ModelTypeSelectorAttribute(string keyProp, string mapDictProp)
         {
-            SelectorProperty = selectorKey;
-            MapProperty = mapKey;
+            KeyProperty = keyProp;
+            MapProperty = mapDictProp;
         }
     }
 }

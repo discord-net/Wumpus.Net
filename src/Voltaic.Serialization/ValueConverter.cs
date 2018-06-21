@@ -2,7 +2,8 @@ using System;
 
 namespace Voltaic.Serialization
 {
-    public abstract class ValueConverter<TValue>
+    public abstract class ValueConverter { }
+    public abstract class ValueConverter<TValue> : ValueConverter
     {
         public virtual bool CanWrite(TValue value, PropertyMap propMap = null) => true;
 

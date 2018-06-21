@@ -9,15 +9,8 @@ namespace Voltaic.Serialization
     public abstract class Serializer
     {
         protected readonly ArrayPool<byte> _pool;
-
-        private static readonly MethodInfo _createPropertyMapMethod
-            = typeof(Serializer).GetTypeInfo().GetDeclaredMethods(nameof(CreatePropertyMap))
-            .Single(x => x.IsGenericMethodDefinition);
         private static readonly MethodInfo _writeMethod
             = typeof(Serializer).GetTypeInfo().GetDeclaredMethods(nameof(WriteInternal))
-            .Single(x => x.IsGenericMethodDefinition);
-        private static readonly MethodInfo _createModelMapMethod
-            = typeof(Serializer).GetTypeInfo().GetDeclaredMethods(nameof(CreateModelMap))
             .Single(x => x.IsGenericMethodDefinition);
 
         protected readonly ConcurrentDictionary<Type, ModelMap> _modelMaps;
@@ -47,7 +40,7 @@ namespace Voltaic.Serialization
             var method = _writeMethods.GetOrAdd(type, t =>
             {
                 return _writeMethod.MakeGenericMethod(t)
-                    .CreateDelegate(typeof(Func<object, object, ResizableMemory<byte>>), this) 
+                    .CreateDelegate(typeof(Func<object, object, ResizableMemory<byte>>), this)
                     as Func<object, object, ResizableMemory<byte>>;
             });
             return method.Invoke(value, converter);
@@ -64,52 +57,23 @@ namespace Voltaic.Serialization
             return writer;
         }
 
-        public ModelMap GetMap(Type modelType)
+        public ModelMap GetMap(Type modelType, PropertyInfo propInfo = null)
         {
             return _modelMaps.GetOrAdd(modelType, _ =>
             {
-                var method = _createModelMapMethod.MakeGenericMethod(modelType);
-                return method.Invoke(this, null) as ModelMap;
+                var method = typeof(ModelMap<>).MakeGenericType(modelType).GetTypeInfo().DeclaredConstructors.Single();
+                return method.Invoke(new object[] { this, propInfo }) as ModelMap;
             });
         }
-        public ModelMap<T> GetMap<T>() => GetMap(typeof(T)) as ModelMap<T>;
+        public ModelMap<T> GetMap<T>(PropertyInfo propInfo = null)
+            => _modelMaps.GetOrAdd(typeof(T), _ => new ModelMap<T>(this, "", propInfo)) as ModelMap<T>;
 
-        // Only used for top-level converters
-        public ValueConverter<T> GetConverter<T>()
-            => _converters.Get(this, typeof(T), null, true) as ValueConverter<T>;
+        internal ValueConverter GetConverter(Type type, PropertyInfo propInfo = null)
+            => _converters.Get(this, type, propInfo, false) as ValueConverter;
+        internal ValueConverter GetConverter(PropertyInfo propInfo)
+            => _converters.Get(this, propInfo.PropertyType, propInfo, false) as ValueConverter;
+        internal ValueConverter<T> GetConverter<T>(PropertyInfo propInfo = null)
+            => _converters.Get(this, typeof(T), propInfo, false) as ValueConverter<T>;
 
-        private PropertyMap MapProperty(ModelMap modelMap, Type modelType, PropertyInfo propInfo)
-        {
-            var method = _createPropertyMapMethod.MakeGenericMethod(modelType, propInfo.PropertyType);
-            return method.Invoke(this, new object[] { modelMap, propInfo }) as PropertyMap;
-        }
-        protected PropertyMap<TModel, TValue> CreatePropertyMap<TModel, TValue>(ModelMap modelMap, PropertyInfo propInfo)
-        {
-            var converter = _converters.Get(this, typeof(TValue), propInfo) as ValueConverter<TValue>;
-            return new PropertyMap<TModel, TValue>(this, modelMap, propInfo, converter);
-        }
-
-        private ModelMap<T> CreateModelMap<T>()
-        {
-            var type = typeof(T).GetTypeInfo();
-            var map = new ModelMap<T>(type.Name);
-
-            while (type != null)
-            {
-                foreach (var propInfo in type.DeclaredProperties)
-                {
-                    if (propInfo.GetCustomAttribute<ModelPropertyAttribute>() != null)
-                    {
-                        var propMap = MapProperty(map, typeof(T), propInfo);
-                        if (propMap != null)
-                            map.AddProperty(propMap);
-                    }
-                }
-
-                type = type.BaseType?.GetTypeInfo();
-            }
-            map.MapTypeSelectors();
-            return map;
-        }
     }
 }
