@@ -32,7 +32,7 @@ namespace Voltaic.Serialization.Json
             }
 
             Span<bool> dependencies = stackalloc bool[8];
-            var deferred = new DeferredSpanList<byte>();
+            var deferred = new DeferredPropertyList<byte, byte>();
 
             var map = serializer.GetMap<T>();
             bool isFirst = true;
@@ -59,7 +59,6 @@ namespace Voltaic.Serialization.Json
                         break;
                 }
 
-                var start = remaining;
                 if (!JsonReader.TryReadUtf8String(ref remaining, out var key))
                     return false;
                 if (JsonReader.GetTokenType(ref remaining) != JsonTokenType.KeyValueSeparator)
@@ -69,7 +68,7 @@ namespace Voltaic.Serialization.Json
                 // Unknown Property
                 if (!map.TryGetProperty(key, out var innerPropMap))
                 {
-                    if (!JsonReader.Skip(ref remaining))
+                    if (!JsonReader.Skip(ref remaining, out _))
                         return false;
                     continue;
                 }
@@ -80,9 +79,9 @@ namespace Voltaic.Serialization.Json
                 // Property depends on another that hasn't been deserialized yet
                 if (innerPropMap.Dependency != null && !dependencies[innerPropMap.Dependency.Index.Value])
                 {
-                    if (!deferred.Add(start))
+                    if (!JsonReader.Skip(ref remaining, out var skipped))
                         return false;
-                    if (!JsonReader.Skip(ref remaining))
+                    if (!deferred.Add(key, skipped))
                         return false;
                     continue;
                 }
@@ -94,14 +93,13 @@ namespace Voltaic.Serialization.Json
                     dependencies[innerPropMap.Index.Value] = true;
             }
 
+            // Process all deferred properties
             for (int i = 0; i < deferred.Count; i++)
             {
-                if (!JsonReader.TryReadUtf8String(ref remaining, out var key))
+                if (!map.TryGetProperty(deferred.GetKey(i), out var innerPropMap))
                     return false;
-                remaining = remaining.Slice(1); // JsonTokenType.KeyValueSeparator
-                if (!map.TryGetProperty(key, out var innerPropMap))
-                    return false;
-                if (!innerPropMap.TryRead(result, ref remaining))
+                var value = deferred.GetValue(i);
+                if (!innerPropMap.TryRead(result, ref value))
                     return false;
             }
             return true;

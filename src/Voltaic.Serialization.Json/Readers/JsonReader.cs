@@ -71,8 +71,10 @@ namespace Voltaic.Serialization.Json
         }
 
         // TODO: Add tests
-        public static bool Skip(ref ReadOnlySpan<byte> remaining)
+        public static bool Skip(ref ReadOnlySpan<byte> remaining, out ReadOnlySpan<byte> skipped)
         {
+            skipped = default;
+
             var stack = new ResizableMemory<byte>(32);
             var currentToken = JsonTokenType.None;
 
@@ -186,6 +188,7 @@ namespace Voltaic.Serialization.Json
             // Incomplete object/array
             if (currentToken != JsonTokenType.None)
                 return false;
+            skipped = remaining.Slice(0, i);
             remaining = remaining.Slice(i);
             return true;
         }
