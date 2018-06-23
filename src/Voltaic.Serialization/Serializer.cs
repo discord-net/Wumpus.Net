@@ -62,18 +62,18 @@ namespace Voltaic.Serialization
             return _modelMaps.GetOrAdd(modelType, _ =>
             {
                 var method = typeof(ModelMap<>).MakeGenericType(modelType).GetTypeInfo().DeclaredConstructors.Single();
-                return method.Invoke(new object[] { this, propInfo }) as ModelMap;
+                return method.Invoke(new object[] { this, modelType.Name, propInfo }) as ModelMap;
             });
         }
         public ModelMap<T> GetMap<T>(PropertyInfo propInfo = null)
-            => _modelMaps.GetOrAdd(typeof(T), _ => new ModelMap<T>(this, "", propInfo)) as ModelMap<T>;
+            => _modelMaps.GetOrAdd(typeof(T), _ => new ModelMap<T>(this, typeof(T).Name, propInfo)) as ModelMap<T>;
 
-        internal ValueConverter GetConverter(Type type, PropertyInfo propInfo = null)
-            => _converters.Get(this, type, propInfo, false) as ValueConverter;
-        internal ValueConverter GetConverter(PropertyInfo propInfo)
-            => _converters.Get(this, propInfo.PropertyType, propInfo, false) as ValueConverter;
-        internal ValueConverter<T> GetConverter<T>(PropertyInfo propInfo = null)
-            => _converters.Get(this, typeof(T), propInfo, false) as ValueConverter<T>;
+        internal ValueConverter GetConverter(Type type, PropertyInfo propInfo = null, bool throwOnNotFound = false)
+            => _converters.Get(this, type, propInfo, throwOnNotFound);
+        internal ValueConverter GetConverter(PropertyInfo propInfo, bool throwOnNotFound = false)
+            => _converters.Get(this, propInfo.PropertyType, propInfo, throwOnNotFound);
+        internal ValueConverter<T> GetConverter<T>(PropertyInfo propInfo = null, bool throwOnNotFound = false)
+            => _converters.Get<T>(this, propInfo, throwOnNotFound);
 
     }
 }

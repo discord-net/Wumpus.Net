@@ -20,10 +20,13 @@ namespace Wumpus
         public AuthenticationHeaderValue Authorization { get => _api.Authorization; set => _api.Authorization = value; }
 
         public WumpusRestClient(JsonSerializer serializer = null)
+            : this("https://discordapp.com/api/v6/", serializer) { }
+        internal WumpusRestClient(string url, JsonSerializer serializer = null)
         {
             _serializer = serializer ?? new JsonSerializer();
             var httpClient = new HttpClient { BaseAddress = new Uri("https://discordapp.com/api/v6/") };
             _api = RestClient.For<IDiscordRestApi>(new WumpusRequester(httpClient, _serializer));
+
         }
         public void Dispose() => _api.Dispose();
 

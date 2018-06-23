@@ -46,7 +46,7 @@ namespace Voltaic.Serialization
                     {
                         var propMapType = typeof(PropertyMap<,>).MakeGenericType(typeof(T), itemPropInfo.PropertyType).GetTypeInfo();
                         var constructor = propMapType.DeclaredConstructors.Single();
-                        var converter = serializer.GetConverter(itemPropInfo);
+                        var converter = serializer.GetConverter(itemPropInfo, true);
                         var propMap = constructor.Invoke(new object[] { serializer, this, itemPropInfo, propAttr, converter }) as PropertyMap<T>;
 
                         _propDict.Add(propMap.Key, propMap);
