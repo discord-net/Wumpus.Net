@@ -16,7 +16,7 @@ namespace Voltaic.Serialization
         public int? Index { get; internal set; }
         public PropertyMap Dependency { get; protected set; }
 
-        protected bool _supportsRead, _supportsWrite;
+        protected readonly bool _supportsRead, _supportsWrite;
 
         protected PropertyMap(Serializer serializer, ModelMap modelMap, PropertyInfo propInfo, ModelPropertyAttribute attr)
         {
@@ -128,7 +128,7 @@ namespace Voltaic.Serialization
             return true;
         }
 
-        private bool GetConverter(TModel model, out ValueConverter<TValue> converter) 
+        private bool GetConverter(TModel model, out ValueConverter<TValue> converter)
             => ValueConverters.TryGetValue((Dependency as PropertyMap<TModel, TKey>).GetFunc(model), out converter);
     }
 }
