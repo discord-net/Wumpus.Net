@@ -38,7 +38,6 @@ namespace Voltaic.Serialization.Utf8.Tests
             }
         }
 
-
         public static object[] FailRead(string str)
           => new object[] { new TestData<T>(TestType.FailRead, str, default) };
         public static object[] FailWrite(T value)
