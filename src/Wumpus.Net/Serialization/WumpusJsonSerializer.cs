@@ -14,6 +14,7 @@ namespace Wumpus.Serialization
                 (t) => t.GenericTypeArguments[0]);
             _converters.SetDefault<Color, ColorJsonConverter>();
             _converters.SetDefault<Image, ImageJsonConverter>();
+            _converters.SetDefault<Snowflake, SnowflakeJsonConverter>();
         }
     }
 }
