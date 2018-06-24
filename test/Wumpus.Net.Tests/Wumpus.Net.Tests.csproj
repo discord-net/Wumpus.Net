@@ -5,9 +5,9 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\Wumpus.Net\Wumpus.Net.csproj" />
-    <ProjectReference Include="..\src\Voltaic.Serialization.Json\Voltaic.Serialization.Json.csproj" />
-    <ProjectReference Include="..\src\Voltaic.Serialization\Voltaic.Serialization.csproj" />
+    <ProjectReference Include="..\..\src\Wumpus.Net\Wumpus.Net.csproj" />
+    <ProjectReference Include="..\..\src\Voltaic.Serialization.Json\Voltaic.Serialization.Json.csproj" />
+    <ProjectReference Include="..\..\src\Voltaic.Serialization\Voltaic.Serialization.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />

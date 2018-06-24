@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Voltaic.Serialization.Json;
+using Wumpus.Serialization;
 using Xunit;
 
 namespace Wumpus.Net.Tests
@@ -31,13 +31,13 @@ namespace Wumpus.Net.Tests
 
     public abstract class BaseTest
     {
-        private readonly JsonSerializer _serializer;
-        protected readonly HttpListener _server;
+        private readonly WumpusJsonSerializer _serializer;
+        private readonly HttpListener _server;
         private readonly WumpusRestClient _client;
 
         public BaseTest()
         {
-            _serializer = new JsonSerializer();
+            _serializer = new WumpusJsonSerializer();
 
             const string url = "http://localhost:34560/";
             _server = new HttpListener();
@@ -50,14 +50,23 @@ namespace Wumpus.Net.Tests
             _server.Start();
             try
             {
-                var listenTask = _server.GetContextAsync().ContinueWith(c =>
+                var serverTask = _server.GetContextAsync().ContinueWith(c =>
                 {
                     var serverResponse = c.Result.Response;
                     serverResponse.StatusCode = (int)HttpStatusCode.NoContent;
                     serverResponse.Close();
                 });
+
                 var requestTask = test.Action(_client);
-                Task.WaitAll(requestTask, listenTask);
+                var timeoutTask = Task.Delay(3000);
+                var task = Task.WhenAny(requestTask, timeoutTask).Result;
+                if (task == timeoutTask)
+                {
+                    if (serverTask.IsFaulted)
+                        throw serverTask.Exception.InnerException;
+                    else
+                        throw new TimeoutException();
+                }
             }
             finally { _server.Stop(); }
         }
@@ -68,14 +77,14 @@ namespace Wumpus.Net.Tests
 
     public abstract class BaseTest<TResponse>
     {
-        private readonly JsonSerializer _serializer;
+        private readonly WumpusJsonSerializer _serializer;
         private readonly HttpListener _server;
         private readonly WumpusRestClient _client;
         private readonly IEqualityComparer<TResponse> _comparer;
 
         public BaseTest(IEqualityComparer<TResponse> comparer = null)
         {
-            _serializer = new JsonSerializer();
+            _serializer = new WumpusJsonSerializer();
 
             const string url = "http://localhost:34560/";
             _server = new HttpListener();
@@ -89,15 +98,26 @@ namespace Wumpus.Net.Tests
             _server.Start();
             try
             {
-                var listenTask = _server.GetContextAsync().ContinueWith(c =>
+                var serverTask = _server.GetContextAsync().ContinueWith(c =>
                 {
                     var serverResponse = c.Result.Response;
                     serverResponse.StatusCode = (int)HttpStatusCode.OK;
+                    serverResponse.OutputStream.Write(_serializer.WriteUtf8(test.Response).Span);
                     serverResponse.Close();
                 });
+
                 var requestTask = test.Action(_client);
-                Task.WaitAll(requestTask, listenTask);
-                Assert.Equal(requestTask.Result, test.Response, _comparer);
+                var timeoutTask = Task.Delay(3000);
+                var task = Task.WhenAny(requestTask, timeoutTask).Result;
+                if (task == timeoutTask)
+                {
+                    if (serverTask.IsFaulted)
+                        throw serverTask.Exception.InnerException;
+                    else
+                        throw new TimeoutException();
+                }
+                var response = requestTask.Result;
+                Assert.Equal(requestTask.Result, response, _comparer);
             }
             finally { _server.Stop(); }
         }
