@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Voltaic;
 using Voltaic.Serialization;
 
 namespace Wumpus.Entities
@@ -23,37 +24,37 @@ namespace Wumpus.Entities
         {
             // General
 
-            [AuditLogChangeKey.Id] = typeof(ulong),
-            [AuditLogChangeKey.Type] = typeof(string),
+            [AuditLogChangeKey.Id] = typeof(Snowflake),
+            [AuditLogChangeKey.Type] = typeof(Utf8String),
 
             // Guild
 
-            [AuditLogChangeKey.Name] = typeof(string),
-            [AuditLogChangeKey.IconHash] = typeof(string),
-            [AuditLogChangeKey.SplashHash] = typeof(string),
-            [AuditLogChangeKey.OwnerId] = typeof(ulong),
-            [AuditLogChangeKey.Region] = typeof(string),
-            [AuditLogChangeKey.AFKChannelId] = typeof(ulong),
+            [AuditLogChangeKey.Name] = typeof(Utf8String),
+            [AuditLogChangeKey.IconHash] = typeof(Utf8String),
+            [AuditLogChangeKey.SplashHash] = typeof(Utf8String),
+            [AuditLogChangeKey.OwnerId] = typeof(Snowflake),
+            [AuditLogChangeKey.Region] = typeof(Utf8String),
+            [AuditLogChangeKey.AFKChannelId] = typeof(Snowflake),
             [AuditLogChangeKey.AFKTimeout] = typeof(int),
             [AuditLogChangeKey.MFALevel] = typeof(int),
             [AuditLogChangeKey.VerificationLevel] = typeof(VerificationLevel),
             [AuditLogChangeKey.ExplicitContentFilter] = typeof(ExplicitContentFilter),
             [AuditLogChangeKey.DefaultMessageNotifications] = typeof(DefaultMessageNotifications),
-            [AuditLogChangeKey.VanityUrlCode] = typeof(string),
+            [AuditLogChangeKey.VanityUrlCode] = typeof(Utf8String),
             [AuditLogChangeKey.AddRole] = typeof(Role),
             [AuditLogChangeKey.RemoveRole] = typeof(Role),
             [AuditLogChangeKey.PruneDeleteDays] = typeof(int),
             [AuditLogChangeKey.WidgetEnabled] = typeof(bool),
-            [AuditLogChangeKey.WidgetChannelId] = typeof(ulong),
+            [AuditLogChangeKey.WidgetChannelId] = typeof(Snowflake),
 
             // Channel
 
             [AuditLogChangeKey.Position] = typeof(int),
-            [AuditLogChangeKey.Topic] = typeof(string),
+            [AuditLogChangeKey.Topic] = typeof(Utf8String),
             [AuditLogChangeKey.Bitrate] = typeof(int),
             [AuditLogChangeKey.PermissionOverwrites] = typeof(Overwrite[]),
             [AuditLogChangeKey.Nsfw] = typeof(bool),
-            [AuditLogChangeKey.ApplicationId] = typeof(ulong),
+            [AuditLogChangeKey.ApplicationId] = typeof(Snowflake),
 
             // Role
 
@@ -66,9 +67,9 @@ namespace Wumpus.Entities
 
             // Invite
 
-            [AuditLogChangeKey.Code] = typeof(string),
-            [AuditLogChangeKey.ChannelId] = typeof(ulong),
-            [AuditLogChangeKey.InviterId] = typeof(ulong),
+            [AuditLogChangeKey.Code] = typeof(Utf8String),
+            [AuditLogChangeKey.ChannelId] = typeof(Snowflake),
+            [AuditLogChangeKey.InviterId] = typeof(Snowflake),
             [AuditLogChangeKey.MaxUses] = typeof(int),
             [AuditLogChangeKey.Uses] = typeof(int),
             [AuditLogChangeKey.MaxAge] = typeof(int),
@@ -78,8 +79,8 @@ namespace Wumpus.Entities
 
             [AuditLogChangeKey.Deaf] = typeof(bool),
             [AuditLogChangeKey.Mute] = typeof(bool),
-            [AuditLogChangeKey.Nick] = typeof(string),
-            [AuditLogChangeKey.AvatarHash] = typeof(string)
+            [AuditLogChangeKey.Nick] = typeof(Utf8String),
+            [AuditLogChangeKey.AvatarHash] = typeof(Utf8String)
         };
     }
 }

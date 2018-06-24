@@ -9,10 +9,10 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("id")]
-        public ulong Id { get; set; }
+        public Snowflake Id { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("channel_id")]
-        public ulong ChannelId { get; set; }
+        public Snowflake ChannelId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("type")]
         public MessageType Type { get; set; }
@@ -21,7 +21,7 @@ namespace Wumpus.Entities
         public Optional<User> Author { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("content")]
-        public Optional<string> Content { get; set; }
+        public Optional<Utf8String> Content { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("timestamp")]
         public Optional<DateTimeOffset> Timestamp { get; set; }
@@ -39,7 +39,7 @@ namespace Wumpus.Entities
         public Optional<EntityOrId<User>[]> UserMentions { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("mention_roles")]
-        public Optional<ulong[]> RoleMentions { get; set; }
+        public Optional<Snowflake[]> RoleMentions { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("attachments")]
         public Optional<Attachment[]> Attachments { get; set; }
@@ -51,12 +51,12 @@ namespace Wumpus.Entities
         public Optional<Reaction[]> Reactions { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("nonce")]
-        public Optional<string> Nonce { get; set; }
+        public Optional<Utf8String> Nonce { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("pinned")]
         public Optional<bool> Pinned { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("webhook_id")]
-        public Optional<ulong> WebhookId { get; set; }
+        public Optional<Snowflake> WebhookId { get; set; }
     }
 }

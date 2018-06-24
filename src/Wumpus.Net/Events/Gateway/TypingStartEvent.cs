@@ -7,10 +7,10 @@ namespace Wumpus.Events
     {
         /// <summary> xxx </summary>
         [ModelProperty("user_id")]
-        public ulong UserId { get; set; }
+        public Snowflake UserId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("channel_id")]
-        public ulong ChannelId { get; set; }
+        public Snowflake ChannelId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("timestamp")]
         public int Timestamp { get; set; }

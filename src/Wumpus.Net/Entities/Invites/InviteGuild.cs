@@ -1,4 +1,5 @@
-﻿using Voltaic.Serialization;
+﻿using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
@@ -7,12 +8,12 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("id")]
-        public ulong Id { get; set; }
+        public Snowflake Id { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("name")]
-        public string Name { get; set; }
+        public Utf8String Name { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("splash_hash")]
-        public string SplashHash { get; set; }
+        public Utf8String SplashHash { get; set; }
     }
 }

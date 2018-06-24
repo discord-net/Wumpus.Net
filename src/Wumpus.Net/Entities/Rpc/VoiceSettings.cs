@@ -1,4 +1,5 @@
 ﻿
+using Voltaic;
 using Voltaic.Serialization;
 
 namespace Wumpus.Entities

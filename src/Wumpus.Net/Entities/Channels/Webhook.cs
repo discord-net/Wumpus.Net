@@ -8,24 +8,24 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("id")]
-        public ulong Id { get; set; }
+        public Snowflake Id { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("guild_id")]
-        public Optional<ulong> GuildId { get; set; }
+        public Optional<Snowflake> GuildId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("channel_id")]
-        public Optional<ulong> ChannelId { get; set; }
+        public Optional<Snowflake> ChannelId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("user")]
         public Optional<User> User { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("name")]
-        public string Name { get; set; }
+        public Utf8String Name { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("avatar")]
         public Image? Avatar { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("token")]
-        public string Token { get; set; }
+        public Utf8String Token { get; set; }
     }
 }

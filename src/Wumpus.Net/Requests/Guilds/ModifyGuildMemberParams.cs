@@ -17,10 +17,10 @@ namespace Wumpus.Requests
         public Optional<string> Nickname { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("roles")]
-        public Optional<ulong[]> RoleIds { get; set; }
+        public Optional<Snowflake[]> RoleIds { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("channel_id")]
-        public Optional<ulong> ChannelId { get; set; }
+        public Optional<Snowflake> ChannelId { get; set; }
 
         public void Validate()
         {

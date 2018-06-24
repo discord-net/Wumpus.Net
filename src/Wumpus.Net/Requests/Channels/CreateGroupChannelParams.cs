@@ -12,7 +12,7 @@ namespace Wumpus.Requests
         public string[] AccessTokens { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("nicks")]
-        public Optional<Dictionary<ulong, string>> Nicks { get; set; } //TODO: Serializer does not currently support numeric keys
+        public Optional<Dictionary<Snowflake, string>> Nicks { get; set; } //TODO: Serializer does not currently support numeric keys
 
         public CreateGroupChannelParams(string[] accessTokens)
         {

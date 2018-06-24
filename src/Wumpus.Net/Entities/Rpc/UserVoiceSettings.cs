@@ -1,4 +1,5 @@
 ﻿
+using Voltaic;
 using Voltaic.Serialization;
 
 namespace Wumpus.Entities
@@ -8,7 +9,7 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("userId")]
-        internal ulong UserId { get; set; }
+        internal Snowflake UserId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("pan")]
         public Optional<Pan> Pan { get; set; }

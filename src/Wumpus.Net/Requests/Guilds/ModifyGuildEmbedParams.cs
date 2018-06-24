@@ -11,7 +11,7 @@ namespace Wumpus.Requests
         public Optional<bool> Enabled { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("channel")]
-        public Optional<ulong?> ChannelId { get; set; }
+        public Optional<Snowflake?> ChannelId { get; set; }
 
         public void Validate() { }
     }

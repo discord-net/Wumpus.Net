@@ -7,6 +7,6 @@ namespace Wumpus.Events
     {
         /// <summary> xxx </summary>
         [ModelProperty("user_id")]
-        public ulong UserId { get; set; }
+        public Snowflake UserId { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Voltaic.Serialization;
 using System;
+using Voltaic;
 
 namespace Wumpus.Entities
 {
@@ -8,13 +9,13 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("id")]
-        public ulong Id { get; set; }
+        public Snowflake Id { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("name")]
-        public string Name { get; set; }
+        public Utf8String Name { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("type")]
-        public string Type { get; set; }
+        public Utf8String Type { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("enabled")]
         public bool Enabled { get; set; }
@@ -23,13 +24,13 @@ namespace Wumpus.Entities
         public bool Syncing { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("role_id")]
-        public ulong RoleId { get; set; }
+        public Snowflake RoleId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("expire_behavior")]
-        public ulong ExpireBehavior { get; set; }
+        public int ExpireBehavior { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("expire_grace_period")]
-        public ulong ExpireGracePeriod { get; set; }
+        public int ExpireGracePeriod { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("user")]
         public User User { get; set; }

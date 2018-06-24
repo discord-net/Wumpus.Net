@@ -8,24 +8,24 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("target_id")]
-        public string TargetId { get; set; }
+        public Utf8String TargetId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("changes")]
         public AuditLogChange[] Changes { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("user_id")]
-        public ulong UserId { get; set; }
+        public Snowflake UserId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("id")]
-        public ulong Id { get; set; }
+        public Snowflake Id { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("action_type")]
         public AuditLogEvent ActionType { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("options")]
-        public Optional<AuditEntryInfo[]> Options { get; set; }
+        public Optional<OptionalAuditEntryInfo[]> Options { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("reason")]
-        public string Reason { get; set; }
+        public Utf8String Reason { get; set; }
     }
 }

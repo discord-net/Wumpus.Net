@@ -9,7 +9,7 @@ namespace Wumpus.Requests
         /// <summary> xxx </summary>
         public Optional<int> Limit { get; set; }
         /// <summary> xxx </summary>
-        public Optional<ulong> After { get; set; }
+        public Optional<Snowflake> After { get; set; }
 
         public override IDictionary<string, object> GetQueryMap()
         {

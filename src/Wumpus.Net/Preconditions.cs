@@ -20,6 +20,8 @@ namespace Wumpus
 
         public static void NotEmpty(string obj, string name, string msg = null) { if (obj.Length == 0) throw CreateNotEmptyException(name, msg); }
         public static void NotEmpty(Optional<string> obj, string name, string msg = null) { if (obj.IsSpecified && obj.Value.Length == 0) throw CreateNotEmptyException(name, msg); }
+        public static void NotEmpty(Utf8String obj, string name, string msg = null) { if (obj.Bytes.Length == 0) throw CreateNotEmptyException(name, msg); }
+        public static void NotEmpty(Optional<Utf8String> obj, string name, string msg = null) { if (obj.IsSpecified && obj.Value.Bytes.Length == 0) throw CreateNotEmptyException(name, msg); }
         public static void NotNullOrEmpty(string obj, string name, string msg = null)
         {
             if (obj == null) throw CreateNotNullException(name, msg);
@@ -33,6 +35,19 @@ namespace Wumpus
                 if (obj.Value.Length == 0) throw CreateNotEmptyException(name, msg);
             }
         }
+        public static void NotNullOrEmpty(Utf8String obj, string name, string msg = null)
+        {
+            if (obj == (Utf8String)null) throw CreateNotNullException(name, msg);
+            if (obj.Bytes.Length == 0) throw CreateNotEmptyException(name, msg);
+        }
+        public static void NotNullOrEmpty(Optional<Utf8String> obj, string name, string msg = null)
+        {
+            if (obj.IsSpecified)
+            {
+                if (obj.Value == (Utf8String)null) throw CreateNotNullException(name, msg);
+                if (obj.Value.Bytes.Length == 0) throw CreateNotEmptyException(name, msg);
+            }
+        }
         public static void NotNullOrWhitespace(string obj, string name, string msg = null)
         {
             if (obj == null) throw CreateNotNullException(name, msg);
@@ -44,6 +59,19 @@ namespace Wumpus
             {
                 if (obj.Value == null) throw CreateNotNullException(name, msg);
                 if (obj.Value.Trim().Length == 0) throw CreateNotEmptyException(name, msg);
+            }
+        }
+        public static void NotNullOrWhitespace(Utf8String obj, string name, string msg = null)
+        {
+            if (obj == (Utf8String)null) throw CreateNotNullException(name, msg);
+            if (obj.Trim().Bytes.Length == 0) throw CreateNotEmptyException(name, msg);
+        }
+        public static void NotNullOrWhitespace(Optional<Utf8String> obj, string name, string msg = null)
+        {
+            if (obj.IsSpecified)
+            {
+                if (obj.Value == (Utf8String)null) throw CreateNotNullException(name, msg);
+                if (obj.Value.Trim().Bytes.Length == 0) throw CreateNotEmptyException(name, msg);
             }
         }
 
@@ -95,6 +123,58 @@ namespace Wumpus
             LengthGreaterThan(obj.Value, value, name, msg);
         }
         public static void LengthLessThan(Optional<string> obj, int value, string name, string msg = null)
+        {
+            if (!obj.IsSpecified) return;
+            LengthLessThan(obj.Value, value, name, msg);
+        }
+        public static void LengthAtLeast(Utf8String obj, int value, string name, string msg = null)
+        {
+            if (obj?.Bytes.Length < value) // TODO: This is byte length, not char count
+            {
+                if (msg == null) throw new ArgumentException($"Length must be at least {value}", name);
+                else throw new ArgumentException(msg, name);
+            }
+        }
+        public static void LengthAtMost(Utf8String obj, int value, string name, string msg = null)
+        {
+            if (obj?.Bytes.Length > value) // TODO: This is byte length, not char count
+            {
+                if (msg == null) throw new ArgumentException($"Length must be at most {value}", name);
+                else throw new ArgumentException(msg, name);
+            }
+        }
+        public static void LengthGreaterThan(Utf8String obj, int value, string name, string msg = null)
+        {
+            if (obj?.Bytes.Length <= value) // TODO: This is byte length, not char count
+            {
+                if (msg == null) throw new ArgumentException($"Length must be greater than {value}", name);
+                else throw new ArgumentException(msg, name);
+            }
+        }
+        public static void LengthLessThan(Utf8String obj, int value, string name, string msg = null)
+        {
+            if (obj?.Bytes.Length >= value) // TODO: This is byte length, not char count
+            {
+                if (msg == null) throw new ArgumentException($"Length must be less than {value}", name);
+                else throw new ArgumentException(msg, name);
+            }
+        }
+        public static void LengthAtLeast(Optional<Utf8String> obj, int value, string name, string msg = null)
+        {
+            if (!obj.IsSpecified) return;
+            LengthAtLeast(obj.Value, value, name, msg);
+        }
+        public static void LengthAtMost(Optional<Utf8String> obj, int value, string name, string msg = null)
+        {
+            if (!obj.IsSpecified) return;
+            LengthAtMost(obj.Value, value, name, msg);
+        }
+        public static void LengthGreaterThan(Optional<Utf8String> obj, int value, string name, string msg = null)
+        {
+            if (!obj.IsSpecified) return;
+            LengthGreaterThan(obj.Value, value, name, msg);
+        }
+        public static void LengthLessThan(Optional<Utf8String> obj, int value, string name, string msg = null)
         {
             if (!obj.IsSpecified) return;
             LengthLessThan(obj.Value, value, name, msg);
@@ -436,24 +516,27 @@ namespace Wumpus
 
         // Snowflakes
 
-        public static void YoungerThan(ulong snowflake, TimeSpan maximumAge, string name, string msg = null)
+        public static void NotZero(Snowflake obj, string name, string msg = null) { if (obj == 0) throw CreateNotZeroException(name, msg); }
+        public static void NotZero(Optional<Snowflake> obj, string name, string msg = null) { if (obj.IsSpecified && obj.Value == 0) throw CreateNotZeroException(name, msg); }
+
+        public static void YoungerThan(Snowflake snowflake, TimeSpan maximumAge, string name, string msg = null)
         {
-            ulong minimumSnowflake = DateTimeUtils.ToSnowflake(DateTimeOffset.UtcNow.Subtract(maximumAge));
+            var minimumSnowflake = new Snowflake(DateTimeOffset.UtcNow.Subtract(maximumAge));
             YoungerThan(snowflake, minimumSnowflake, name, msg);
         }
-        public static void YoungerThan(ulong? snowflake, TimeSpan maximumAge, string name, string msg = null)
+        public static void YoungerThan(Snowflake? snowflake, TimeSpan maximumAge, string name, string msg = null)
         {
             if (snowflake == null) return;
-            ulong minimumSnowflake = DateTimeUtils.ToSnowflake(DateTimeOffset.UtcNow.Subtract(maximumAge));
+            var minimumSnowflake = new Snowflake(DateTimeOffset.UtcNow.Subtract(maximumAge));
             YoungerThan(snowflake.Value, minimumSnowflake, name, msg);
         }
-        public static void YoungerThan(ulong[] snowflakes, TimeSpan maximumAge, string name, string msg = null)
+        public static void YoungerThan(Snowflake[] snowflakes, TimeSpan maximumAge, string name, string msg = null)
         {
-            ulong minimumSnowflake = DateTimeUtils.ToSnowflake(DateTimeOffset.UtcNow.Subtract(maximumAge));
+            var minimumSnowflake = new Snowflake(DateTimeOffset.UtcNow.Subtract(maximumAge));
             for (int i = 0; i < snowflakes.Length; i++)
                 YoungerThan(snowflakes[i], minimumSnowflake, name, msg);
         }
-        private static void YoungerThan(ulong snowflake, ulong minimumSnowflake, string name, string msg = null)
+        private static void YoungerThan(Snowflake snowflake, ulong minimumSnowflake, string name, string msg = null)
         {
             if (snowflake < minimumSnowflake)
             {
@@ -462,24 +545,24 @@ namespace Wumpus
             }
         }
 
-        public static void OlderThan(ulong snowflake, TimeSpan maximumAge, string name, string msg = null)
+        public static void OlderThan(Snowflake snowflake, TimeSpan maximumAge, string name, string msg = null)
         {
-            ulong maximumSnowflake = DateTimeUtils.ToSnowflake(DateTimeOffset.UtcNow.Subtract(maximumAge));
+            var maximumSnowflake = new Snowflake(DateTimeOffset.UtcNow.Subtract(maximumAge));
             OlderThan(snowflake, maximumSnowflake, name, msg);
         }
-        public static void OlderThan(ulong? snowflake, TimeSpan maximumAge, string name, string msg = null)
+        public static void OlderThan(Snowflake? snowflake, TimeSpan maximumAge, string name, string msg = null)
         {
             if (snowflake == null) return;
-            ulong maximumSnowflake = DateTimeUtils.ToSnowflake(DateTimeOffset.UtcNow.Subtract(maximumAge));
+            var maximumSnowflake = new Snowflake(DateTimeOffset.UtcNow.Subtract(maximumAge));
             OlderThan(snowflake.Value, maximumSnowflake, name, msg);
         }
-        public static void OlderThan(ulong[] snowflakes, TimeSpan maximumAge, string name, string msg = null)
+        public static void OlderThan(Snowflake[] snowflakes, TimeSpan maximumAge, string name, string msg = null)
         {
-            ulong maximumSnowflake = DateTimeUtils.ToSnowflake(DateTimeOffset.UtcNow.Subtract(maximumAge));
+            var maximumSnowflake = new Snowflake(DateTimeOffset.UtcNow.Subtract(maximumAge));
             for (int i = 0; i < snowflakes.Length; i++)
                 OlderThan(snowflakes[i], maximumSnowflake, name, msg);
         }
-        private static void OlderThan(ulong snowflake, ulong maximumSnowflake, string name, string msg = null)
+        private static void OlderThan(Snowflake snowflake, ulong maximumSnowflake, string name, string msg = null)
         {
             if (snowflake > maximumSnowflake)
             {

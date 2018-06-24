@@ -8,11 +8,11 @@ namespace Wumpus.Requests
     public class GetAuditLogParams : QueryMap
     {
         /// <summary> xxx </summary>
-        public Optional<ulong> UserId { get; set; }
+        public Optional<Snowflake> UserId { get; set; }
         /// <summary> xxx </summary>
         public Optional<AuditLogEvent> ActionType { get; set; }
         /// <summary> xxx </summary>
-        public Optional<ulong> Before { get; set; }
+        public Optional<Snowflake> Before { get; set; }
         /// <summary> xxx </summary>
         public Optional<int> Limit { get; set; }
 

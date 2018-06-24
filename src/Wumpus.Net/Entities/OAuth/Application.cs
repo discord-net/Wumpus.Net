@@ -9,19 +9,19 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("description")]
-        public string Description { get; set; }
+        public Utf8String Description { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("rpc_origins")]
-        public string[] RPCOrigins { get; set; }
+        public Utf8String[] RPCOrigins { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("name")]
-        public string Name { get; set; }
+        public Utf8String Name { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("id")]
-        public ulong Id { get; set; }
+        public Snowflake Id { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("icon")]
-        public string Icon { get; set; }
+        public Utf8String Icon { get; set; }
 
         /// <summary> xxx </summary>
         [ModelProperty("flags"), Int53]

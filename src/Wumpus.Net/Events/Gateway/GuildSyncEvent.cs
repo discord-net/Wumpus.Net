@@ -8,7 +8,7 @@ namespace Wumpus.Events
     {
         /// <summary> xxx </summary>
         [ModelProperty("id")]
-        public ulong Id { get; set; }
+        public Snowflake Id { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("large")]
         public bool Large { get; set; }

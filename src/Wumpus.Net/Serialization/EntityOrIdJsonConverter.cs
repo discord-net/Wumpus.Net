@@ -7,12 +7,12 @@ namespace Wumpus.Serialization
 {
     public class EntityOrIdJsonConverter<T> : ValueConverter<EntityOrId<T>>
     {
-        private readonly ValueConverter<ulong> _idConverter;
+        private readonly ValueConverter<Snowflake> _idConverter;
         private readonly ValueConverter<T> _entityConverter;
 
         public EntityOrIdJsonConverter(Serializer serializer, PropertyInfo propInfo)
         {
-            _idConverter = serializer.GetConverter<ulong>(propInfo, true);
+            _idConverter = serializer.GetConverter<Snowflake>(propInfo, true);
             _entityConverter = serializer.GetConverter<T>(propInfo, true);
         }
 
@@ -26,7 +26,7 @@ namespace Wumpus.Serialization
             switch (JsonReader.GetTokenType(ref remaining))
             {
                 case JsonTokenType.Number:
-                    if (!_idConverter.TryRead(ref remaining, out ulong idValue, propMap))
+                    if (!_idConverter.TryRead(ref remaining, out var idValue, propMap))
                         return false;
                     result = new EntityOrId<T>(idValue);
                     return true;

@@ -8,6 +8,6 @@ namespace Wumpus.Events
     {
         /// <summary> xxx </summary>
         [ModelProperty("guild_id")]
-        public ulong GuildId { get; set; }
+        public Snowflake GuildId { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Voltaic.Serialization;
+﻿using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Events
 {
@@ -10,6 +11,6 @@ namespace Wumpus.Events
         public int HeartbeatInterval { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("_trace")]
-        public string[] Trace { get; set; }
+        public Utf8String[] Trace { get; set; }
     }
 }

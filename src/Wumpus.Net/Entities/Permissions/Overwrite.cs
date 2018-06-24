@@ -8,7 +8,7 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("id")]
-        public ulong TargetId { get; set; }
+        public Snowflake TargetId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("type")]
         public PermissionTarget TargetType { get; set; }

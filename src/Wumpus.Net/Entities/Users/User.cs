@@ -8,19 +8,19 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("id")]
-        public ulong Id { get; set; }
+        public Snowflake Id { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("username")]
-        public Optional<string> Username { get; set; }
+        public Optional<Utf8String> Username { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("discriminator")]
-        public Optional<string> Discriminator { get; set; }
+        public Optional<Utf8String> Discriminator { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("bot")]
         public Optional<bool> Bot { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("avatar")]
-        public Optional<string> Avatar { get; set; }
+        public Optional<Utf8String> Avatar { get; set; }
 
         //CurrentUser
         /// <summary> xxx </summary>
@@ -28,7 +28,7 @@ namespace Wumpus.Entities
         public Optional<bool> Verified { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("email")]
-        public Optional<string> Email { get; set; }
+        public Optional<Utf8String> Email { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("mfa_enabled")]
         public Optional<bool> MfaEnabled { get; set; }

@@ -8,12 +8,12 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("id")]
-        public ulong Id { get; set; }
+        public Snowflake Id { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("mention_count")]
         public int MentionCount { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("last_message_id")]
-        public Optional<ulong> LastMessageId { get; set; }
+        public Optional<Snowflake> LastMessageId { get; set; }
     }
 }

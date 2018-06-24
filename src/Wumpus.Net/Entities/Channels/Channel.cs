@@ -9,7 +9,7 @@ namespace Wumpus.Entities
         //Shared
         /// <summary> xxx </summary>
         [ModelProperty("id")]
-        public ulong Id { get; set; }
+        public Snowflake Id { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("type")]
         public ChannelType Type { get; set; }
@@ -17,7 +17,7 @@ namespace Wumpus.Entities
         //GuildChannel
         /// <summary> xxx </summary>
         [ModelProperty("guild_id")]
-        public Optional<ulong> GuildId { get; set; }
+        public Optional<Snowflake> GuildId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("position")]
         public Optional<int> Position { get; set; }
@@ -26,12 +26,12 @@ namespace Wumpus.Entities
         public Optional<Overwrite[]> PermissionOverwrites { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("name")]
-        public Optional<string> Name { get; set; }
+        public Optional<Utf8String> Name { get; set; }
 
         //TextChannel
         /// <summary> xxx </summary>
         [ModelProperty("topic")]
-        public Optional<string> Topic { get; set; }
+        public Optional<Utf8String> Topic { get; set; }
 
         //VoiceChannel
         /// <summary> xxx </summary>
@@ -47,20 +47,20 @@ namespace Wumpus.Entities
         public Optional<User[]> Recipients { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("owner_id")]
-        public Optional<ulong> OwnerId { get; set; }
+        public Optional<Snowflake> OwnerId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("application_id")]
-        public Optional<ulong> ApplicationId { get; set; }
+        public Optional<Snowflake> ApplicationId { get; set; }
 
         //GroupChannel
         /// <summary> xxx </summary>
         [ModelProperty("icon")]
-        public Optional<string> Icon { get; set; }
+        public Optional<Utf8String> Icon { get; set; }
 
         //MessageChannel
         /// <summary> xxx </summary>
         [ModelProperty("last_message_id")]
-        public Optional<ulong?> LastMessageId { get; set; }
+        public Optional<Snowflake?> LastMessageId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("last_pin_timestamp")]
         public Optional<DateTimeOffset?> LastPinTimestamp { get; set; }

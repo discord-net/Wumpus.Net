@@ -7,12 +7,12 @@ namespace Wumpus.Requests
     {
         /// <summary> xxx </summary>
         [ModelProperty("id")]
-        public ulong Id { get; }
+        public Snowflake Id { get; }
         /// <summary> xxx </summary>
         [ModelProperty("position")]
         public int Position { get; }
 
-        public ModifyGuildChannelPositionParams(ulong id, int position)
+        public ModifyGuildChannelPositionParams(Snowflake id, int position)
         {
             Id = id;
             Position = position;

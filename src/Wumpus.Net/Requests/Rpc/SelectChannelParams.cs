@@ -1,4 +1,5 @@
-﻿using Voltaic.Serialization;
+﻿using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Requests
 {
@@ -7,7 +8,7 @@ namespace Wumpus.Requests
     {
         /// <summary> xxx </summary>
         [ModelProperty("channel_id")]
-        public ulong? ChannelId { get; set; }
+        public Snowflake? ChannelId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("force")]
         public Optional<bool> Force { get; set; }

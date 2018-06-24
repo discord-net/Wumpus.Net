@@ -1,5 +1,6 @@
 ﻿using Voltaic.Serialization;
 using System.Collections.Generic;
+using Voltaic;
 
 namespace Wumpus.Requests
 {

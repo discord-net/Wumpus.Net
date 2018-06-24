@@ -1,4 +1,5 @@
-﻿using Voltaic.Serialization;
+﻿using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
@@ -7,10 +8,10 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("id")]
-        public string Id { get; set; }
+        public Utf8String Id { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("name")]
-        public string Name { get; set; }
+        public Utf8String Name { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("vip")]
         public bool IsVip { get; set; }
@@ -19,7 +20,7 @@ namespace Wumpus.Entities
         public bool IsOptimal { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("sample_hostname")]
-        public string SampleHostname { get; set; }
+        public Utf8String SampleHostname { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("sample_port")]
         public int SamplePort { get; set; }

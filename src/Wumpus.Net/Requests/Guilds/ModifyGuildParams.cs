@@ -24,7 +24,7 @@ namespace Wumpus.Requests
         public Optional<DefaultMessageNotifications> DefaultMessageNotifications { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("afk_channel_id")]
-        public Optional<ulong?> AfkChannelId { get; set; }
+        public Optional<Snowflake?> AfkChannelId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("afk_timeout")]
         public Optional<int> AfkTimeout { get; set; }
@@ -33,7 +33,7 @@ namespace Wumpus.Requests
         public Optional<Image?> Icon { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("owner_id")]
-        public Optional<ulong> OwnerId { get; set; }
+        public Optional<Snowflake> OwnerId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("splash")]
         public Optional<Image?> Splash { get; set; }

@@ -1,4 +1,5 @@
-﻿using Voltaic.Serialization;
+﻿using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
@@ -13,7 +14,7 @@ namespace Wumpus.Entities
         public Optional<VoiceState> VoiceState { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("nick")]
-        public Optional<string> Nickname { get; set; }
+        public Optional<Utf8String> Nickname { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("volume")]
         public Optional<int> Volume { get; set; }

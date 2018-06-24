@@ -4,7 +4,7 @@ using System;
 namespace Wumpus.Entities
 {
     /// <summary> xxx </summary>
-    public class SocketGuild : Guild
+    public class GatewayGuild : Guild
     {
         /// <summary> xxx </summary>
         [ModelProperty("unavailable")]

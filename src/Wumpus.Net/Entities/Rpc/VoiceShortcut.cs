@@ -1,4 +1,5 @@
-﻿using Voltaic.Serialization;
+﻿using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
@@ -13,6 +14,6 @@ namespace Wumpus.Entities
         public Optional<int> Code { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("name")]
-        public Optional<string> Name { get; set; }
+        public Optional<Utf8String> Name { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Wumpus.Entities;
 using Voltaic.Serialization;
+using Voltaic;
 
 namespace Wumpus.Events
 {
@@ -11,13 +12,13 @@ namespace Wumpus.Events
         {
             /// <summary> xxx </summary>
             [ModelProperty("id")]
-            public string ChannelId { get; set; }
+            public Snowflake ChannelId { get; set; }
             /// <summary> xxx </summary>
             [ModelProperty("mention_count")]
             public int MentionCount { get; set; }
             /// <summary> xxx </summary>
             [ModelProperty("last_message_id")]
-            public string LastMessageId { get; set; }
+            public Snowflake LastMessageId { get; set; }
         }
 
         /// <summary> xxx </summary>
@@ -28,13 +29,13 @@ namespace Wumpus.Events
         public User User { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("session_id")]
-        public string SessionId { get; set; }
+        public Utf8String SessionId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("read_state")]
         public ReadState[] ReadStates { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("guilds")]
-        public SocketGuild[] Guilds { get; set; }
+        public GatewayGuild[] Guilds { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("private_channels")]
         public Channel[] PrivateChannels { get; set; }

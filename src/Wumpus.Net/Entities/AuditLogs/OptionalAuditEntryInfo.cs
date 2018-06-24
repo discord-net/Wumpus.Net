@@ -4,7 +4,7 @@ using Voltaic.Serialization;
 namespace Wumpus.Entities
 {
     /// <summary> xxx </summary>
-    public class AuditEntryInfo
+    public class OptionalAuditEntryInfo
     {
         /// <summary> xxx </summary>
         [ModelProperty("delete_member_days")]
@@ -14,13 +14,13 @@ namespace Wumpus.Entities
         public Optional<Utf8String> MembersRemoved { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("channel_id")]
-        public Optional<ulong> ChannelId { get; set; }
+        public Optional<Snowflake> ChannelId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("count")]
-        public Optional<string> Count { get; set; }
+        public Optional<Utf8String> Count { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("id")]
-        public Optional<ulong> Id { get; set; }
+        public Optional<Snowflake> Id { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("type")]
         public Optional<Utf8String> Type { get; set; }

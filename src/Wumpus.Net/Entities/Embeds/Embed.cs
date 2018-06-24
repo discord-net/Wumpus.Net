@@ -11,13 +11,13 @@ namespace Wumpus.Entities
         public EmbedType Type { get; set; } = EmbedType.Rich;
         /// <summary> xxx </summary>
         [ModelProperty("title")]
-        public Optional<string> Title { get; set; }
+        public Optional<Utf8String> Title { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("description")]
-        public Optional<string> Description { get; set; }
+        public Optional<Utf8String> Description { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("url")]
-        public Optional<string> Url { get; set; }
+        public Optional<Utf8String> Url { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("timestamp")]
         public Optional<DateTimeOffset> Timestamp { get; set; }

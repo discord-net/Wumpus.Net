@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Voltaic;
 using Voltaic.Serialization;
 using Wumpus.Entities;
 using Wumpus.Requests;
@@ -7,22 +8,22 @@ using Wumpus.Requests;
 namespace Wumpus.Events
 {
     /// <summary> xxx </summary>
-    public class GatewaySocketFrame
+    public class GatewayFrame
     {
         /// <summary> xxx </summary>
         [ModelProperty("op")]
         public GatewayOpCode Operation { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("t", ExcludeNull = true)]
-        public string DispatchType { get; set; }
+        public Utf8String DispatchType { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("s", ExcludeNull = true)]
         public int? Sequence { get; set; }
 
         /// <summary> xxx </summary>
         [ModelProperty("d")]
-        [ModelTypeSelector(nameof(Operation), nameof(OpCodeTypeSelector)]
-        [ModelTypeSelector(nameof(DispatchType), nameof(DispatchTypeSelector)]
+        [ModelTypeSelector(nameof(Operation), nameof(OpCodeTypeSelector))]
+        [ModelTypeSelector(nameof(DispatchType), nameof(DispatchTypeSelector))]
         public object Payload { get; set; }
 
         private static Dictionary<GatewayOpCode, Type> OpCodeTypeSelector => new Dictionary<GatewayOpCode, Type>()
@@ -41,9 +42,9 @@ namespace Wumpus.Events
         private static Dictionary<GatewayDispatchType, Type> DispatchTypeSelector => new Dictionary<GatewayDispatchType, Type>()
         {
             [GatewayDispatchType.Ready] = typeof(SocketReadyEvent),
-            [GatewayDispatchType.GuildCreate] = typeof(SocketGuild),
+            [GatewayDispatchType.GuildCreate] = typeof(GatewayGuild),
             [GatewayDispatchType.GuildUpdate] = typeof(Guild),
-            [GatewayDispatchType.GuildDelete] = typeof(SocketGuild),
+            [GatewayDispatchType.GuildDelete] = typeof(GatewayGuild),
             [GatewayDispatchType.GuildEmojisUpdate] = typeof(GuildEmojiUpdateEvent),
             [GatewayDispatchType.GuildSync] = typeof(GuildSyncEvent),
             [GatewayDispatchType.ChannelCreate] = typeof(Channel),
@@ -64,8 +65,8 @@ namespace Wumpus.Events
             [GatewayDispatchType.MessageUpdate] = typeof(Message),
             [GatewayDispatchType.MessageDelete] = typeof(Message),
             [GatewayDispatchType.MessageDeleteBulk] = typeof(MessageDeleteBulkEvent),
-            [GatewayDispatchType.MessageReactionAdd] = typeof(SocketReaction),
-            [GatewayDispatchType.MessageReactionRemove] = typeof(SocketReaction),
+            [GatewayDispatchType.MessageReactionAdd] = typeof(GatewayReaction),
+            [GatewayDispatchType.MessageReactionRemove] = typeof(GatewayReaction),
             [GatewayDispatchType.MessageReactionRemoveAll] = typeof(RemoveAllReactionsEvent),
             [GatewayDispatchType.PresenceUpdate] = typeof(Presence),
             [GatewayDispatchType.UserUpdate] = typeof(User),

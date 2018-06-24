@@ -1,4 +1,5 @@
-﻿using Voltaic.Serialization;
+﻿using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
@@ -7,16 +8,16 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("guild_id")]
-        public ulong? GuildId { get; set; }
+        public Snowflake? GuildId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("channel_id")]
-        public ulong? ChannelId { get; set; }
+        public Snowflake? ChannelId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("user_id")]
-        public ulong UserId { get; set; }
+        public Snowflake UserId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("session_id")]
-        public string SessionId { get; set; }
+        public Utf8String SessionId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("deaf")]
         public bool Deaf { get; set; }

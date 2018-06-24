@@ -8,7 +8,7 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("url")]
-        public string Url { get; set; }
+        public Utf8String Url { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("height")]
         public Optional<int> Height { get; set; }

@@ -1,14 +1,15 @@
-﻿using Voltaic.Serialization;
+﻿using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
     public class InviteChannel
     {
         [ModelProperty("id")]
-        public ulong Id { get; set; }
+        public Snowflake Id { get; set; }
         [ModelProperty("name")]
-        public string Name { get; set; }
+        public Utf8String Name { get; set; }
         [ModelProperty("type")]
-        public string Type { get; set; }
+        public Utf8String Type { get; set; }
     }
 }

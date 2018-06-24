@@ -11,7 +11,7 @@ namespace Wumpus.Entities
         public User User { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("guild_id")]
-        public Optional<ulong> GuildId { get; set; }
+        public Optional<Snowflake> GuildId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("status")]
         public UserStatus Status { get; set; }
@@ -21,9 +21,9 @@ namespace Wumpus.Entities
 
         /// <summary> xxx </summary>
         [ModelProperty("roles")]
-        public Optional<ulong[]> Roles { get; set; }
+        public Optional<Snowflake[]> Roles { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("nick")]
-        public Optional<string> Nick { get; set; }
+        public Optional<Utf8String> Nick { get; set; }
     }
 }

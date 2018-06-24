@@ -7,7 +7,7 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("channel_id")]
-        public ulong ChannelId { get; set; }
+        public Snowflake ChannelId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("message")]
         public Message Message { get; set; }

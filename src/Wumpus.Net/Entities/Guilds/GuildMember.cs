@@ -12,10 +12,10 @@ namespace Wumpus.Entities
         public User User { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("nick")]
-        public Optional<string> Nick { get; set; }
+        public Optional<Utf8String> Nick { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("roles")]
-        public Optional<ulong[]> Roles { get; set; }
+        public Optional<Snowflake[]> Roles { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("joined_at")]
         public Optional<DateTimeOffset> JoinedAt { get; set; }

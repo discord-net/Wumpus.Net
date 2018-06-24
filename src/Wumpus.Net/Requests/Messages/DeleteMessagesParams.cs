@@ -8,9 +8,9 @@ namespace Wumpus.Requests
     {
         /// <summary> xxx </summary>
         [ModelProperty("messages")]
-        public ulong[] MessageIds { get; }
+        public Snowflake[] MessageIds { get; }
 
-        public DeleteMessagesParams(ulong[] messageIds)
+        public DeleteMessagesParams(Snowflake[] messageIds)
         {
             MessageIds = messageIds;
         }

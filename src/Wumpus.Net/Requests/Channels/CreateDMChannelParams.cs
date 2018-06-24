@@ -7,9 +7,9 @@ namespace Wumpus.Requests
     {
         /// <summary> xxx </summary>
         [ModelProperty("recipient_id")]
-        public ulong RecipientId { get; }
+        public Snowflake RecipientId { get; }
 
-        public CreateDMChannelParams(ulong recipientId)
+        public CreateDMChannelParams(Snowflake recipientId)
         {
             RecipientId = recipientId;
         }

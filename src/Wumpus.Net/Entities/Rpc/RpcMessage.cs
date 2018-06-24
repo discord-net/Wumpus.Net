@@ -1,4 +1,5 @@
-﻿using Voltaic.Serialization;
+﻿using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
@@ -13,10 +14,10 @@ namespace Wumpus.Entities
         public Optional<object[]> ContentParsed { get; }
         /// <summary> xxx </summary>
         [ModelProperty("author_color")]
-        public Optional<string> AuthorColor { get; } //#Hex
+        public Optional<Color> AuthorColor { get; }
 
         /// <summary> xxx </summary>
         [ModelProperty("mentions")]
-        public new Optional<ulong[]> UserMentions { get; set; }
+        public new Optional<Snowflake[]> UserMentions { get; set; }
     }
 }

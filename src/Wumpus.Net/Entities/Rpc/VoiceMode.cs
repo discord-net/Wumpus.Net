@@ -1,4 +1,5 @@
-﻿using Voltaic.Serialization;
+﻿using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
@@ -7,7 +8,7 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("type")]
-        public Optional<string> Type { get; set; }
+        public Optional<Utf8String> Type { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("auto_threshold")]
         public Optional<bool> AutoThreshold { get; set; }

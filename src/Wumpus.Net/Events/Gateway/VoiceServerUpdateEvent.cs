@@ -1,4 +1,5 @@
-﻿using Voltaic.Serialization;
+﻿using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Events
 {
@@ -7,12 +8,12 @@ namespace Wumpus.Events
     {
         /// <summary> xxx </summary>
 		[ModelProperty("guild_id")]
-		public ulong GuildId { get; set; }
+		public Snowflake GuildId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("endpoint")]
-		public string Endpoint { get; set; }
+		public Utf8String Endpoint { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("token")]
-		public string Token { get; set; }
+		public Utf8String Token { get; set; }
     }
 }

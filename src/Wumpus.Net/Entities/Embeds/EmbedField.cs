@@ -8,10 +8,10 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("name")]
-        public string Name { get; set; }
+        public Utf8String Name { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("value")]
-        public string Value { get; set; }
+        public Utf8String Value { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("inline")]
         public Optional<bool> Inline { get; set; }

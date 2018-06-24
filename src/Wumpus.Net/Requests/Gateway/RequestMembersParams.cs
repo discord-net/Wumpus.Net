@@ -7,7 +7,7 @@ namespace Wumpus.Requests
     {
         /// <summary> id of the guild to get offline members for </summary>
         [ModelProperty("guild_id")]
-        public ulong GuildId { get; set; }
+        public Snowflake GuildId { get; set; }
         /// <summary> string that username starts with, or an empty string to return all members </summary>
         [ModelProperty("query")]
         public string Query { get; set; }

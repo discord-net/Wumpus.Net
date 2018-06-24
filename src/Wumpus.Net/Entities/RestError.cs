@@ -1,4 +1,5 @@
-﻿using Voltaic.Serialization;
+﻿using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
@@ -10,6 +11,6 @@ namespace Wumpus.Entities
         public int? Code { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("message")]
-        public string Message { get; set; }
+        public Utf8String Message { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Voltaic.Serialization;
+﻿using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
@@ -7,25 +8,25 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("id")]
-        public ulong Id { get; set; }
+        public Snowflake Id { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("name")]
-        public string Name { get; set; }
+        public Utf8String Name { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("icon")]
-        public string Icon { get; set; }
+        public Utf8String Icon { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("splash")]
-        public string Splash { get; set; }
+        public Utf8String Splash { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("owner_id")]
-        public ulong OwnerId { get; set; }
+        public Snowflake OwnerId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("region")]
-        public string Region { get; set; }
+        public Utf8String Region { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("afk_channel_id")]
-        public ulong? AFKChannelId { get; set; }
+        public Snowflake? AFKChannelId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("afk_timeout")]
         public int AFKTimeout { get; set; }
@@ -34,7 +35,7 @@ namespace Wumpus.Entities
         public bool EmbedEnabled { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("embed_channel_id")]
-        public ulong? EmbedChannelId { get; set; }
+        public Snowflake? EmbedChannelId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("verification_level")]
         public VerificationLevel VerificationLevel { get; set; }
@@ -52,19 +53,19 @@ namespace Wumpus.Entities
         public Emoji[] Emojis { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("features")]
-        public string[] Features { get; set; }
+        public Utf8String[] Features { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("mfa_level")]
         public MfaLevel MfaLevel { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("application_id")]
-        public ulong? ApplicationId { get; set; }
+        public Snowflake? ApplicationId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("widget_enabled")]
         public bool IsWidgetEnabled { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("widget_channel_id")]
-        public ulong WidgetChannelId { get; set; }
+        public Snowflake WidgetChannelId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("voice_states")]
         public VoiceState[] VoiceStates { get; set; }

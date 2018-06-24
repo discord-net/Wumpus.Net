@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using RestEase;
+using Voltaic;
 using Wumpus.Entities;
 using Wumpus.Requests;
 using Wumpus.Responses;
-using System;
-using System.Net.Http.Headers;
 
 namespace Wumpus
 {
@@ -18,187 +19,187 @@ namespace Wumpus
         // Audit Log
 
         [Get("guilds/{guildId}/audit-logs")]
-        Task<AuditLog> GetGuildAuditLogAsync([Path] ulong guildId, [QueryMap] GetAuditLogParams args);
+        Task<AuditLog> GetGuildAuditLogAsync([Path] Snowflake guildId, [QueryMap] GetAuditLogParams args);
 
         // Channel
 
         [Get("channels/{channelId}")]
-        Task<Channel> GetChannelAsync([Path] ulong channelId);
+        Task<Channel> GetChannelAsync([Path] Snowflake channelId);
         [Put("channels/{channelId}")]
-        Task<Channel> ReplaceTextChannelAsync([Path] ulong channelId, [Body] ModifyTextChannelParams args);
+        Task<Channel> ReplaceTextChannelAsync([Path] Snowflake channelId, [Body] ModifyTextChannelParams args);
         [Put("channels/{channelId}")]
-        Task<Channel> ReplaceVoiceChannelAsync([Path] ulong channelId, [Body] ModifyVoiceChannelParams args);
+        Task<Channel> ReplaceVoiceChannelAsync([Path] Snowflake channelId, [Body] ModifyVoiceChannelParams args);
         [Patch("channels/{channelId}")]
-        Task<Channel> ModifyGuildChannelAsync([Path] ulong channelId, [Body] ModifyGuildChannelParams args);
+        Task<Channel> ModifyGuildChannelAsync([Path] Snowflake channelId, [Body] ModifyGuildChannelParams args);
         [Patch("channels/{channelId}")]
-        Task<Channel> ModifyTextChannelAsync([Path] ulong channelId, [Body] ModifyTextChannelParams args);
+        Task<Channel> ModifyTextChannelAsync([Path] Snowflake channelId, [Body] ModifyTextChannelParams args);
         [Patch("channels/{channelId}")]
-        Task<Channel> ModifyVoiceChannelAsync([Path] ulong channelId, [Body] ModifyVoiceChannelParams args);
+        Task<Channel> ModifyVoiceChannelAsync([Path] Snowflake channelId, [Body] ModifyVoiceChannelParams args);
         [Delete("channels/{channelId}")]
-        Task<Channel> DeleteChannelAsync([Path] ulong channelId);
+        Task<Channel> DeleteChannelAsync([Path] Snowflake channelId);
 
         [Get("channels/{channelId}/messages")]
-        Task<List<Message>> GetChannelMessagesAsync([Path] ulong channelId, [QueryMap] GetChannelMessagesParams args);
+        Task<List<Message>> GetChannelMessagesAsync([Path] Snowflake channelId, [QueryMap] GetChannelMessagesParams args);
         [Get("channels/{channelId}/messages/{messageId}")]
-        Task<Message> GetChannelMessageAsync([Path] ulong channelId, [Path] ulong messageId);
+        Task<Message> GetChannelMessageAsync([Path] Snowflake channelId, [Path] Snowflake messageId);
         [Post("channels/{channelId}/messages")]
-        Task<Message> CreateMessageAsync([Path] ulong channelId, [Body] [QueryMap] CreateMessageParams args);
+        Task<Message> CreateMessageAsync([Path] Snowflake channelId, [Body] [QueryMap] CreateMessageParams args);
         [Patch("channels/{channelId}/messages/{messageId}")]
-        Task<Message> ModifyMessageAsync([Path] ulong channelId, [Path] ulong messageId, [Body] ModifyMessageParams args);
+        Task<Message> ModifyMessageAsync([Path] Snowflake channelId, [Path] Snowflake messageId, [Body] ModifyMessageParams args);
         [Delete("channels/{channelId}/messages/{messageId}")]
-        Task DeleteMessageAsync([Path] ulong channelId, [Path] ulong messageId);
+        Task DeleteMessageAsync([Path] Snowflake channelId, [Path] Snowflake messageId);
         [Post("channels/{channelId}/messages/bulk-delete")]
-        Task DeleteMessagesAsync([Path] ulong channelId, [Body] DeleteMessagesParams args);
+        Task DeleteMessagesAsync([Path] Snowflake channelId, [Body] DeleteMessagesParams args);
 
         [Get("channels/{channelId}/messages/{messageId}/reactions/{emoji}")]
-        Task<List<User>> GetReactionUsersAsync([Path] ulong channelId, [Path] ulong messageId, [Path] string emoji);
+        Task<List<User>> GetReactionUsersAsync([Path] Snowflake channelId, [Path] Snowflake messageId, [Path] Utf8String emoji);
         [Put("channels/{channelId}/messages/{messageId}/reactions/{emoji}/@me")]
-        Task CreateReactionAsync([Path] ulong channelId, [Path] ulong messageId, [Path] string emoji);
+        Task CreateReactionAsync([Path] Snowflake channelId, [Path] Snowflake messageId, [Path] Utf8String emoji);
         [Delete("channels/{channelId}/messages/{messageId}/reactions/{emoji}/@me")]
-        Task DeleteReactionAsync([Path] ulong channelId, [Path] ulong messageId, [Path] string emoji);
+        Task DeleteReactionAsync([Path] Snowflake channelId, [Path] Snowflake messageId, [Path] Utf8String emoji);
         [Delete("channels/{channelId}/messages/{messageId}/reactions/{emoji}/{userId}")]
-        Task DeleteReactionAsync([Path] ulong channelId, [Path] ulong messageId, [Path] ulong userId, [Path] string emoji);
+        Task DeleteReactionAsync([Path] Snowflake channelId, [Path] Snowflake messageId, [Path] Snowflake userId, [Path] Utf8String emoji);
         [Delete("channels/{channelId}/messages/{messageId}/reactions")]
-        Task DeleteAllReactionsAsync([Path] ulong channelId, [Path] ulong messageId);
+        Task DeleteAllReactionsAsync([Path] Snowflake channelId, [Path] Snowflake messageId);
 
         [Put("channels/{channelId}/permissions/{overwriteId}")]
-        Task EditChannelPermissionsAsync([Path] ulong channelId, [Path] ulong overwriteId, [Body] ModifyChannelPermissionsParams args);
+        Task EditChannelPermissionsAsync([Path] Snowflake channelId, [Path] Snowflake overwriteId, [Body] ModifyChannelPermissionsParams args);
         [Delete("channels/{channelId}/permissions/{overwriteId}")]
-        Task DeleteChannelPermissionsAsync([Path] ulong channelId, [Path] ulong overwriteId);
+        Task DeleteChannelPermissionsAsync([Path] Snowflake channelId, [Path] Snowflake overwriteId);
 
         [Get("channels/{channelId}/invites")]
-        Task<List<Invite>> GetChannelInvitesAsync([Path] ulong channelId);
+        Task<List<Invite>> GetChannelInvitesAsync([Path] Snowflake channelId);
         [Post("channels/{channelId}/invites")]
-        Task<Invite> CreateChannelInviteAsync([Path] ulong channelId, [Body] CreateChannelInviteParams args);
+        Task<Invite> CreateChannelInviteAsync([Path] Snowflake channelId, [Body] CreateChannelInviteParams args);
 
         [Get("channels/{channelId}/pins")]
-        Task<List<Message>> GetPinnedMessagesAsync([Path] ulong channelId);
+        Task<List<Message>> GetPinnedMessagesAsync([Path] Snowflake channelId);
         [Put("channels/{channelId}/pins/{messageId}")]
-        Task PinMessageAsync([Path] ulong channelId, [Path] ulong messageId);
+        Task PinMessageAsync([Path] Snowflake channelId, [Path] Snowflake messageId);
         [Delete("channels/{channelId}/pins/{messageId}")]
-        Task UnpinMessageAsync([Path] ulong channelId, [Path] ulong messageId);
+        Task UnpinMessageAsync([Path] Snowflake channelId, [Path] Snowflake messageId);
 
         [Put("channels/{channelId}/recipients/{userId}")]
-        Task AddRecipientAsync([Path] ulong channelId, [Path] ulong userId, [Body] AddChannelRecipientParams args);
+        Task AddRecipientAsync([Path] Snowflake channelId, [Path] Snowflake userId, [Body] AddChannelRecipientParams args);
         [Delete("channels/{channelId}/recipients/{userId}")]
-        Task RemoveRecipientAsync([Path] ulong channelId, [Path] ulong userId);
+        Task RemoveRecipientAsync([Path] Snowflake channelId, [Path] Snowflake userId);
 
         [Post("channels/{channelId}/webhooks")]
-        Task<Webhook> CreateWebhookAsync([Path] ulong channelId, [Body] CreateWebhookParams args);
+        Task<Webhook> CreateWebhookAsync([Path] Snowflake channelId, [Body] CreateWebhookParams args);
         [Get("channels/{channelId}/webhooks")]
-        Task<List<Webhook>> GetChannelWebhooksAsync([Path] ulong channelId);
+        Task<List<Webhook>> GetChannelWebhooksAsync([Path] Snowflake channelId);
 
         [Post("channels/{channelId}/typing")]
-        Task TriggerTypingIndicatorAsync([Path] ulong channelId);
+        Task TriggerTypingIndicatorAsync([Path] Snowflake channelId);
 
         // Guild
 
         [Get("guilds/{guildId}")]
-        Task<Guild> GetGuildAsync([Path] ulong guildId);
+        Task<Guild> GetGuildAsync([Path] Snowflake guildId);
         [Post("guilds")]
         Task<Guild> CreateGuildAsync([Body] CreateGuildParams args);
         [Patch("guilds/{guildId}")]
-        Task<Guild> ModifyGuildAsync([Path] ulong guildId, [Body] ModifyGuildParams args);
+        Task<Guild> ModifyGuildAsync([Path] Snowflake guildId, [Body] ModifyGuildParams args);
         [Delete("guilds/{guildId}")]
-        Task DeleteGuildAsync([Path] ulong guildId);
+        Task DeleteGuildAsync([Path] Snowflake guildId);
 
         [Get("guilds/{guildId}/channels")]
-        Task<List<Channel>> GetGuildChannelsAsync([Path] ulong guildId);
+        Task<List<Channel>> GetGuildChannelsAsync([Path] Snowflake guildId);
         [Post("guilds/{guildId}/channels")]
-        Task<Channel> CreateTextChannelAsync([Path] ulong guildId, [Body] CreateTextChannelParams args);
+        Task<Channel> CreateTextChannelAsync([Path] Snowflake guildId, [Body] CreateTextChannelParams args);
         [Post("guilds/{guildId}/channels")]
-        Task<Channel> CreateVoiceChannelAsync([Path] ulong guildId, [Body] CreateVoiceChannelParams args);
+        Task<Channel> CreateVoiceChannelAsync([Path] Snowflake guildId, [Body] CreateVoiceChannelParams args);
         [Patch("guilds/{guildId}/channels")]
-        Task<Channel> ReorderGuildChannelsAsync([Path] ulong guildId, [Body] ModifyGuildChannelPositionParams[] args);
+        Task<Channel> ReorderGuildChannelsAsync([Path] Snowflake guildId, [Body] ModifyGuildChannelPositionParams[] args);
 
         [Get("guilds/{guildId}/members")]
-        Task<List<GuildMember>> GetGuildMembersAsync([Path] ulong guildId, [QueryMap] GetGuildMembersParams args);
+        Task<List<GuildMember>> GetGuildMembersAsync([Path] Snowflake guildId, [QueryMap] GetGuildMembersParams args);
         [Get("guilds/{guildId}/members/{userId}")]
-        Task<List<GuildMember>> GetGuildMemberAsync([Path] ulong guildId, [Path] ulong userId);
+        Task<List<GuildMember>> GetGuildMemberAsync([Path] Snowflake guildId, [Path] Snowflake userId);
         [Put("guilds/{guildId}/members/{userId}")]
-        Task<GuildMember> AddGuildMemberAsync([Path] ulong guildId, [Path] ulong userId, [Body] AddGuildMemberParams args);
+        Task<GuildMember> AddGuildMemberAsync([Path] Snowflake guildId, [Path] Snowflake userId, [Body] AddGuildMemberParams args);
         [Delete("guilds/{guildId}/members/{userId}")]
-        Task RemoveGuildMemberAsync([Path] ulong guildId, [Path] ulong userId);
+        Task RemoveGuildMemberAsync([Path] Snowflake guildId, [Path] Snowflake userId);
         [Patch("guilds/{guildId}/members/{userId}")]
-        Task ModifyGuildMemberAsync([Path] ulong guildId, [Path] ulong userId, [Body] ModifyGuildMemberParams args);
+        Task ModifyGuildMemberAsync([Path] Snowflake guildId, [Path] Snowflake userId, [Body] ModifyGuildMemberParams args);
         [Patch("guilds/{guildId}/members/@me/nick")]
-        Task ModifyCurrentUserNickAsync([Path] ulong guildId, [Body] ModifyCurrentUserNickParams args);
+        Task ModifyCurrentUserNickAsync([Path] Snowflake guildId, [Body] ModifyCurrentUserNickParams args);
 
         [Put("guilds/{guildId}/members/{userId}/roles/{roleId}")]
-        Task AddGuildMemberRoleAsync([Path] ulong guildId, [Path] ulong userId, [Path] ulong roleId);
+        Task AddGuildMemberRoleAsync([Path] Snowflake guildId, [Path] Snowflake userId, [Path] Snowflake roleId);
         [Delete("guilds/{guildId}/members/{userId}/roles/{roleId}")]
-        Task RemoveGuildMemberRoleAsync([Path] ulong guildId, [Path] ulong userId, [Path] ulong roleId);
+        Task RemoveGuildMemberRoleAsync([Path] Snowflake guildId, [Path] Snowflake userId, [Path] Snowflake roleId);
 
         [Get("guilds/{guildId}/bans")]
-        Task<Ban> GetGuildBansAsync([Path] ulong guildId);
+        Task<Ban> GetGuildBansAsync([Path] Snowflake guildId);
         [Put("guilds/{guildId}/bans/{userId}")]
-        Task AddGuildBansAsync([Path] ulong guildId, [Path] ulong userId);
+        Task AddGuildBansAsync([Path] Snowflake guildId, [Path] Snowflake userId);
         [Delete("guilds/{guildId}/bans/{userId}")]
-        Task RemoveGuildBansAsync([Path] ulong guildId, [Path] ulong userId);
+        Task RemoveGuildBansAsync([Path] Snowflake guildId, [Path] Snowflake userId);
 
         [Get("guilds/{guildId}/roles")]
-        Task<List<Role>> GetGuildRolesAsync([Path] ulong guildId);
+        Task<List<Role>> GetGuildRolesAsync([Path] Snowflake guildId);
         [Post("guilds/{guildId}/roles")]
-        Task<Role> CreateGuildRoleAsync([Path] ulong guildId, [Body] CreateGuildRoleParams args);
+        Task<Role> CreateGuildRoleAsync([Path] Snowflake guildId, [Body] CreateGuildRoleParams args);
         [Delete("guilds/{guildId}/roles/{roleId}")]
-        Task<Role> DeleteGuildRoleAsync([Path] ulong guildId, [Path] ulong roleId);
+        Task<Role> DeleteGuildRoleAsync([Path] Snowflake guildId, [Path] Snowflake roleId);
         [Patch("guilds/{guildId}/roles")]
-        Task ReorderGuildRolesAsync([Path] ulong guildId, [Body] ModifyGuildRolePositionParams[] args);
+        Task ReorderGuildRolesAsync([Path] Snowflake guildId, [Body] ModifyGuildRolePositionParams[] args);
         [Patch("guilds/{guildId}/roles/{roleId}")]
-        Task<Role> ModifyGuildRoleAsync([Path] ulong guildId, [Path] ulong roleId, [Body] ModifyGuildRoleParams args);
+        Task<Role> ModifyGuildRoleAsync([Path] Snowflake guildId, [Path] Snowflake roleId, [Body] ModifyGuildRoleParams args);
 
         [Get("guilds/{guildId}/prune")]
-        Task<GuildPruneCountResponse> GetGuildPruneCountAsync([Path] ulong guildId, [QueryMap] GuildPruneParams args);
+        Task<GuildPruneCountResponse> GetGuildPruneCountAsync([Path] Snowflake guildId, [QueryMap] GuildPruneParams args);
         [Post("guilds/{guildId}/prune")]
-        Task<GuildPruneCountResponse> PruneGuildMembersAsync([Path] ulong guildId, [QueryMap] GuildPruneParams args);
+        Task<GuildPruneCountResponse> PruneGuildMembersAsync([Path] Snowflake guildId, [QueryMap] GuildPruneParams args);
 
         [Get("guilds/{guildId}/regions")]
-        Task<List<VoiceRegion>> GetGuildVoiceRegionsAsync([Path] ulong guildId);
+        Task<List<VoiceRegion>> GetGuildVoiceRegionsAsync([Path] Snowflake guildId);
 
         [Get("guilds/{guildId}/invites")]
-        Task<List<InviteMetadata>> GetGuildInvitesAsync([Path] ulong guildId);
+        Task<List<InviteMetadata>> GetGuildInvitesAsync([Path] Snowflake guildId);
 
         [Get("guilds/{guildId}/integrations")]
-        Task<List<Integration>> GetGuildIntegrationsAsync([Path] ulong guildId);
+        Task<List<Integration>> GetGuildIntegrationsAsync([Path] Snowflake guildId);
         [Post("guilds/{guildId}/integrations")]
-        Task<Integration> CreateGuildIntegrationsAsync([Path] ulong guildId, [Body] CreateGuildIntegrationParams args);
+        Task<Integration> CreateGuildIntegrationsAsync([Path] Snowflake guildId, [Body] CreateGuildIntegrationParams args);
         [Delete("guilds/{guildId}/integrations/{integrationId}")]
-        Task DeleteGuildIntegrationsAsync([Path] ulong guildId, [Path] ulong integrationId);
+        Task DeleteGuildIntegrationsAsync([Path] Snowflake guildId, [Path] Snowflake integrationId);
         [Patch("guilds/{guildId}/integrations/{integrationId}")]
-        Task ModifyGuildIntegrationsAsync([Path] ulong guildId, [Path] ulong integrationId, [Body] ModifyGuildIntegrationParams args);
+        Task ModifyGuildIntegrationsAsync([Path] Snowflake guildId, [Path] Snowflake integrationId, [Body] ModifyGuildIntegrationParams args);
         [Post("guilds/{guildId}/integrations/{integrationId}/sync")]
-        Task SyncGuildIntegrationsAsync([Path] ulong guildId, [Path] ulong integrationId);
+        Task SyncGuildIntegrationsAsync([Path] Snowflake guildId, [Path] Snowflake integrationId);
 
         [Get("guilds/{guildId}/embed")]
-        Task<GuildEmbed> GetGuildEmbedAsync([Path] ulong guildId);
+        Task<GuildEmbed> GetGuildEmbedAsync([Path] Snowflake guildId);
         [Patch("guilds/{guildId}/embed")]
-        Task<GuildEmbed> ModifyGuildEmbedAsync([Path] ulong guildId, [Body] ModifyGuildEmbedParams args);
+        Task<GuildEmbed> ModifyGuildEmbedAsync([Path] Snowflake guildId, [Body] ModifyGuildEmbedParams args);
 
         [Get("guilds/{guildId}/webhooks")]
-        Task<List<Webhook>> GetGuildWebhooksAsync([Path] ulong guildId);
+        Task<List<Webhook>> GetGuildWebhooksAsync([Path] Snowflake guildId);
 
         // Invite
 
         [Get("invites/{code}")]
-        Task<Invite> GetInviteAsync([Path] string code);
+        Task<Invite> GetInviteAsync([Path] Utf8String code);
         [Delete("invites/{code}")]
-        Task<Invite> DeleteInviteAsync([Path] string code);
+        Task<Invite> DeleteInviteAsync([Path] Utf8String code);
         [Post("invites/{code}")]
-        Task<Invite> AcceptInviteAsync([Path] string code);
+        Task<Invite> AcceptInviteAsync([Path] Utf8String code);
 
         // User
 
         [Get("users/@me")]
         Task<User> GetCurrentUserAsync();
         [Get("users/{userId}")]
-        Task<User> GetUserAsync([Path] ulong userId);
+        Task<User> GetUserAsync([Path] Snowflake userId);
         [Patch("users/@me")]
         Task<User> ModifyCurrentUserAsync([Body] ModifyCurrentUserParams args);
 
         [Get("users/@me/guilds")]
         Task<List<UserGuild>> GetCurrentUserGuildsAsync([QueryMap] GetCurrentUserGuildsParams args);
         [Delete("users/@me/guilds/{guildId}")]
-        Task LeaveGuildAsync([Path] ulong guildId);
+        Task LeaveGuildAsync([Path] Snowflake guildId);
 
         [Get("users/@me/channels")]
         Task<List<Channel>> GetPrivateChannelsAsync();
@@ -218,25 +219,25 @@ namespace Wumpus
         // Webhook
 
         [Get("webhooks/{webhookId}")]
-        Task<Webhook> GetWebhookAsync([Path] ulong webhookId);
+        Task<Webhook> GetWebhookAsync([Path] Snowflake webhookId);
         [Delete("webhooks/{webhookId}")]
-        Task DeleteWebhookAsync([Path] ulong webhookId);
+        Task DeleteWebhookAsync([Path] Snowflake webhookId);
         [Patch("webhooks/{webhookId}")]
-        Task<Webhook> ModifyWebhookAsync([Path] ulong webhookId, ModifyWebhookParams args);
+        Task<Webhook> ModifyWebhookAsync([Path] Snowflake webhookId, ModifyWebhookParams args);
 
         // Webhook (Anonymous)
 
         [Get("webhooks/{webhookId}/{webhookToken}")]
         [Header("Authorization", null)]
-        Task<Webhook> GetWebhookWithTokenAsync([Path] ulong webhookId, [Path] string webhookToken);
+        Task<Webhook> GetWebhookWithTokenAsync([Path] Snowflake webhookId, [Path] Utf8String webhookToken);
         [Delete("webhooks/{webhookId}/{webhookToken}")]
         [Header("Authorization", null)]
-        Task DeleteWebhookAsync([Path] ulong webhookId, [Path] string webhookToken);
+        Task DeleteWebhookAsync([Path] Snowflake webhookId, [Path] Utf8String webhookToken);
         [Patch("webhooks/{webhookId}/{webhookToken}")]
         [Header("Authorization", null)]
-        Task<Webhook> ModifyWebhookAsync([Path] ulong webhookId, [Path] string webhookToken, ModifyWebhookParams args);
+        Task<Webhook> ModifyWebhookAsync([Path] Snowflake webhookId, [Path] Utf8String webhookToken, ModifyWebhookParams args);
         [Post("webhooks/{webhookId}/{webhookToken}")]
         [Header("Authorization", null)]
-        Task ExecuteWebhookAsync([Path] ulong webhookId, [Path] string webhookToken, [QueryMap] [Body] ExecuteWebhookParams args);
+        Task ExecuteWebhookAsync([Path] Snowflake webhookId, [Path] Utf8String webhookToken, [QueryMap] [Body] ExecuteWebhookParams args);
     }
 }

@@ -7,10 +7,10 @@ namespace Wumpus.Requests
     {
         /// <summary> id of the guild </summary>
         [ModelProperty("guild_id")]
-        public ulong GuildId { get; set; }
+        public Snowflake GuildId { get; set; }
         /// <summary> id of the voice channel client wants to join (null if disconnecting) </summary>
         [ModelProperty("channel_id")]
-        public ulong? ChannelId { get; set; }
+        public Snowflake? ChannelId { get; set; }
         /// <summary> is the client muted </summary>
         [ModelProperty("self_mute")]
         public bool SelfMute { get; set; }

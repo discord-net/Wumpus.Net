@@ -1,5 +1,6 @@
 ﻿using Voltaic.Serialization;
 using System.Collections.Generic;
+using Voltaic;
 
 namespace Wumpus.Entities
 {
@@ -8,13 +9,13 @@ namespace Wumpus.Entities
     {
         /// <summary> xxx </summary>
         [ModelProperty("id")]
-        public ulong Id { get; set; }
+        public Snowflake Id { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("name")]
-        public string Name { get; set; }
+        public Utf8String Name { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("icon_url")]
-        public string IconUrl { get; set; }
+        public Utf8String IconUrl { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("members")]
         public IEnumerable<GuildMember> Members { get; set; }

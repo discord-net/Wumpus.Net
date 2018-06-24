@@ -7,6 +7,6 @@ namespace Wumpus.Requests
     {
         /// <summary> xxx </summary>
         [ModelProperty("channel_id")]
-        public ulong ChannelId { get; set; }
+        public Snowflake ChannelId { get; set; }
     }
 }

@@ -7,11 +7,11 @@ namespace Wumpus.Requests
     public class GetChannelMessagesParams : QueryMap
     {
         /// <summary> xxx </summary>
-        public Optional<ulong> Around { get; set; }
+        public Optional<Snowflake> Before { get; set; }
         /// <summary> xxx </summary>
-        public Optional<ulong> Before { get; set; }
+        public Optional<Snowflake> Around { get; set; }
         /// <summary> xxx </summary>
-        public Optional<ulong> After { get; set; }
+        public Optional<Snowflake> After { get; set; }
         /// <summary> xxx </summary>
         public Optional<int> Limit { get; set; }
 

@@ -2,13 +2,13 @@
 {
     public struct EntityOrId<T>
     {
-        public ulong Id { get; }
+        public Snowflake Id { get; }
         public T Object { get; }
 
-        public EntityOrId(ulong id)
+        public EntityOrId(Snowflake id)
         {
             Id = id;
-            Object = default(T);
+            Object = default;
         }
         public EntityOrId(T obj)
         {
