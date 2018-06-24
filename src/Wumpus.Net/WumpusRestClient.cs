@@ -24,7 +24,7 @@ namespace Wumpus
         internal WumpusRestClient(string url, JsonSerializer serializer = null)
         {
             _serializer = serializer ?? new JsonSerializer();
-            var httpClient = new HttpClient { BaseAddress = new Uri("https://discordapp.com/api/v6/") };
+            var httpClient = new HttpClient { BaseAddress = new Uri(url) };
             _api = RestClient.For<IDiscordRestApi>(new WumpusRequester(httpClient, _serializer));
 
         }
