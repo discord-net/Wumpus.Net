@@ -1,5 +1,6 @@
 ﻿namespace Wumpus.Entities
 {
+    /// <summary> xxx </summary>
     public enum ExplicitContentFilter
     {
         Disabled = 0,

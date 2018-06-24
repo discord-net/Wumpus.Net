@@ -2,10 +2,13 @@
 
 namespace Wumpus.Requests
 {
+    /// <summary> xxx </summary>
     public class CreateWebhookParams
     {
+        /// <summary> xxx </summary>
         [ModelProperty("name")]
         public string Name { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("avatar")]
         public Image Avatar { get; set; }
 

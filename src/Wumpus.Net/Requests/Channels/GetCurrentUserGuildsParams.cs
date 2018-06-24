@@ -3,10 +3,14 @@ using Voltaic;
 
 namespace Wumpus.Requests
 {
+    /// <summary> xxx </summary>
     public class GetCurrentUserGuildsParams : QueryMap
     {
+        /// <summary> xxx </summary>
         public Optional<int> Limit { get; set; }
+        /// <summary> xxx </summary>
         public Optional<ulong> Before { get; set; }
+        /// <summary> xxx </summary>
         public Optional<ulong> After { get; set; }
 
         public override IDictionary<string, object> GetQueryMap()

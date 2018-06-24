@@ -2,6 +2,7 @@
 
 namespace Wumpus.Requests
 {
+    /// <summary> xxx </summary>
     public class CreateTextChannelParams : CreateGuildChannelParams
     {
         public CreateTextChannelParams(string name)

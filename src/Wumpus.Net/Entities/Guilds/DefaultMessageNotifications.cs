@@ -1,5 +1,6 @@
 ﻿namespace Wumpus.Entities
 {
+    /// <summary> xxx </summary>
     public enum DefaultMessageNotifications
     {
         /// <summary> By default, all messages will trigger notifications. </summary>

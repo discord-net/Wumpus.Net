@@ -2,10 +2,13 @@
 
 namespace Wumpus.Responses
 {
+    /// <summary> xxx </summary>
     public class GetBotGatewayResponse
     {
+        /// <summary> xxx </summary>
         [ModelProperty("url")]
         public string Url { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("shards")]
         public int Shards { get; set; }
     }

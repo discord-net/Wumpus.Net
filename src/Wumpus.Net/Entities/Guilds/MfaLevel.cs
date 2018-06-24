@@ -1,5 +1,6 @@
 ﻿namespace Wumpus.Entities
 {
+    /// <summary> xxx </summary>
     public enum MfaLevel
     {
         /// <summary> Users have no additional MFA restriction on this guild. </summary>

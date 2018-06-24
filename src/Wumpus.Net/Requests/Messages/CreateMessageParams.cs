@@ -5,14 +5,19 @@ using Voltaic;
 
 namespace Wumpus.Requests
 {
+    /// <summary> xxx </summary>
     public class CreateMessageParams : IFormData
     {
+        /// <summary> xxx </summary>
         [ModelProperty("content")]
         public Optional<string> Content { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("nonce")]
         public Optional<string> Nonce { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("tts")]
         public Optional<bool> IsTTS { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("embed")]
         public Optional<Embed> Embed { get; set; }
 

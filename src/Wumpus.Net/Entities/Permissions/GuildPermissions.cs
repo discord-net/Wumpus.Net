@@ -2,6 +2,7 @@
 
 namespace Wumpus.Entities
 {
+    /// <summary> xxx </summary>
     [Flags]
     public enum GuildPermissions : ulong
     {

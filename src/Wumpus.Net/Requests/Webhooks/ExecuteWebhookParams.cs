@@ -5,23 +5,32 @@ using Voltaic;
 
 namespace Wumpus.Requests
 {
+    /// <summary> xxx </summary>
     public class ExecuteWebhookParams : QueryMap, IFormData
     {
+        /// <summary> xxx </summary>
         [ModelProperty("content")]
         public Optional<string> Content { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("nonce")]
         public Optional<string> Nonce { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("tts")]
         public Optional<bool> IsTTS { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("embeds")]
         public Optional<Embed[]> Embeds { get; set; }
 
+        /// <summary> xxx </summary>
         [ModelProperty("username")]
         public Optional<string> Username { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("avatar_url")]
         public Optional<string> AvatarUrl { get; set; }
 
+        /// <summary> xxx </summary>
         public Optional<bool> Wait { get; set; }
+        /// <summary> xxx </summary>
         public Optional<MultipartFile> File { get; set; }
 
         public override IDictionary<string, object> GetQueryMap()

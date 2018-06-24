@@ -1,5 +1,6 @@
 ﻿namespace Wumpus.Entities
 {
+    /// <summary> xxx </summary>
     public enum AuditLogEvent : int
     {
         GuildUpdate = 1,

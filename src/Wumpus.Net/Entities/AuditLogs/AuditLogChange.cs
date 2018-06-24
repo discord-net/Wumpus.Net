@@ -4,14 +4,18 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
+    /// <summary> xxx </summary>
     public class AuditLogChange
     {
+        /// <summary> xxx </summary>
         [ModelProperty("new_value")]
         [ModelTypeSelector(nameof(Key), nameof(TypeSelector))]
         public object NewValue { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("old_value")]
         [ModelTypeSelector(nameof(Key), nameof(TypeSelector))]
         public object OldValue { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("key")]
         public AuditLogChangeKey Key { get; set; }
 

@@ -3,8 +3,10 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Requests
 {
+    /// <summary> xxx </summary>
     public class DeleteMessagesParams
     {
+        /// <summary> xxx </summary>
         [ModelProperty("messages")]
         public ulong[] MessageIds { get; }
 

@@ -2,10 +2,13 @@
 
 namespace Wumpus.Requests
 {
+    /// <summary> xxx </summary>
     public class SelectChannelParams
     {
+        /// <summary> xxx </summary>
         [ModelProperty("channel_id")]
         public ulong? ChannelId { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("force")]
         public Optional<bool> Force { get; set; }
     }

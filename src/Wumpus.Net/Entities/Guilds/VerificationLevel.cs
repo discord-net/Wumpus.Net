@@ -1,5 +1,6 @@
 ﻿namespace Wumpus.Entities
 {
+    /// <summary> xxx </summary>
     public enum VerificationLevel
     {
         /// <summary> Users have no additional restrictions on sending messages to this guild. </summary>

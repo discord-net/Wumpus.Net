@@ -4,10 +4,13 @@ using Voltaic;
 
 namespace Wumpus.Requests
 {
+    /// <summary> xxx </summary>
     public class CreateVoiceChannelParams : CreateGuildChannelParams
     {
+        /// <summary> xxx </summary>
         [ModelProperty("bitrate")]
         public Optional<int> Bitrate { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("user_limit")]
         public Optional<int> UserLimit { get; set; }
 

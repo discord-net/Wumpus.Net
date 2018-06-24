@@ -2,12 +2,16 @@
 
 namespace Wumpus.Entities
 {
+    /// <summary> xxx </summary>
     public class VoiceShortcut
     {
+        /// <summary> xxx </summary>
         [ModelProperty("type")]
         public Optional<VoiceShortcutType> Type { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("code")]
         public Optional<int> Code { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("name")]
         public Optional<string> Name { get; set; }
     }

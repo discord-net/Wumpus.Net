@@ -2,10 +2,13 @@
 
 namespace Wumpus.Requests
 {
+    /// <summary> xxx </summary>
     public class ModifyGuildRolePositionParams
     {
+        /// <summary> xxx </summary>
         [ModelProperty("id")]
         public ulong Id { get; }
+        /// <summary> xxx </summary>
         [ModelProperty("position")]
         public int Position { get; }
 

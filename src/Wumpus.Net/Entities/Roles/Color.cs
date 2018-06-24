@@ -3,6 +3,7 @@ using System.Diagnostics;
 
 namespace Wumpus.Entities
 {
+    /// <summary> xxx </summary>
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
     public struct Color
     {

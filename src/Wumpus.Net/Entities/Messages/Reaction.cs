@@ -2,6 +2,7 @@
 
 namespace Wumpus.Entities
 {
+    /// <summary> xxx </summary>
     public class Reaction
     {
         [ModelProperty("count")]

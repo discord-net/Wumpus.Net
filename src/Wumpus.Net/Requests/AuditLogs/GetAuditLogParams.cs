@@ -4,11 +4,16 @@ using Wumpus.Entities;
 
 namespace Wumpus.Requests
 {
+    /// <summary> xxx </summary>
     public class GetAuditLogParams : QueryMap
     {
+        /// <summary> xxx </summary>
         public Optional<ulong> UserId { get; set; }
+        /// <summary> xxx </summary>
         public Optional<AuditLogEvent> ActionType { get; set; }
+        /// <summary> xxx </summary>
         public Optional<ulong> Before { get; set; }
+        /// <summary> xxx </summary>
         public Optional<int> Limit { get; set; }
 
         public override IDictionary<string, object> GetQueryMap()

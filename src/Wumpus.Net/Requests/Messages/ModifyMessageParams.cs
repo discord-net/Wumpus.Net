@@ -4,10 +4,13 @@ using Voltaic;
 
 namespace Wumpus.Requests
 {
+    /// <summary> xxx </summary>
     public class ModifyMessageParams
     {
+        /// <summary> xxx </summary>
         [ModelProperty("content")]
         public Optional<string> Content { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("embed")]
         public Optional<Embed> Embed { get; set; }
 

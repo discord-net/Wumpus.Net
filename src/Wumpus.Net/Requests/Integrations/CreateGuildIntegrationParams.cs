@@ -2,10 +2,13 @@
 
 namespace Wumpus.Requests
 {
+    /// <summary> xxx </summary>
     public class CreateGuildIntegrationParams
     {
+        /// <summary> xxx </summary>
         [ModelProperty("id")]
         public ulong Id { get; }
+        /// <summary> xxx </summary>
         [ModelProperty("type")]
         public string Type { get; }
 

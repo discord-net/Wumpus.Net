@@ -4,10 +4,13 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Requests
 {
+    /// <summary> xxx </summary>
     public class CreateGroupChannelParams
     {
+        /// <summary> xxx </summary>
         [ModelProperty("access_tokens")]
         public string[] AccessTokens { get; set; }
+        /// <summary> xxx </summary>
         [ModelProperty("nicks")]
         public Optional<Dictionary<ulong, string>> Nicks { get; set; } //TODO: Serializer does not currently support numeric keys
 
