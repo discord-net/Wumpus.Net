@@ -256,6 +256,8 @@ namespace Voltaic.Serialization
                     args[i] = Get(serializer, converterTypeInfo.GenericTypeArguments[innerConverters++], propInfo, throwOnNotFound);
                 else if (_serializerType.IsAssignableFrom(paramInfo))
                     args[i] = serializer;
+                else if (paramType == typeof(PropertyInfo))
+                    args[i] = propInfo;
                 else if (!parameters[i].HasDefaultValue)
                     throw new SerializationException($"{converterType.Name} has an unsupported constructor");
             }

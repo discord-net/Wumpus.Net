@@ -31,9 +31,12 @@ namespace Voltaic.Serialization.Utf8
             _converters.SetDefault<DateTimeOffset, DateTimeOffsetUtf8Converter>();
             _converters.SetDefault<TimeSpan, TimeSpanUtf8Converter>();
 
-            // Others
+            // Strings
             _converters.SetDefault<char, CharUtf8Converter>();
             _converters.SetDefault<string, StringUtf8Converter>();
+            _converters.SetDefault<Utf8String, Utf8StringUtf8Converter>();
+
+            // Others
             _converters.SetDefault<bool, BooleanUtf8Converter>();
             _converters.SetDefault<Guid, GuidUtf8Converter>();
         }

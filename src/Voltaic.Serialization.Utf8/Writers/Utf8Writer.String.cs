@@ -30,5 +30,15 @@ namespace Voltaic.Serialization.Utf8
             writer.Advance(length);
             return true;
         }
+
+        public static bool TryWrite(ref ResizableMemory<byte> writer, Utf8String value)
+        {
+            var srcSpan = value.Bytes;
+            var valueBytes = MemoryMarshal.AsBytes(srcSpan);
+            var dstSpan = writer.GetSpan(srcSpan.Length);
+            srcSpan.CopyTo(dstSpan);
+            writer.Advance(srcSpan.Length);
+            return true;
+        }
     }
 }

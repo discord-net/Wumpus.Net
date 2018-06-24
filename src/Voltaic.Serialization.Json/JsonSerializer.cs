@@ -65,9 +65,28 @@ namespace Voltaic.Serialization.Json
                 (t, p) => t.GenericTypeArguments[0] == typeof(string), 
                 (t) => t.GenericTypeArguments[1]);
 
-            // Others
+            // Strings
             _converters.SetDefault<char, CharJsonConverter>();
             _converters.SetDefault<string, StringJsonConverter>();
+            _converters.SetDefault<Utf8String, Utf8StringJsonConverter>();
+
+            // Enums
+            _converters.AddGlobalConditional(typeof(Int64EnumJsonConverter<>),
+                (t, p) => t.IsEnum && (
+                    Enum.GetUnderlyingType(t.AsType()) == typeof(sbyte) ||
+                    Enum.GetUnderlyingType(t.AsType()) == typeof(short) ||
+                    Enum.GetUnderlyingType(t.AsType()) == typeof(int) ||
+                    Enum.GetUnderlyingType(t.AsType()) == typeof(long)),
+                (t) => t.AsType());
+            _converters.AddGlobalConditional(typeof(UInt64EnumJsonConverter<>),
+                (t, p) => t.IsEnum && (
+                    Enum.GetUnderlyingType(t.AsType()) == typeof(byte) ||
+                    Enum.GetUnderlyingType(t.AsType()) == typeof(ushort) ||
+                    Enum.GetUnderlyingType(t.AsType()) == typeof(uint) ||
+                    Enum.GetUnderlyingType(t.AsType()) == typeof(ulong)),
+                (t) => t.AsType());
+
+            // Others
             _converters.SetDefault<bool, BooleanJsonConverter>(
                 (s, t, p) => new BooleanJsonConverter(GetStandardFormat(p)));
             _converters.SetDefault<Guid, GuidJsonConverter>(

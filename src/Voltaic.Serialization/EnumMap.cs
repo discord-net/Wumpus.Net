@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Voltaic.Serialization
 {
@@ -15,11 +17,14 @@ namespace Voltaic.Serialization
     {
         public static readonly EnumMap<T> Instance = new EnumMap<T>();
 
+        public bool IsStringEnum { get; } = typeof(T).GetTypeInfo().GetCustomAttribute<ModelStringEnumAttribute>() != null;
+
         private readonly Dictionary<string, T> _keyToValue;
         private readonly MemoryDictionary<T> _utf8KeyToValue;
         private readonly Dictionary<long, T> _intToValue;
 
         private readonly Dictionary<T, string> _valueToKey;
+        private readonly Dictionary<T, Utf8String> _valueToUtf8Key;
         private readonly Dictionary<T, long> _valueToInt;
 
         public EnumMap()
@@ -33,6 +38,7 @@ namespace Voltaic.Serialization
             _intToValue = new Dictionary<long, T>();
 
             _valueToKey = new Dictionary<T, string>();
+            _valueToUtf8Key = new Dictionary<T, Utf8String>();
             _valueToInt = new Dictionary<T, long>();
 
             foreach (T val in Enum.GetValues(typeof(T)).OfType<T>())
@@ -41,15 +47,25 @@ namespace Voltaic.Serialization
                 var attr = fieldInfo.GetCustomAttribute<ModelEnumValueAttribute>();
                 if (attr != null)
                 {
-                    string key = attr.Key;
-                    var keyBuffer = attr.Key.ToUtf8Memory();
+                    string utf16Key = attr.Key;
+
+                    var utf16Bytes = MemoryMarshal.AsBytes(utf16Key.AsSpan());
+                    if (Encodings.Utf16.ToUtf8Length(utf16Bytes, out var length) != OperationStatus.Done)
+                        throw new ArgumentException("Failed to serialize enum key to UTF8");
+                    var utf8Key = new byte[length].AsSpan();
+                    if (Encodings.Utf16.ToUtf8(utf16Bytes, utf8Key, out _, out _) != OperationStatus.Done)
+                        throw new ArgumentException("Failed to serialize enum key to UTF8");
+
                     if (attr.Type != EnumValueType.WriteOnly)
                     {
-                        _keyToValue.Add(key, val);
-                        _utf8KeyToValue.Add(keyBuffer, val);
+                        _keyToValue.Add(utf16Key, val);
+                        _utf8KeyToValue.Add(utf8Key, val);
                     }
                     if (attr.Type != EnumValueType.ReadOnly)
-                        _valueToKey.Add(val, key);
+                    {
+                        _valueToKey.Add(val, utf16Key);
+                        _valueToUtf8Key.Add(val, new Utf8String(utf8Key));
+                    }
                 }
 
                 var underlyingType = Enum.GetUnderlyingType(typeof(T));
@@ -85,6 +101,12 @@ namespace Voltaic.Serialization
             if (_utf8KeyToValue.TryGetValue(key, out var value))
                 return value;
             throw new SerializationException($"Unknown enum key: {key.ToString()}");
+        }
+        public Utf8String ToUtf8Key(T value)
+        {
+            if (_valueToUtf8Key.TryGetValue(value, out var key))
+                return key;
+            throw new SerializationException($"Unknown enum value: {value}");
         }
         public string ToUtf16Key(T value)
         {

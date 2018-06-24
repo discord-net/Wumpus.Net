@@ -18,9 +18,9 @@ namespace Voltaic.Serialization.Json
         public override bool CanWrite(T[] value, PropertyMap propMap)
             => (!propMap.ExcludeNull && !propMap.ExcludeDefault) || value != null;
 
-        public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out T[] result, PropertyMap propMap = null)
+        public override bool TryRead(ref ReadOnlySpan<byte> remaining, out T[] result, PropertyMap propMap = null)
         {
-            if (!JsonCollectionReader.TryRead(serializer, ref remaining, out var resultBuilder, propMap, _innerConverter, _pool))
+            if (!JsonCollectionReader.TryRead(ref remaining, out var resultBuilder, propMap, _innerConverter, _pool))
             {
                 result = default;
                 return false;
@@ -32,7 +32,7 @@ namespace Voltaic.Serialization.Json
             return true;
         }
 
-        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, T[] value, PropertyMap propMap = null)
+        public override bool TryWrite(ref ResizableMemory<byte> writer, T[] value, PropertyMap propMap = null)
         {
             if (value == null)
                 return JsonWriter.TryWriteNull(ref writer);
@@ -42,7 +42,7 @@ namespace Voltaic.Serialization.Json
             {
                 if (i != 0)
                     writer.Push((byte)',');
-                if (!_innerConverter.TryWrite(serializer, ref writer, value[i], propMap))
+                if (!_innerConverter.TryWrite(ref writer, value[i], propMap))
                     return false;
             }
             writer.Push((byte)']');
@@ -64,9 +64,9 @@ namespace Voltaic.Serialization.Json
         public override bool CanWrite(List<T> value, PropertyMap propMap)
             => (!propMap.ExcludeNull && !propMap.ExcludeDefault) || value != null;
 
-        public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out List<T> result, PropertyMap propMap = null)
+        public override bool TryRead(ref ReadOnlySpan<byte> remaining, out List<T> result, PropertyMap propMap = null)
         {
-            if (!JsonCollectionReader.TryRead(serializer, ref remaining, out var resultBuilder, propMap, _innerConverter, _pool))
+            if (!JsonCollectionReader.TryRead(ref remaining, out var resultBuilder, propMap, _innerConverter, _pool))
             {
                 result = default;
                 return false;
@@ -78,7 +78,7 @@ namespace Voltaic.Serialization.Json
             return true;
         }
 
-        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, List<T> value, PropertyMap propMap = null)
+        public override bool TryWrite(ref ResizableMemory<byte> writer, List<T> value, PropertyMap propMap = null)
         {
             if (value == null)
                 return JsonWriter.TryWriteNull(ref writer);
@@ -88,7 +88,7 @@ namespace Voltaic.Serialization.Json
             {
                 if (i != 0)
                     writer.Push((byte)',');
-                if (!_innerConverter.TryWrite(serializer, ref writer, value[i], propMap))
+                if (!_innerConverter.TryWrite(ref writer, value[i], propMap))
                     return false;
             }
             writer.Push((byte)']');
@@ -104,9 +104,8 @@ namespace Voltaic.Serialization.Json
             public static readonly T[] Value = new T[0];
         }
 
-        public static bool TryRead<T>(Serializer serializer, ref ReadOnlySpan<byte> remaining, 
-            out ResizableMemory<T> result, PropertyMap propMap, ValueConverter<T> innerConverter,
-            ArrayPool<T> pool)
+        public static bool TryRead<T>(ref ReadOnlySpan<byte> remaining, out ResizableMemory<T> result, 
+            PropertyMap propMap, ValueConverter<T> innerConverter, ArrayPool<T> pool)
         {
             result = default;
             
@@ -149,7 +148,7 @@ namespace Voltaic.Serialization.Json
                             return false;
                         break;
                 }
-                if (!innerConverter.TryRead(serializer, ref remaining, out var item, propMap))
+                if (!innerConverter.TryRead(ref remaining, out var item, propMap))
                     return false;
                 result.Push(item);
             }

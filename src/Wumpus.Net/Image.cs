@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Voltaic;
 
 namespace Wumpus
 {
@@ -6,7 +7,7 @@ namespace Wumpus
     {
         public Stream Stream { get; }
         public ImageFormat StreamFormat { get; }
-        public string Hash { get; }
+        public Utf8String Hash { get; }
 
         public Image(Stream stream, ImageFormat format)
         {
@@ -14,7 +15,7 @@ namespace Wumpus
             StreamFormat = format;
             Hash = null;
         }
-        public Image(string hash)
+        public Image(Utf8String hash)
         {
             Stream = null;
             StreamFormat = ImageFormat.Jpeg;

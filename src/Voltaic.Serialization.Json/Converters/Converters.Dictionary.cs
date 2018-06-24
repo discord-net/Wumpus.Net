@@ -18,7 +18,7 @@ namespace Voltaic.Serialization.Json
         public override bool CanWrite(Dictionary<string, T> value, PropertyMap propMap)
             => (!propMap.ExcludeNull && !propMap.ExcludeDefault) || value != null;
 
-        public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out Dictionary<string, T> result, PropertyMap propMap = null)
+        public override bool TryRead(ref ReadOnlySpan<byte> remaining, out Dictionary<string, T> result, PropertyMap propMap = null)
         {
             result = default;
 
@@ -66,7 +66,7 @@ namespace Voltaic.Serialization.Json
                 if (JsonReader.GetTokenType(ref remaining) != JsonTokenType.KeyValueSeparator)
                     return false;
                 remaining = remaining.Slice(1);
-                if (!_innerConverter.TryRead(serializer, ref remaining, out var value, propMap))
+                if (!_innerConverter.TryRead(ref remaining, out var value, propMap))
                     return false;
                 if (result.ContainsKey(key))
                     return false;
@@ -74,7 +74,7 @@ namespace Voltaic.Serialization.Json
             }
         }
 
-        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, Dictionary<string, T> value, PropertyMap propMap = null)
+        public override bool TryWrite(ref ResizableMemory<byte> writer, Dictionary<string, T> value, PropertyMap propMap = null)
         {
             if (value == null)
                 return JsonWriter.TryWriteNull(ref writer);
@@ -90,7 +90,7 @@ namespace Voltaic.Serialization.Json
                 if (!JsonWriter.TryWrite(ref writer, pair.Key))
                     return false;
                 writer.Push((byte)':');
-                if (!_innerConverter.TryWrite(serializer, ref writer, pair.Value, propMap))
+                if (!_innerConverter.TryWrite(ref writer, pair.Value, propMap))
                     return false;
             }
             writer.Push((byte)'}');

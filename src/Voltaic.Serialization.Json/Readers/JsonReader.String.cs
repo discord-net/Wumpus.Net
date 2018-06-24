@@ -7,6 +7,13 @@ namespace Voltaic.Serialization.Json
 {
     public static partial class JsonReader
     {
+        private enum StringOperationStatus
+        {
+            Failed,
+            Builder,
+            Direct
+        }
+
         public static bool TryReadChar(ref ReadOnlySpan<byte> remaining, out char result)
         {
             result = default;
@@ -63,7 +70,7 @@ namespace Voltaic.Serialization.Json
             return false;
         }
 
-        public static bool TryReadUtf8String(ref ReadOnlySpan<byte> remaining, out ReadOnlySpan<byte> result)
+        public static bool TryReadUtf8String(ref ReadOnlySpan<byte> remaining, out Utf8String result)
         {
             result = default;
 
@@ -74,7 +81,7 @@ namespace Voltaic.Serialization.Json
                 case StringOperationStatus.Builder:
                     try
                     {
-                        result = builder.AsReadOnlySpan();
+                        result = new Utf8String(builder.AsReadOnlySpan());
                         return true;
                     }
                     finally
@@ -82,18 +89,12 @@ namespace Voltaic.Serialization.Json
                         builder.Return();
                     }
                 case StringOperationStatus.Direct:
-                    result = direct;
+                    result = new Utf8String(direct);
                     return true;
             }
             return false;
         }
 
-        private enum StringOperationStatus
-        {
-            Failed,
-            Builder,
-            Direct
-        }
         private static StringOperationStatus TryReadUtf8String(ref ReadOnlySpan<byte> remaining, out ResizableMemory<byte> builder, out ReadOnlySpan<byte> directResult)
         {
             builder = default;

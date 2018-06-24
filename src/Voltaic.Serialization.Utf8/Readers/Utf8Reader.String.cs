@@ -41,5 +41,15 @@ namespace Voltaic.Serialization.Utf8
             }
             return true;
         }
+
+        public static bool TryReadUtf8String(ref ReadOnlySpan<byte> remaining, out Utf8String result)
+        {
+            var utf8Bytes = new Memory<byte>(new byte[remaining.Length]);
+            remaining.CopyTo(utf8Bytes.Span);
+
+            remaining = ReadOnlySpan<byte>.Empty;
+            result = new Utf8String(utf8Bytes.Span);
+            return true;
+        }
     }
 }

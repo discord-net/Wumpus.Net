@@ -29,7 +29,7 @@ namespace Voltaic.Serialization
         {
             if (converter == null)
                 converter = _converters.Get<T>(this);
-            if (!converter.TryRead(this, ref data, out var result))
+            if (!converter.TryRead(ref data, out var result))
                 throw new SerializationException($"Failed to deserialize {typeof(T).Name}");
             return result;
         }
@@ -52,7 +52,7 @@ namespace Voltaic.Serialization
             var writer = new ResizableMemory<byte>(1024, pool: _pool);
             if (converter == null)
                 converter = _converters.Get<T>(this);
-            if (!converter.TryWrite(this, ref writer, value))
+            if (!converter.TryWrite(ref writer, value))
                 throw new SerializationException($"Failed to serialize {typeof(T).Name}");
             return writer;
         }
@@ -68,11 +68,11 @@ namespace Voltaic.Serialization
         public ModelMap<T> GetMap<T>(PropertyInfo propInfo = null)
             => _modelMaps.GetOrAdd(typeof(T), _ => new ModelMap<T>(this, typeof(T).Name, propInfo)) as ModelMap<T>;
 
-        internal ValueConverter GetConverter(Type type, PropertyInfo propInfo = null, bool throwOnNotFound = false)
+        public ValueConverter GetConverter(Type type, PropertyInfo propInfo = null, bool throwOnNotFound = false)
             => _converters.Get(this, type, propInfo, throwOnNotFound);
-        internal ValueConverter GetConverter(PropertyInfo propInfo, bool throwOnNotFound = false)
+        public ValueConverter GetConverter(PropertyInfo propInfo, bool throwOnNotFound = false)
             => _converters.Get(this, propInfo.PropertyType, propInfo, throwOnNotFound);
-        internal ValueConverter<T> GetConverter<T>(PropertyInfo propInfo = null, bool throwOnNotFound = false)
+        public ValueConverter<T> GetConverter<T>(PropertyInfo propInfo = null, bool throwOnNotFound = false)
             => _converters.Get<T>(this, propInfo, throwOnNotFound);
 
     }

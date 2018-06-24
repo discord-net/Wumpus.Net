@@ -5,10 +5,17 @@ namespace Voltaic.Serialization.Json
     public class ObjectJsonConverter<T> : ValueConverter<T>
         where T : class, new()
     {
+        private readonly ModelMap<T> _map;
+
+        public ObjectJsonConverter(Serializer serializer)
+        {
+            _map = serializer.GetMap<T>();
+        }
+
         public override bool CanWrite(T value, PropertyMap propMap)
             => (!propMap.ExcludeNull && !propMap.ExcludeDefault) || value != null;
 
-        public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out T result, PropertyMap propMap = null)
+        public override bool TryRead(ref ReadOnlySpan<byte> remaining, out T result, PropertyMap propMap = null)
         {
             result = default;
 
@@ -34,7 +41,6 @@ namespace Voltaic.Serialization.Json
             Span<bool> dependencies = stackalloc bool[8];
             var deferred = new DeferredPropertyList<byte, byte>();
 
-            var map = serializer.GetMap<T>();
             bool isFirst = true;
             bool incomplete = true;
             while (incomplete)
@@ -66,7 +72,7 @@ namespace Voltaic.Serialization.Json
                 remaining = remaining.Slice(1);
 
                 // Unknown Property
-                if (!map.TryGetProperty(key, out var innerPropMap))
+                if (!_map.TryGetProperty(key, out var innerPropMap))
                 {
                     if (!JsonReader.Skip(ref remaining, out _))
                         return false;
@@ -96,7 +102,7 @@ namespace Voltaic.Serialization.Json
             // Process all deferred properties
             for (int i = 0; i < deferred.Count; i++)
             {
-                if (!map.TryGetProperty(deferred.GetKey(i), out var innerPropMap))
+                if (!_map.TryGetProperty(deferred.GetKey(i), out var innerPropMap))
                     return false;
                 var value = deferred.GetValue(i);
                 if (!innerPropMap.TryRead(result, ref value))
@@ -105,16 +111,15 @@ namespace Voltaic.Serialization.Json
             return true;
         }
 
-        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, T value, PropertyMap propMap = null)
+        public override bool TryWrite(ref ResizableMemory<byte> writer, T value, PropertyMap propMap = null)
         {
             if (value == null)
                 return JsonWriter.TryWriteNull(ref writer);
 
             writer.Push((byte)'{');
             bool isFirst = true;
-            var map = serializer.GetMap(typeof(T));
 
-            var properties = map.Properties;
+            var properties = _map.Properties;
             for (int i = 0; i < properties.Count; i++)
             {
                 var key = properties[i].Key;

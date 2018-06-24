@@ -14,18 +14,18 @@ namespace Voltaic.Serialization.Json
         public override bool CanWrite(Optional<T> value, PropertyMap propMap)
             => value.IsSpecified && _innerConverter.CanWrite(value.Value, propMap);
 
-        public override bool TryRead(Serializer serializer, ref ReadOnlySpan<byte> remaining, out Optional<T> result, PropertyMap propMap = null)
+        public override bool TryRead(ref ReadOnlySpan<byte> remaining, out Optional<T> result, PropertyMap propMap = null)
         {
             result = default;
             if (JsonReader.GetTokenType(ref remaining) == JsonTokenType.Null)
                 return true;
-            if (!_innerConverter.TryRead(serializer, ref remaining, out var resultValue, propMap))
+            if (!_innerConverter.TryRead(ref remaining, out var resultValue, propMap))
                 return false;
             result = resultValue;
             return true;
         }
 
-        public override bool TryWrite(Serializer serializer, ref ResizableMemory<byte> writer, Optional<T> value, PropertyMap propMap = null)
-            => _innerConverter.TryWrite(serializer, ref writer, value.Value, propMap);
+        public override bool TryWrite(ref ResizableMemory<byte> writer, Optional<T> value, PropertyMap propMap = null)
+            => _innerConverter.TryWrite(ref writer, value.Value, propMap);
     }
 }

@@ -67,7 +67,7 @@ namespace Voltaic.Serialization
 
         public override bool TryRead(TModel model, ref ReadOnlySpan<byte> data)
         {
-            if (!Converter.TryRead(Serializer, ref data, out var result, this))
+            if (!Converter.TryRead(ref data, out var result, this))
                 return false;
             SetFunc(model, result);
             return true;
@@ -76,7 +76,7 @@ namespace Voltaic.Serialization
         public override bool CanWrite(TModel model) => _supportsWrite && Converter.CanWrite(GetFunc(model), this);
         public override bool TryWrite(TModel model, ref ResizableMemory<byte> buffer)
         {
-            if (!Converter.TryWrite(Serializer, ref buffer, GetFunc(model), this))
+            if (!Converter.TryWrite(ref buffer, GetFunc(model), this))
                 return false;
             return true;
         }
@@ -107,7 +107,7 @@ namespace Voltaic.Serialization
         {
             if (!GetConverter(model, out var converter))
                 return false;
-            if (!converter.TryRead(Serializer, ref data, out var result, this))
+            if (!converter.TryRead(ref data, out var result, this))
                 return false;
             SetFunc(model, result);
             return true;
@@ -123,7 +123,7 @@ namespace Voltaic.Serialization
         {
             if (!GetConverter(model, out var converter))
                 return false;
-            if (!converter.TryWrite(Serializer, ref buffer, GetFunc(model), this))
+            if (!converter.TryWrite(ref buffer, GetFunc(model), this))
                 return false;
             return true;
         }
