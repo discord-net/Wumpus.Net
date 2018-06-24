@@ -69,7 +69,7 @@ namespace Wumpus.Net
                     _semaphore = info.Remaining.Value;
                 }
 
-                long now = DateTimeUtils.ToUnixSeconds(DateTimeOffset.UtcNow);
+                long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 DateTimeOffset? resetsAt = null;
 
                 //Using X-RateLimit-Remaining causes a race condition

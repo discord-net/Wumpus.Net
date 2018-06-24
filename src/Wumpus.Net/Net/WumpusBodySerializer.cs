@@ -3,16 +3,16 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using Voltaic.Serialization.Json;
 using Wumpus.Requests;
+using Wumpus.Serialization;
 
 namespace Wumpus.Net
 {
     internal class WumpusBodySerializer : RequestBodySerializer
     {
-        private readonly JsonSerializer _serializer;
+        private readonly WumpusJsonSerializer _serializer;
 
-        public WumpusBodySerializer(JsonSerializer serializer)
+        public WumpusBodySerializer(WumpusJsonSerializer serializer)
         {
             _serializer = serializer;
         }

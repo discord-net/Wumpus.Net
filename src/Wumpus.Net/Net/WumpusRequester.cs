@@ -7,19 +7,19 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Voltaic.Serialization.Json;
 using Wumpus.Entities;
+using Wumpus.Serialization;
 
 namespace Wumpus.Net
 {
     internal class WumpusRequester : Requester
     {
-        private readonly JsonSerializer _serializer;
+        private readonly WumpusJsonSerializer _serializer;
         private readonly ConcurrentDictionary<string, RequestBucket> _buckets;
 
         private DateTimeOffset _globalWaitUntil;
 
-        public WumpusRequester(HttpClient httpClient, JsonSerializer serializer)
+        public WumpusRequester(HttpClient httpClient, WumpusJsonSerializer serializer)
             : base(httpClient)
         {
             _serializer = serializer;
@@ -27,7 +27,7 @@ namespace Wumpus.Net
 
             ResponseDeserializer = new WumpusResponseDeserializer(_serializer);
             RequestBodySerializer = new WumpusBodySerializer(_serializer);
-            RequestQueryParamSerializer = new WumpusQueryParamSerializer();
+            RequestQueryParamSerializer = new WumpusQueryParamSerializer(_serializer);
         }
 
         protected override async Task<HttpResponseMessage> SendRequestAsync(IRequestInfo request, bool readBody)

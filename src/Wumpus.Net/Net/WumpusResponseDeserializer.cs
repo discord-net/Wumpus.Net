@@ -1,15 +1,15 @@
 ﻿using System.Net.Http;
 using RestEase;
-using Voltaic.Serialization.Json;
+using Wumpus.Serialization;
 
 namespace Wumpus.Net
 {
     // TODO: RestEase converts to UTF16 but we support reading the UTF8 byte stream
     internal class WumpusResponseDeserializer : ResponseDeserializer
     {
-        private readonly JsonSerializer _serializer;
+        private readonly WumpusJsonSerializer _serializer;
 
-        public WumpusResponseDeserializer(JsonSerializer serializer)
+        public WumpusResponseDeserializer(WumpusJsonSerializer serializer)
         {
             _serializer = serializer;
         }
