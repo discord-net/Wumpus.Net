@@ -20,7 +20,7 @@ namespace Wumpus.Entities
         [ModelProperty("key")]
         public AuditLogChangeKey Key { get; set; }
 
-        private static Dictionary<AuditLogChangeKey, Type> TypeSelector { get; } = new Dictionary<AuditLogChangeKey, Type>()
+        private static Dictionary<AuditLogChangeKey, Type> TypeSelector => new Dictionary<AuditLogChangeKey, Type>()
         {
             // General
 
