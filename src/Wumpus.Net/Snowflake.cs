@@ -6,23 +6,23 @@ namespace Wumpus
     {
         private const ulong DiscordEpoch = 1420070400000UL;
 
-        public ulong Value { get; }
+        public ulong RawValue { get; }
 
         public Snowflake(ulong value)
         {
-            Value = value;
+            RawValue = value;
         }
         public Snowflake(DateTimeOffset dto)
         {
-            Value = ((ulong)dto.ToUnixTimeMilliseconds() - DiscordEpoch) << 22;
+            RawValue = ((ulong)dto.ToUnixTimeMilliseconds() - DiscordEpoch) << 22;
         }
         public Snowflake(DateTime dt)
             : this(new DateTimeOffset(dt)) { }
 
-        public DateTimeOffset ToDateTimeOffset()
-            => DateTimeOffset.FromUnixTimeMilliseconds((long)((Value >> 22) + DiscordEpoch));
+        public DateTimeOffset ToDateTimeOffset() => DateTimeOffset.FromUnixTimeMilliseconds((long)((RawValue >> 22) + DiscordEpoch));
+        public DateTimeOffset ToDateTime() => ToDateTimeOffset().DateTime;
 
-        public static implicit operator ulong(Snowflake snowflake) => snowflake.Value;
+        public static implicit operator ulong(Snowflake snowflake) => snowflake.RawValue;
         public static implicit operator Snowflake(ulong value) => new Snowflake(value);
     }
 }
