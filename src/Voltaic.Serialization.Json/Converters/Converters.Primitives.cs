@@ -287,20 +287,54 @@ namespace Voltaic.Serialization.Json
     public class StringJsonConverter : ValueConverter<string>
     {
         public override bool CanWrite(string value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+            => (!propMap.ExcludeDefault && !propMap.ExcludeNull) || !(value is null);
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out string result, PropertyMap propMap = null)
-            => JsonReader.TryReadString(ref remaining, out result);
+        {
+            switch (JsonReader.GetTokenType(ref remaining))
+            {
+                case JsonTokenType.Null:
+                    remaining = remaining.Slice(4);
+                    result = null;
+                    return true;
+                case JsonTokenType.String:
+                    return JsonReader.TryReadString(ref remaining, out result);
+            }
+            result = default;
+            return false;
+        }
         public override bool TryWrite(ref ResizableMemory<byte> writer, string value, PropertyMap propMap = null)
-            => JsonWriter.TryWrite(ref writer, value);
+        {
+            if (value is null)
+                return JsonWriter.TryWriteNull(ref writer);
+            else
+                return JsonWriter.TryWrite(ref writer, value);
+        }
     }
 
     public class Utf8StringJsonConverter : ValueConverter<Utf8String>
     {
         public override bool CanWrite(Utf8String value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != (Utf8String)default;
+            => (!propMap.ExcludeDefault && !propMap.ExcludeNull) || !(value is null);
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out Utf8String result, PropertyMap propMap = null)
-            => JsonReader.TryReadUtf8String(ref remaining, out result);
+        {
+            switch (JsonReader.GetTokenType(ref remaining))
+            {
+                case JsonTokenType.Null:
+                    remaining = remaining.Slice(4);
+                    result = null;
+                    return true;
+                case JsonTokenType.String:
+                    return JsonReader.TryReadUtf8String(ref remaining, out result);
+            }
+            result = default;
+            return false;
+        }
         public override bool TryWrite(ref ResizableMemory<byte> writer, Utf8String value, PropertyMap propMap = null)
-            => JsonWriter.TryWrite(ref writer, value);
+        {
+            if (value is null)
+                return JsonWriter.TryWriteNull(ref writer);
+            else
+                return JsonWriter.TryWrite(ref writer, value);
+        }
     }
 }

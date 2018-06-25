@@ -132,7 +132,7 @@ namespace Voltaic.Serialization.Json
                     isFirst = false;
 
                 writer.Push((byte)'"');
-                if (!JsonWriter.TryWriteUtf8String(ref writer, key.Span))
+                if (!JsonWriter.TryWriteUtf8(ref writer, key.Span))
                     return false;
                 writer.Push((byte)'"');
 

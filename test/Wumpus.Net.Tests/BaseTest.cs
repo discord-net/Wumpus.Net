@@ -107,7 +107,7 @@ namespace Wumpus.Net.Tests
                 });
 
                 var requestTask = test.Action(_client);
-                var timeoutTask = Task.Delay(3000);
+                var timeoutTask = Task.Delay(5000);
                 var task = Task.WhenAny(requestTask, timeoutTask).Result;
                 if (task == timeoutTask)
                 {
@@ -116,8 +116,7 @@ namespace Wumpus.Net.Tests
                     else
                         throw new TimeoutException();
                 }
-                var response = requestTask.Result;
-                Assert.Equal(requestTask.Result, response, _comparer);
+                Assert.Equal(requestTask.Result, test.Response, _comparer);
             }
             finally { _server.Stop(); }
         }
