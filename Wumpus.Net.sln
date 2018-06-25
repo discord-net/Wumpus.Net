@@ -27,6 +27,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wumpus.Net", "src\Wumpus.Ne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wumpus.Net.Tests", "test\Wumpus.Net.Tests\Wumpus.Net.Tests.csproj", "{8925BE4B-604B-4769-863A-3154ED6E4A32}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{90E3631E-FE7C-4546-A54E-6E0750E18851}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		nuget.config = nuget.config
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
