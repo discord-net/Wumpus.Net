@@ -91,6 +91,9 @@ namespace Voltaic.Serialization.Json
                         return false;
                     continue;
                 }
+
+                if (!innerPropMap.TryRead(result, ref remaining, dependencies))
+                    return false;
                 
                 dependencies |= innerPropMap.IndexMask;
             }
