@@ -15,4 +15,9 @@
     <ProjectReference Include="../Voltaic.Core/Voltaic.Core.csproj" />
     <ProjectReference Include="../Voltaic.Serialization/Voltaic.Serialization.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Converters\" />
+    <Folder Include="Attributes\" />
+    <Folder Include="Writers\" />
+  </ItemGroup>
 </Project>
