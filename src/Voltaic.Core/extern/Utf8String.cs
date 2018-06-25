@@ -75,9 +75,9 @@ namespace Voltaic
 
         public bool ReferenceEquals(Utf8String other) => Object.ReferenceEquals(this, other);
 
-        public bool Equals(Utf8String other) => Bytes.SequenceEqual(other.Bytes);
+        public bool Equals(Utf8String other) => !(other is null) && Bytes.SequenceEqual(other.Bytes);
         public bool Equals(Utf8Span other) => Bytes.SequenceEqual(other.Bytes);
-        public bool Equals(string other) => Span.Equals(other);
+        public bool Equals(string other) => !(other is null) && Span.Equals(other);
 
         public override bool Equals(object obj)
         {
@@ -95,18 +95,23 @@ namespace Voltaic
 
         public override int GetHashCode() => Span.GetHashCode();
 
-        public static bool operator ==(Utf8String left, Utf8String right) => left.Equals(right);
-        public static bool operator !=(Utf8String left, Utf8String right) => !left.Equals(right);
-        public static bool operator ==(Utf8String left, Utf8Span right) => left.Equals(right);
-        public static bool operator !=(Utf8String left, Utf8Span right) => !left.Equals(right);
-        public static bool operator ==(Utf8Span left, Utf8String right) => right.Equals(left);
-        public static bool operator !=(Utf8Span left, Utf8String right) => !right.Equals(left);
+        public static bool operator ==(Utf8String left, Utf8String right) 
+            => (left is null && right is null) || (!(left is null) && left.Equals(right));
+        public static bool operator !=(Utf8String left, Utf8String right) => !(left == right);
+        public static bool operator ==(Utf8String left, Utf8Span right)
+            => !(left is null) && left.Equals(right);
+        public static bool operator !=(Utf8String left, Utf8Span right) => !(left == right);
+        public static bool operator ==(Utf8Span left, Utf8String right)
+            => left.Equals(right);
+        public static bool operator !=(Utf8Span left, Utf8String right) => !(left == right);
 
         // TODO: do we like all these O(N) operators? 
-        public static bool operator ==(Utf8String left, string right) => left.Equals(right);
-        public static bool operator !=(Utf8String left, string right) => !left.Equals(right);
-        public static bool operator ==(string left, Utf8String right) => right.Equals(left);
-        public static bool operator !=(string left, Utf8String right) => !right.Equals(left);
+        public static bool operator ==(Utf8String left, string right)
+            => (left is null && right is null) || (!(left is null) && left.Equals(right));
+        public static bool operator !=(Utf8String left, string right) => !(left == right);
+        public static bool operator ==(string left, Utf8String right)
+            => (left is null && right is null) || (!(left is null) && left.Equals(right));
+        public static bool operator !=(string left, Utf8String right) => !(left == right);
 
         public int CompareTo(Utf8String other) => Span.CompareTo(other);
         public int CompareTo(string other) => Span.CompareTo(other);
