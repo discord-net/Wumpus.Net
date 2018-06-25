@@ -9,13 +9,13 @@ namespace Wumpus.Requests
     {
         /// <summary> xxx </summary>
         [ModelProperty("username")]
-        public Optional<string> Username { get; set; }
+        public Optional<Utf8String> Username { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("name")]
-        public Optional<string> Name { get; set; }
+        public Optional<Utf8String> Name { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("region")]
-        public Optional<string> RegionId { get; set; }
+        public Optional<Utf8String> RegionId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("verification_level")]
         public Optional<VerificationLevel> VerificationLevel { get; set; }

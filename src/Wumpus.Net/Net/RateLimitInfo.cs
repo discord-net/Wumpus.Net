@@ -22,7 +22,7 @@ namespace Wumpus.Net
             Remaining = headers.TryGetValues("X-RateLimit-Remaining", out values) &&
                 int.TryParse(values.First(), out var remaining) ? remaining : (int?)null;
             Reset = headers.TryGetValues("X-RateLimit-Reset", out values) &&
-                int.TryParse(values.First(), out var reset) ? DateTimeUtils.FromUnixSeconds(reset) : (DateTimeOffset?)null;
+                int.TryParse(values.First(), out var reset) ? DateTimeOffset.FromUnixTimeSeconds(reset) : (DateTimeOffset?)null;
             RetryAfter = headers.TryGetValues("Retry-After", out values) &&
                 int.TryParse(values.First(), out var retryAfter) ? retryAfter : (int?)null;
             Lag = headers.TryGetValues("Date", out values) &&

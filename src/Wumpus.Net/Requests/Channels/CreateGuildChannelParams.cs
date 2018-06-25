@@ -9,7 +9,7 @@ namespace Wumpus.Requests
     {
         /// <summary> xxx </summary>
         [ModelProperty("name")]
-        public string Name { get; }
+        public Utf8String Name { get; }
         /// <summary> xxx </summary>
         [ModelProperty("type")]
         public ChannelType Type { get; }

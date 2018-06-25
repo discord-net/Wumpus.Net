@@ -9,12 +9,12 @@ namespace Wumpus.Requests
     {
         /// <summary> xxx </summary>
         [ModelProperty("client_id")]
-        public string ClientId { get; set; }
+        public Utf8String ClientId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("scopes")]
         public IReadOnlyCollection<string> Scopes { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("rpc_token")]
-        public Optional<string> RpcToken { get; set; }
+        public Optional<Utf8String> RpcToken { get; set; }
     }
 }

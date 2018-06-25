@@ -8,7 +8,7 @@ namespace Wumpus.Requests
     {
         /// <summary> authentication token </summary>
         [ModelProperty("token")]
-        public string Token { get; set; }
+        public Utf8String Token { get; set; }
         /// <summary> connection properties </summary>
         [ModelProperty("properties")]
         public IdentityConnectionProperties Properties { get; set; }
@@ -31,12 +31,12 @@ namespace Wumpus.Requests
     {
         /// <summary> your operating system </summary>
         [ModelProperty("$os")]
-        public string Os { get; set; }
+        public Utf8String Os { get; set; }
         /// <summary> your library name </summary>
         [ModelProperty("$browser")]
-        public string Browser { get; set; }
+        public Utf8String Browser { get; set; }
         /// <summary> your library name </summary>
         [ModelProperty("$device")]
-        public string Device { get; set; }
+        public Utf8String Device { get; set; }
     }
 }

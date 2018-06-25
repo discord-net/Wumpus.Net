@@ -5,26 +5,26 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Voltaic;
-using Voltaic.Serialization.Json;
 using Wumpus.Entities;
 using Wumpus.Net;
 using Wumpus.Requests;
 using Wumpus.Responses;
+using Wumpus.Serialization;
 
 namespace Wumpus
 {
     public class WumpusRestClient : IDiscordRestApi, IDisposable
     {
         private readonly IDiscordRestApi _api;
-        private readonly JsonSerializer _serializer;
+        private readonly WumpusJsonSerializer _serializer;
 
         public AuthenticationHeaderValue Authorization { get => _api.Authorization; set => _api.Authorization = value; }
 
-        public WumpusRestClient(JsonSerializer serializer = null)
+        public WumpusRestClient(WumpusJsonSerializer serializer = null)
             : this("https://discordapp.com/api/v6/", serializer) { }
-        internal WumpusRestClient(string url, JsonSerializer serializer = null)
+        internal WumpusRestClient(string url, WumpusJsonSerializer serializer = null)
         {
-            _serializer = serializer ?? new JsonSerializer();
+            _serializer = serializer ?? new WumpusJsonSerializer();
             var httpClient = new HttpClient { BaseAddress = new Uri(url) };
             _api = RestClient.For<IDiscordRestApi>(new WumpusRequester(httpClient, _serializer));
 

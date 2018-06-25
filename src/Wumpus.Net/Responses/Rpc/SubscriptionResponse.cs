@@ -7,6 +7,6 @@ namespace Wumpus.Events
     {
         /// <summary> xxx </summary>
         [ModelProperty("evt")]
-        public string Event { get; set; }
+        public Utf8String Event { get; set; }
     }
 }

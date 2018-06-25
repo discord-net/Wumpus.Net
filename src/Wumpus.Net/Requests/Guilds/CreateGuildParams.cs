@@ -9,10 +9,10 @@ namespace Wumpus.Requests
     {
         /// <summary> xxx </summary>
         [ModelProperty("name")]
-        public string Name { get; }
+        public Utf8String Name { get; }
         /// <summary> xxx </summary>
         [ModelProperty("region")]
-        public string RegionId { get; }
+        public Utf8String RegionId { get; }
         /// <summary> xxx </summary>
         [ModelProperty("icon")]
         public Optional<Image?> Icon { get; set; }
@@ -29,7 +29,7 @@ namespace Wumpus.Requests
         [ModelProperty("channels")]
         public Optional<Channel[]> Channels { get; set; }
 
-        public CreateGuildParams(string name, string regionId)
+        public CreateGuildParams(Utf8String name, Utf8String regionId)
         {
             Name = name;
             RegionId = regionId;

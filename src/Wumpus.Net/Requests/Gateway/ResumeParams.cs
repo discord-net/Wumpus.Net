@@ -7,10 +7,10 @@ namespace Wumpus.Requests
     {
         /// <summary> session token </summary>
         [ModelProperty("token")]
-        public string Token { get; set; }
+        public Utf8String Token { get; set; }
         /// <summary> session id </summary>
         [ModelProperty("session_id")]
-        public string SessionId { get; set; }
+        public Utf8String SessionId { get; set; }
         /// <summary> last sequence number received </summary>
         [ModelProperty("seq")]
         public int Sequence { get; set; } 

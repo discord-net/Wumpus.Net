@@ -1,4 +1,5 @@
-﻿using Voltaic.Serialization;
+﻿using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Events
 {
@@ -7,6 +8,6 @@ namespace Wumpus.Events
     {
         /// <summary> xxx </summary>
         [ModelProperty("code")]
-        public string Code { get; set; }
+        public Utf8String Code { get; set; }
     }
 }

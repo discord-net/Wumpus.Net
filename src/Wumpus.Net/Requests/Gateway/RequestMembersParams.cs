@@ -10,7 +10,7 @@ namespace Wumpus.Requests
         public Snowflake GuildId { get; set; }
         /// <summary> string that username starts with, or an empty string to return all members </summary>
         [ModelProperty("query")]
-        public string Query { get; set; }
+        public Utf8String Query { get; set; }
         /// <summary> maximum number of members to send or 0 to request all members matched </summary>
         [ModelProperty("limit")]
         public int Limit { get; set; }

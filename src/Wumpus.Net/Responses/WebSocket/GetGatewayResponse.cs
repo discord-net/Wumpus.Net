@@ -1,4 +1,5 @@
-﻿using Voltaic.Serialization;
+﻿using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Responses
 {
@@ -7,6 +8,6 @@ namespace Wumpus.Responses
     {
         /// <summary> xxx </summary>
         [ModelProperty("url")]
-        public string Url { get; set; }
+        public Utf8String Url { get; set; }
     }
 }

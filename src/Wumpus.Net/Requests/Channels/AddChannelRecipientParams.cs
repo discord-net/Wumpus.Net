@@ -8,10 +8,10 @@ namespace Wumpus.Requests
     {
         /// <summary> xxx </summary>
         [ModelProperty("access_token")]
-        public string AccessToken { get; set; }
+        public Utf8String AccessToken { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("nick")]
-        public Optional<string> Nickname { get; set; }
+        public Optional<Utf8String> Nickname { get; set; }
 
         public AddChannelRecipientParams(string accessToken)
         {

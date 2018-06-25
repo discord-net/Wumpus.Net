@@ -9,7 +9,7 @@ namespace Wumpus.Requests
     {
         /// <summary> xxx </summary>
         [ModelProperty("content")]
-        public Optional<string> Content { get; set; }
+        public Optional<Utf8String> Content { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("embed")]
         public Optional<Embed> Embed { get; set; }

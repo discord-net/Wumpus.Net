@@ -8,7 +8,7 @@ namespace Wumpus.Requests
     {
         /// <summary> xxx </summary>
         [ModelProperty("topic")]
-        public Optional<string> Topic { get; set; }
+        public Optional<Utf8String> Topic { get; set; }
 
         public override void Validate()
         {

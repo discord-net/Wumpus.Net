@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Wumpus.Requests
 {
+    // TODO: Should this be Utf8String?
     public abstract class QueryMap : IDictionary<string, string>
     {
         public abstract IDictionary<string, object> GetQueryMap();

@@ -10,9 +10,9 @@ namespace Wumpus.Requests
         public Snowflake Id { get; }
         /// <summary> xxx </summary>
         [ModelProperty("type")]
-        public string Type { get; }
+        public Utf8String Type { get; }
 
-        public CreateGuildIntegrationParams(Snowflake id, string type)
+        public CreateGuildIntegrationParams(Snowflake id, Utf8String type)
         {
             Id = id;
             Type = type;

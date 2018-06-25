@@ -8,7 +8,7 @@ namespace Wumpus.Requests
     {
         /// <summary> xxx </summary>
         [ModelProperty("name")]
-        public Optional<string> Name { get; set; }
+        public Optional<Utf8String> Name { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("position")]
         public Optional<int> Position { get; set; }

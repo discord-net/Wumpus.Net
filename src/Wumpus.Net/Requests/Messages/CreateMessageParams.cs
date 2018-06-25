@@ -10,10 +10,10 @@ namespace Wumpus.Requests
     {
         /// <summary> xxx </summary>
         [ModelProperty("content")]
-        public Optional<string> Content { get; set; }
+        public Optional<Utf8String> Content { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("nonce")]
-        public Optional<string> Nonce { get; set; }
+        public Optional<Utf8String> Nonce { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("tts")]
         public Optional<bool> IsTTS { get; set; }

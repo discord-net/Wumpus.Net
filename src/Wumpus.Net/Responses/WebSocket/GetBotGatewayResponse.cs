@@ -7,7 +7,7 @@ namespace Wumpus.Responses
     {
         /// <summary> xxx </summary>
         [ModelProperty("url")]
-        public string Url { get; set; }
+        public Utf8String Url { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("shards")]
         public int Shards { get; set; }

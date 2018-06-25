@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using Voltaic;
 
 namespace Wumpus.Net
 {
@@ -7,9 +8,9 @@ namespace Wumpus.Net
     {
         public HttpStatusCode HttpCode { get; }
         public int? DiscordCode { get; }
-        public string Reason { get; }
+        public Utf8String Reason { get; }
 
-        public DiscordRestException(HttpStatusCode httpCode, int? discordCode = null, string reason = null)
+        public DiscordRestException(HttpStatusCode httpCode, int? discordCode = null, Utf8String reason = null)
             : base(CreateMessage(httpCode, discordCode, reason))
         {
             HttpCode = httpCode;
@@ -17,7 +18,7 @@ namespace Wumpus.Net
             Reason = reason;
         }
 
-        private static string CreateMessage(HttpStatusCode httpCode, int? discordCode = null, string reason = null)
-            => $"The server responded with error {discordCode ?? (int)httpCode}: {reason ?? httpCode.ToString()}";
+        private static string CreateMessage(HttpStatusCode httpCode, int? discordCode = null, Utf8String reason = null)
+            => $"The server responded with error {discordCode ?? (int)httpCode}: {reason.ToString() ?? httpCode.ToString()}";
     }
 }

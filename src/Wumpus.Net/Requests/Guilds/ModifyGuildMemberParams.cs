@@ -14,7 +14,7 @@ namespace Wumpus.Requests
         public Optional<bool> Deaf { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("nick")]
-        public Optional<string> Nickname { get; set; }
+        public Optional<Utf8String> Nickname { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("roles")]
         public Optional<Snowflake[]> RoleIds { get; set; }

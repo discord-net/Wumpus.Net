@@ -8,7 +8,7 @@ using Wumpus.Entities;
 using Wumpus.Requests;
 using Wumpus.Responses;
 
-namespace Wumpus
+namespace Wumpus.Net
 {
     [Header("User-Agent", "DiscordBot (https://github.com/RogueException/Wumpus.Net, 1.0.0)")]
     internal interface IDiscordRestApi : IDisposable

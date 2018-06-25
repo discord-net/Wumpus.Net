@@ -7,7 +7,7 @@ namespace Wumpus.Requests
     {
         /// <summary> xxx </summary>
         [ModelProperty("nick")]
-        public string Nickname { get; }
+        public Utf8String Nickname { get; }
 
         public ModifyCurrentUserNickParams(string nickname)
         {
