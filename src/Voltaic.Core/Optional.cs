@@ -33,11 +33,11 @@ namespace Voltaic
 
         public T GetValueOrDefault() => _value;
         public T GetValueOrDefault(T defaultValue) => IsSpecified ? _value : defaultValue;
-
+        
         public override bool Equals(object other)
         {
-            if (!IsSpecified) return other == null;
-            if (other == null) return false;
+            if (!IsSpecified) return false;
+            if (_value is null) return other is null;
             return _value.Equals(other);
         }
         public override int GetHashCode() => IsSpecified ? _value.GetHashCode() : 0;

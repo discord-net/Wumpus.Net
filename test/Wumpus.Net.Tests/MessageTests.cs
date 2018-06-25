@@ -22,6 +22,8 @@ namespace Wumpus.Net.Tests
             });
         }
 
+        public MessageTests() : base(RecursiveComparer<Message>.Instance) { }
+
         [Theory]
         [MemberData(nameof(GetData))]
         public void Request(TestData<Message> data) => RunTest(data);
