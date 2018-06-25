@@ -54,8 +54,8 @@ namespace Wumpus.Requests
         {
             Preconditions.NotNull(Nonce, nameof(Nonce));
 
-            if (!Content.IsSpecified || Content.Value == null)
-                Content = "";
+            if (!Content.IsSpecified || Content.Value == (Utf8String)null)
+                Content = (Utf8String)"";
             if (Embeds.IsSpecified && Embeds.Value != null)
                 Preconditions.NotNullOrWhitespace(Content, nameof(Content));
             // else //TODO: Validate embed length

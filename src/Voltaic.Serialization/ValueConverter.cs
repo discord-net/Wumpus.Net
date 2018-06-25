@@ -13,7 +13,7 @@ namespace Voltaic.Serialization
             PropertyMap propMap = null);
 
         public abstract bool TryWrite(
-            ref ResizableMemory<byte> remaining,
+            ref ResizableMemory<byte> writer,
             TValue value,
             PropertyMap propMap = null);
     }

@@ -7,7 +7,7 @@ namespace Voltaic.Serialization
 {
     public abstract class ModelMap
     {
-        public const int MaxDependencies = 8;
+        protected int _selectorKeyCount;
 
         public string Path { get; }
 
@@ -33,7 +33,6 @@ namespace Voltaic.Serialization
         {
             var type = typeof(T).GetTypeInfo();
             var normalProps = new Dictionary<string, PropertyMap<T>>();
-            var selectorProps = new MemoryDictionary<int>();
 
             // Normal props
             var currentType = type;
@@ -42,7 +41,7 @@ namespace Voltaic.Serialization
                 foreach (var itemPropInfo in currentType.DeclaredProperties)
                 {
                     var propAttr = itemPropInfo.GetCustomAttribute<ModelPropertyAttribute>();
-                    if (propAttr != null && itemPropInfo.GetCustomAttribute<ModelTypeSelectorAttribute>() == null)
+                    if (propAttr != null && itemPropInfo.GetCustomAttributes<ModelTypeSelectorAttribute>().Count() == 0)
                     {
                         var propMapType = typeof(PropertyMap<,>).MakeGenericType(typeof(T), itemPropInfo.PropertyType).GetTypeInfo();
                         var constructor = propMapType.DeclaredConstructors.Single();
@@ -64,37 +63,15 @@ namespace Voltaic.Serialization
                 foreach (var itemPropInfo in currentType.DeclaredProperties)
                 {
                     var propAttr = itemPropInfo.GetCustomAttribute<ModelPropertyAttribute>();
-                    var typeSelectorAttr = itemPropInfo.GetCustomAttribute<ModelTypeSelectorAttribute>();
-                    if (propAttr != null && typeSelectorAttr != null)
+                    var typeSelectorAttrs = itemPropInfo.GetCustomAttributes<ModelTypeSelectorAttribute>().ToList();
+                    if (propAttr != null && typeSelectorAttrs.Count > 0)
                     {
-                        if (!normalProps.TryGetValue(typeSelectorAttr.KeyProperty, out var depProp))
-                            throw new InvalidOperationException($"Unable to find dependency \"{typeSelectorAttr.KeyProperty}\"");
-
-                        // TODO: Does this search subtypes?
-                        var typeMapAccessor = currentType.GetDeclaredProperty(typeSelectorAttr.MapProperty);
-                        if (typeMapAccessor == null)
-                            throw new InvalidOperationException($"Unable to find map \"{typeSelectorAttr.MapProperty}\"");
-                        if (!typeMapAccessor.PropertyType.IsConstructedGenericType || 
-                            typeMapAccessor.PropertyType.GetGenericTypeDefinition() != typeof(IReadOnlyDictionary<,>) ||
-                            typeMapAccessor.PropertyType.GenericTypeArguments[1] != typeof(Type))
-                            throw new InvalidOperationException($"Map must return an IReadOnlyDictionary<TKey,Type>");
-                        var keyType = typeMapAccessor.PropertyType.GenericTypeArguments[0];
-                        var converters = new object(); // TODO: Impl
-
-                        var propMapType = typeof(DependentPropertyMap<,,>).MakeGenericType(typeof(T), keyType, itemPropInfo.PropertyType).GetTypeInfo();
+                        var propMapType = typeof(DependentPropertyMap<,>).MakeGenericType(typeof(T), itemPropInfo.PropertyType).GetTypeInfo();
                         var constructor = propMapType.DeclaredConstructors.Single();
-                        var propMap = constructor.Invoke(new object[] { serializer, this, itemPropInfo, propAttr, depProp, converters }) as PropertyMap<T>;
+                        var propMap = constructor.Invoke(new object[] { serializer, this, itemPropInfo, propAttr, typeSelectorAttrs, normalProps }) as PropertyMap<T>;
 
                         _propDict.Add(propMap.Key, propMap);
                         _propList.Add(new KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>(propMap.Key, propMap));
-
-                        if (depProp.Index == 0)
-                        {
-                            depProp.Index = selectorProps.Count;
-                            if (depProp.Index >= MaxDependencies)
-                                throw new InvalidOperationException($"Model has more than {MaxDependencies} dependencies");
-                            selectorProps.Add(depProp.Key, depProp.Index.Value);
-                        }
                     }
                 }
                 currentType = currentType.BaseType?.GetTypeInfo();
@@ -110,6 +87,14 @@ namespace Voltaic.Serialization
             }
             value = untypedValue as PropertyMap<T>;
             return true;
+        }
+
+        internal void RegisterDependency(PropertyMap<T> keyProp)
+        {
+            if (keyProp.Index >= 32)
+                throw new InvalidOperationException($"Model has more than 32 dependency keys");
+            keyProp.Index = _selectorKeyCount++;
+            keyProp.IndexMask = 1U << keyProp.Index.Value;
         }
     }
 }

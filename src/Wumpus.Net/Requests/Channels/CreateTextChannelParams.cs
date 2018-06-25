@@ -1,11 +1,12 @@
-﻿using Wumpus.Entities;
+﻿using Voltaic;
+using Wumpus.Entities;
 
 namespace Wumpus.Requests
 {
     /// <summary> xxx </summary>
     public class CreateTextChannelParams : CreateGuildChannelParams
     {
-        public CreateTextChannelParams(string name)
+        public CreateTextChannelParams(Utf8String name)
             : base(name, ChannelType.Text)
         {
         }

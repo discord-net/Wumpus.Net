@@ -38,7 +38,7 @@ namespace Wumpus.Net
                             memoryStream.Position = 0;
                             stream = memoryStream;
                         }
-                        content.Add(new StreamContent(stream), pair.Key, file.Filename);
+                        content.Add(new StreamContent(stream), pair.Key, (string)file.Filename);
                     }
                     else
                         content.Add(new StringContent(_serializer.WriteString(pair.Value), Encoding.UTF8), pair.Key);

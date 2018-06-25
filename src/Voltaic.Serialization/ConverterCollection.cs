@@ -184,6 +184,12 @@ namespace Voltaic.Serialization
 
         internal ValueConverter<T> Get<T>(Serializer serializer, PropertyInfo propInfo = null, bool throwOnNotFound = true)
             => Get(serializer, typeof(T), propInfo, throwOnNotFound) as ValueConverter<T>;
+        internal ValueConverter<T> Get<T>(Serializer serializer, Type type, PropertyInfo propInfo = null, bool throwOnNotFound = true)
+        {
+            if (!(Get(serializer, type, propInfo, throwOnNotFound) is ValueConverter<T> converter))
+                throw new InvalidOperationException($"Converter for {type.Name} is not assignable to {typeof(ValueConverter<T>).Name}");
+            return converter;
+        }
         internal ValueConverter Get(Serializer serializer, Type type, PropertyInfo propInfo = null, bool throwOnNotFound = true)
         {
             bool canCache = propInfo == null; // Can't cache top-level due to attribute influences

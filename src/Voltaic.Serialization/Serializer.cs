@@ -72,8 +72,10 @@ namespace Voltaic.Serialization
             => _converters.Get(this, type, propInfo, throwOnNotFound);
         public ValueConverter GetConverter(PropertyInfo propInfo, bool throwOnNotFound = false)
             => _converters.Get(this, propInfo.PropertyType, propInfo, throwOnNotFound);
+        public ValueConverter<T> GetConverter<T>(Type type, PropertyInfo propInfo = null, bool throwOnNotFound = false)
+            => _converters.Get<T>(this, type, propInfo, throwOnNotFound);
         public ValueConverter<T> GetConverter<T>(PropertyInfo propInfo = null, bool throwOnNotFound = false)
-            => _converters.Get<T>(this, propInfo, throwOnNotFound);
+            => _converters.Get<T>(this, typeof(T), propInfo, throwOnNotFound);
 
     }
 }

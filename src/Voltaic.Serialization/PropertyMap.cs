@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -14,14 +15,15 @@ namespace Voltaic.Serialization
         public bool ExcludeDefault { get; }
         public bool ExcludeNull { get; }
         public int? Index { get; internal set; }
-        public PropertyMap Dependency { get; protected set; }
+        public uint IndexMask { get; internal set; }
+
+        public abstract Type Type { get; }
 
         protected readonly bool _supportsRead, _supportsWrite;
 
         protected PropertyMap(Serializer serializer, ModelMap modelMap, PropertyInfo propInfo, ModelPropertyAttribute attr)
         {
             Serializer = serializer;
-
             Name = propInfo.Name;
             Path = $"{modelMap.Path}.{propInfo.Name}";
 
@@ -39,11 +41,13 @@ namespace Voltaic.Serialization
         protected PropertyMap(Serializer serializer, ModelMap modelMap, PropertyInfo propInfo, ModelPropertyAttribute attr)
             : base(serializer, modelMap, propInfo, attr) { }
 
+        public abstract bool HasReadConverter(TModel model, uint dependencies);
+
         public bool CanRead => _supportsRead;
-        public abstract bool TryRead(TModel model, ref ReadOnlySpan<byte> data);
+        public abstract bool TryRead(TModel model, ref ReadOnlySpan<byte> remaining, uint dependencies);
 
         public abstract bool CanWrite(TModel model);
-        public abstract bool TryWrite(TModel model, ref ResizableMemory<byte> buffer);
+        public abstract bool TryWrite(TModel model, ref ResizableMemory<byte> writer);
     }
 
     public class PropertyMap<TModel, TValue> : PropertyMap<TModel>
@@ -51,6 +55,8 @@ namespace Voltaic.Serialization
         public ValueConverter<TValue> Converter { get; }
         public Func<TModel, TValue> GetFunc { get; }
         public Action<TModel, TValue> SetFunc { get; }
+
+        public override Type Type => typeof(TValue);
 
         public PropertyMap(
             Serializer serializer,
@@ -65,7 +71,9 @@ namespace Voltaic.Serialization
             SetFunc = propInfo.SetMethod?.CreateDelegate(typeof(Action<TModel, TValue>)) as Action<TModel, TValue>;
         }
 
-        public override bool TryRead(TModel model, ref ReadOnlySpan<byte> data)
+        public override bool HasReadConverter(TModel model, uint dependencies) => true;
+
+        public override bool TryRead(TModel model, ref ReadOnlySpan<byte> data, uint dependencies)
         {
             if (!Converter.TryRead(ref data, out var result, this))
                 return false;
@@ -74,38 +82,69 @@ namespace Voltaic.Serialization
         }
 
         public override bool CanWrite(TModel model) => _supportsWrite && Converter.CanWrite(GetFunc(model), this);
-        public override bool TryWrite(TModel model, ref ResizableMemory<byte> buffer)
+        public override bool TryWrite(TModel model, ref ResizableMemory<byte> writer)
         {
-            if (!Converter.TryWrite(ref buffer, GetFunc(model), this))
+            if (!Converter.TryWrite(ref writer, GetFunc(model), this))
                 return false;
             return true;
         }
     }
 
-    public class DependentPropertyMap<TModel, TKey, TValue> : PropertyMap<TModel>
+    public class DependentPropertyMap<TModel, TValue> : PropertyMap<TModel>
     {
-        public IReadOnlyDictionary<TKey, ValueConverter<TValue>> ValueConverters { get; }
+        public IReadOnlyList<ConverterProvider<TModel, TValue>> ConverterProviders { get; }
         public Func<TModel, TValue> GetFunc { get; }
         public Action<TModel, TValue> SetFunc { get; }
 
+        public override Type Type => typeof(TValue);
+
+        private readonly List<PropertyMap> _dependencies;
+
         public DependentPropertyMap(
             Serializer serializer,
-            ModelMap modelMap,
+            ModelMap<TModel> modelMap,
             PropertyInfo propInfo,
             ModelPropertyAttribute attr,
-            PropertyMap<TModel, TKey> keyProperty,
-            Dictionary<TKey, ValueConverter<TValue>> converters)
+            List<ModelTypeSelectorAttribute> typeSelectorAttrs,
+            Dictionary<string, PropertyMap<TModel>> props)
             : base(serializer, modelMap, propInfo, attr)
         {
-            Dependency = keyProperty;
-            ValueConverters = converters;
             GetFunc = propInfo.GetMethod?.CreateDelegate(typeof(Func<TModel, TValue>)) as Func<TModel, TValue>;
             SetFunc = propInfo.SetMethod?.CreateDelegate(typeof(Action<TModel, TValue>)) as Action<TModel, TValue>;
+
+            var dependencyDict = new MemoryDictionary<PropertyMap>();
+            var dependencies = new List<PropertyMap>();
+            var converterProviders = new List<ConverterProvider<TModel, TValue>>();
+            for (int i = 0; i < typeSelectorAttrs.Count; i++)
+            {
+                var typeSelectorAttr = typeSelectorAttrs[i];
+                if (!props.TryGetValue(typeSelectorAttr.KeyProperty, out var keyProp))
+                    throw new InvalidOperationException($"Unable to find dependency \"{typeSelectorAttr.KeyProperty}\"");
+                var keyType = keyProp.Type;
+
+                // TODO: Does this search subtypes?
+                var mapProp = typeof(TModel).GetTypeInfo().GetDeclaredProperty(typeSelectorAttr.MapProperty);
+                if (mapProp == null)
+                    throw new InvalidOperationException($"Unable to find map \"{typeSelectorAttr.MapProperty}\"");
+
+                var converterProviderType = typeof(ConverterProvider<,,>).MakeGenericType(typeof(TModel), keyType, typeof(TValue)).GetTypeInfo();
+                var converterConstructor = converterProviderType.DeclaredConstructors.Single();
+                var converterProvider = converterConstructor.Invoke(new object[] { serializer, this, keyProp, mapProp }) as ConverterProvider<TModel, TValue>;
+                converterProviders.Add(converterProvider);
+
+                if (keyProp.Index == null)
+                    modelMap.RegisterDependency(keyProp);
+
+                if (dependencyDict.TryAdd(converterProvider.KeyProperty.Key, converterProvider.KeyProperty))
+                    dependencies.Add(converterProvider.KeyProperty);
+            }
+            ConverterProviders = converterProviders;
+            _dependencies = dependencies;
         }
 
-        public override bool TryRead(TModel model, ref ReadOnlySpan<byte> data)
+        public override bool TryRead(TModel model, ref ReadOnlySpan<byte> data, uint dependencies)
         {
-            if (!GetConverter(model, out var converter))
+            if (!TryGetReadConverter(model, out var converter, dependencies))
                 return false;
             if (!converter.TryRead(ref data, out var result, this))
                 return false;
@@ -115,20 +154,41 @@ namespace Voltaic.Serialization
 
         public override bool CanWrite(TModel model)
         {
-            if (!GetConverter(model, out var converter))
+            if (!TryGetWriteConverter(model, out var converter))
                 return false;
             return _supportsWrite && converter.CanWrite(GetFunc(model), this);
         }
         public override bool TryWrite(TModel model, ref ResizableMemory<byte> buffer)
         {
-            if (!GetConverter(model, out var converter))
+            if (!TryGetWriteConverter(model, out var converter))
                 return false;
             if (!converter.TryWrite(ref buffer, GetFunc(model), this))
                 return false;
             return true;
         }
 
-        private bool GetConverter(TModel model, out ValueConverter<TValue> converter)
-            => ValueConverters.TryGetValue((Dependency as PropertyMap<TModel, TKey>).GetFunc(model), out converter);
+        public override bool HasReadConverter(TModel model, uint dependencies)
+            => TryGetReadConverter(model, out _, dependencies);
+        private bool TryGetReadConverter(TModel model, out ValueConverter<TValue> converter, uint dependencies)
+        {
+            converter = default;
+            for (int i = 0; i < ConverterProviders.Count; i++)
+            {
+                var provider = ConverterProviders[i];
+                if ((dependencies & provider.KeyProperty.IndexMask) != 0 && provider.TryGet(model, out converter))
+                    return true;
+            }
+            return false;
+        }
+        private bool TryGetWriteConverter(TModel model, out ValueConverter<TValue> converter)
+        {
+            converter = default;
+            for (int i = 0; i < ConverterProviders.Count; i++)
+            {
+                if (ConverterProviders[i].TryGet(model, out converter))
+                    return true;
+            }
+            return false;
+        }
     }
 }

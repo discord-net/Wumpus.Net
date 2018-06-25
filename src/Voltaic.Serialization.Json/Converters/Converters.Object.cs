@@ -38,7 +38,7 @@ namespace Voltaic.Serialization.Json
                 return true;
             }
 
-            Span<bool> dependencies = stackalloc bool[8];
+            uint dependencies = 0;
             var deferred = new DeferredPropertyList<byte, byte>();
 
             bool isFirst = true;
@@ -83,7 +83,7 @@ namespace Voltaic.Serialization.Json
                     return false;
 
                 // Property depends on another that hasn't been deserialized yet
-                if (innerPropMap.Dependency != null && !dependencies[innerPropMap.Dependency.Index.Value])
+                if (!innerPropMap.HasReadConverter(result, dependencies))
                 {
                     if (!JsonReader.Skip(ref remaining, out var skipped))
                         return false;
@@ -91,12 +91,8 @@ namespace Voltaic.Serialization.Json
                         return false;
                     continue;
                 }
-
-                if (!innerPropMap.TryRead(result, ref remaining))
-                    return false;
-
-                if (innerPropMap.Index != null)
-                    dependencies[innerPropMap.Index.Value] = true;
+                
+                dependencies |= innerPropMap.IndexMask;
             }
 
             // Process all deferred properties
@@ -105,7 +101,7 @@ namespace Voltaic.Serialization.Json
                 if (!_map.TryGetProperty(deferred.GetKey(i), out var innerPropMap))
                     return false;
                 var value = deferred.GetValue(i);
-                if (!innerPropMap.TryRead(result, ref value))
+                if (!innerPropMap.TryRead(result, ref value, dependencies))
                     return false;
             }
             return true;

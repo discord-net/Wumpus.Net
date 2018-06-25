@@ -14,7 +14,7 @@ namespace Wumpus.Requests
         [ModelProperty("user_limit")]
         public Optional<int> UserLimit { get; set; }
 
-        public CreateVoiceChannelParams(string name)
+        public CreateVoiceChannelParams(Utf8String name)
             : base(name, ChannelType.Voice)
         {
         }

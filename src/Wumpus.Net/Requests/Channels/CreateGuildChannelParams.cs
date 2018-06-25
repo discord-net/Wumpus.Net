@@ -17,7 +17,7 @@ namespace Wumpus.Requests
         [ModelProperty("permission_overwrites")]
         public Optional<Overwrite[]> PermissionOverwrites { get; set; }
 
-        public CreateGuildChannelParams(string name, ChannelType type)
+        public CreateGuildChannelParams(Utf8String name, ChannelType type)
         {
             Name = name;
             Type = type;

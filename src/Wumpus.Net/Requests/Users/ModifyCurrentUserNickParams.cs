@@ -1,4 +1,5 @@
-﻿using Voltaic.Serialization;
+﻿using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Requests
 {
@@ -9,7 +10,7 @@ namespace Wumpus.Requests
         [ModelProperty("nick")]
         public Utf8String Nickname { get; }
 
-        public ModifyCurrentUserNickParams(string nickname)
+        public ModifyCurrentUserNickParams(Utf8String nickname)
         {
             Nickname = nickname;
         }

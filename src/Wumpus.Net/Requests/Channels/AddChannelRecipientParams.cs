@@ -13,7 +13,7 @@ namespace Wumpus.Requests
         [ModelProperty("nick")]
         public Optional<Utf8String> Nickname { get; set; }
 
-        public AddChannelRecipientParams(string accessToken)
+        public AddChannelRecipientParams(Utf8String accessToken)
         {
             AccessToken = accessToken;
         }

@@ -11,13 +11,13 @@ namespace Wumpus.Net.Tests
         {
             yield return Test(c => c.CreateMessageAsync(123, new Requests.CreateMessageParams
             {
-                Content = "test",
-                Embed = new Embed { Author = new EmbedAuthor { Name = "testtest" }, Url = new Utf8String("http://discordapp.com") },
+                Content = (Utf8String)"test",
+                Embed = new Embed { Author = new EmbedAuthor { Name = (Utf8String)"testtest" }, Url = (Utf8String)"http://discordapp.com" },
                 IsTTS = true
             }), new Message
             {
-                Content = "test",
-                Embeds = new[] { new Embed { Author = new EmbedAuthor { Name = "testtest" }, Url = new Utf8String("http://discordapp.com") } },
+                Content = (Utf8String)"test",
+                Embeds = new[] { new Embed { Author = new EmbedAuthor { Name = (Utf8String)"testtest" }, Url = (Utf8String)"http://discordapp.com" } },
                 IsTextToSpeech = true
             });
         }
