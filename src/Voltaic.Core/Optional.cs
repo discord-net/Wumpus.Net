@@ -37,8 +37,7 @@ namespace Voltaic
         public override bool Equals(object other)
         {
             if (!IsSpecified) return false;
-            if (_value is null) return other is null;
-            return _value.Equals(other);
+            return _value?.Equals(other) ?? false;
         }
         public override int GetHashCode() => IsSpecified ? _value.GetHashCode() : 0;
 
