@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Voltaic.Serialization.Utf8.Tests;
 using Xunit;
 
 namespace Voltaic.Serialization.Json.Tests
