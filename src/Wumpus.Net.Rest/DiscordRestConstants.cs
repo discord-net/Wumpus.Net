@@ -1,14 +1,14 @@
-﻿
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace Wumpus
 {
-    public static class DiscordConstants
+    // TODO: Do we use these?
+    public static class DiscordRestConstants
     {
         public const int APIVersion = 6;
         public static string Version { get; } =
-            typeof(DiscordConstants).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ??
-            typeof(DiscordConstants).GetTypeInfo().Assembly.GetName().Version.ToString(3) ??
+            typeof(DiscordRestConstants).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ??
+            typeof(DiscordRestConstants).GetTypeInfo().Assembly.GetName().Version.ToString(3) ??
             "Unknown";
 
         public static string UserAgent { get; } = $"DiscordBot (https://github.com/RogueException/Wumpus.Net, v{Version})";

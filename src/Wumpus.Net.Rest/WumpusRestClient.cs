@@ -22,7 +22,7 @@ namespace Wumpus
 
         public WumpusRestClient(WumpusJsonSerializer serializer = null)
             : this("https://discordapp.com/api/v6/", serializer) { }
-        internal WumpusRestClient(string url, WumpusJsonSerializer serializer = null)
+        public WumpusRestClient(string url, WumpusJsonSerializer serializer = null)
         {
             _serializer = serializer ?? new WumpusJsonSerializer();
             var httpClient = new HttpClient { BaseAddress = new Uri(url) };

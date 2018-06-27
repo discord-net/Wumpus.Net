@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../Voltaic.targets" />
+  <PropertyGroup>
+    <AssemblyName>Wumpus.Net.Core</AssemblyName>
+    <RootNamespace>Wumpus</RootNamespace>
+    <Description>A low-level Discord API wrapper</Description>
+    <TargetFrameworks>netstandard1.3</TargetFrameworks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Voltaic.Serialization.Json\Voltaic.Serialization.Json.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../Voltaic.targets" />
+  <PropertyGroup>
+    <AssemblyName>Wumpus.Net.Rest</AssemblyName>
+    <RootNamespace>Wumpus</RootNamespace>
+    <Description>Provides a low-level rest client for the Discord API</Description>
+    <TargetFrameworks>netstandard1.3</TargetFrameworks>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="RestEase" Version="1.4.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Wumpus.Net.Core\Wumpus.Net.Core.csproj" />
+    <ProjectReference Include="..\Voltaic.Serialization.Json\Voltaic.Serialization.Json.csproj" />
+  </ItemGroup>
+</Project>

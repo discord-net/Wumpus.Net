@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../Voltaic.targets" />
+  <PropertyGroup>
+    <AssemblyName>Wumpus.Net.Rpc</AssemblyName>
+    <RootNamespace>Wumpus</RootNamespace>
+    <Description>Provides a low-level RPC client for local Discord clients</Description>
+    <TargetFrameworks>netstandard1.3</TargetFrameworks>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="RestEase" Version="1.4.5" />
+    <PackageReference Include="System.Net.WebSockets.Client" Version="4.3.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Voltaic.Serialization.Json\Voltaic.Serialization.Json.csproj" />
+    <ProjectReference Include="..\Voltaic.Serialization.Etf\Voltaic.Serialization.Etf.csproj" />
+    <ProjectReference Include="..\Wumpus.Net.Core\Wumpus.Net.Core.csproj" />
+  </ItemGroup>
+</Project>

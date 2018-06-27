@@ -41,7 +41,7 @@ namespace Wumpus.Requests
             if (Embed.IsSpecified && Embed.Value != null)
                 Preconditions.NotNullOrWhitespace(Content, nameof(Content));
             // else //TODO: Validate embed length
-            Preconditions.LengthAtMost(Content, DiscordConstants.MaxMessageSize, nameof(Content));
+            Preconditions.LengthAtMost(Content, DiscordRestConstants.MaxMessageSize, nameof(Content));
         }
     }
 }

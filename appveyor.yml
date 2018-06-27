@@ -20,18 +20,23 @@ build_script:
 - ps: dotnet build Wumpus.Net.sln -c "Release" /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
 
 test_script:
-- ps: dotnet xunit "test/Voltaic.Serialization.Utf8.Tests/Voltaic.Serialization.Utf8.Tests.csproj" -c "Release" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
-- ps: dotnet xunit "test/Voltaic.Serialization.Json.Tests/Voltaic.Serialization.Json.Tests.csproj" -c "Release" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
-- ps: dotnet xunit "test/Voltaic.Serialization.Etf.Tests/Voltaic.Serialization.Etf.Tests.csproj" -c "Release" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
-- ps: dotnet xunit "test/Wumpus.Net.Tests/Wumpus.Net.Tests.csproj" -c "Release" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
+- ps: dotnet test "test/Voltaic.Serialization.Utf8.Tests/Voltaic.Serialization.Utf8.Tests.csproj" -c "Release" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
+- ps: dotnet test "test/Voltaic.Serialization.Json.Tests/Voltaic.Serialization.Json.Tests.csproj" -c "Release" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
+- ps: dotnet test "test/Voltaic.Serialization.Etf.Tests/Voltaic.Serialization.Etf.Tests.csproj" -c "Release" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
+- ps: dotnet test "test/Wumpus.Net.Gateway.Tests/Wumpus.Net.Gateway.Tests.csproj" -c "Release" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
+- ps: dotnet test "test/Wumpus.Net.Rest.Tests/Wumpus.Net.Rest.Tests.csproj" -c "Release" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
+- ps: dotnet test "test/Wumpus.Net.Rpc.Tests/Wumpus.Net.Rpc.Tests.csproj" -c "Release" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
 
 after_test:
-- ps: dotnet pack "src\Wumpus.Net\Wumpus.Net.csproj" -c "Release" -o "../../artifacts" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
 - ps: dotnet pack "src\Voltaic.Core\Voltaic.Core.csproj" -c "Release" -o "../../artifacts" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
 - ps: dotnet pack "src\Voltaic.Serialization\Voltaic.Serialization.csproj" -c "Release" -o "../../artifacts" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
 - ps: dotnet pack "src\Voltaic.Serialization.Utf8\Voltaic.Serialization.Utf8.csproj" -c "Release" -o "../../artifacts" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
 - ps: dotnet pack "src\Voltaic.Serialization.Json\Voltaic.Serialization.Json.csproj" -c "Release" -o "../../artifacts" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
 - ps: dotnet pack "src\Voltaic.Serialization.Etf\Voltaic.Serialization.Etf.csproj" -c "Release" -o "../../artifacts" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
+- ps: dotnet pack "src\Wumpus.Net.Core\Wumpus.Net.Core.csproj" -c "Release" -o "../../artifacts" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
+- ps: dotnet pack "src\Wumpus.Net.Gateway\Wumpus.Net.Gateway.csproj" -c "Release" -o "../../artifacts" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
+- ps: dotnet pack "src\Wumpus.Net.Rest\Wumpus.Net.Rest.csproj" -c "Release" -o "../../artifacts" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
+- ps: dotnet pack "src\Wumpus.Net.Rpc\Wumpus.Net.Rpc.csproj" -c "Release" -o "../../artifacts" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
 - ps: Get-ChildItem artifacts\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
 
 deploy:

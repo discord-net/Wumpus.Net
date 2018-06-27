@@ -1,19 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../Voltaic.targets" />
   <PropertyGroup>
-    <AssemblyName>Wumpus.Net</AssemblyName>
+    <AssemblyName>Wumpus.Net.Gateway</AssemblyName>
     <RootNamespace>Wumpus</RootNamespace>
-    <Description>A low-level Discord API wrapper</Description>
+    <Description>Provides a low-level gateway client for the Discord API</Description>
     <TargetFrameworks>netstandard1.3</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="RestEase" Version="1.4.3" />
     <PackageReference Include="System.Net.WebSockets.Client" Version="4.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Voltaic.Core\Voltaic.Core.csproj" />
     <ProjectReference Include="..\Voltaic.Serialization.Etf\Voltaic.Serialization.Etf.csproj" />
-    <ProjectReference Include="..\Voltaic.Serialization.Json\Voltaic.Serialization.Json.csproj" />
-    <ProjectReference Include="..\Voltaic.Serialization\Voltaic.Serialization.csproj" />
+    <ProjectReference Include="..\Wumpus.Net.Rest\Wumpus.Net.Rest.csproj" />
   </ItemGroup>
 </Project>
