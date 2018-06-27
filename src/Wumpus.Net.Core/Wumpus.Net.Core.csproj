@@ -1,9 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../Voltaic.targets" />
   <PropertyGroup>
-    <AssemblyName>Wumpus.Net.Core</AssemblyName>
     <RootNamespace>Wumpus</RootNamespace>
-    <Description>A low-level Discord API wrapper</Description>
+    <AssemblyName>Wumpus.Net.Core</AssemblyName>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <PackageTags>discord;discordapp;wumpus;api;rogueexception</PackageTags>
+    <PackageProjectUrl>https://github.com/RogueException/Wumpus.Net</PackageProjectUrl>
+    <RepositoryUrl>git://github.com/RogueException/Wumpus.Net</RepositoryUrl>
+    <Description>A collection of common types and models used by Wumpus.Net packages</Description>
     <TargetFrameworks>netstandard1.3</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>

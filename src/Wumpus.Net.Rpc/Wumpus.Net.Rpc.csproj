@@ -1,9 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../Voltaic.targets" />
   <PropertyGroup>
-    <AssemblyName>Wumpus.Net.Rpc</AssemblyName>
     <RootNamespace>Wumpus</RootNamespace>
-    <Description>Provides a low-level RPC client for local Discord clients</Description>
+    <AssemblyName>Wumpus.Net.Rpc</AssemblyName>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <PackageTags>discord;discordapp;wumpus;rpc;api;rogueexception</PackageTags>
+    <PackageProjectUrl>https://github.com/RogueException/Wumpus.Net</PackageProjectUrl>
+    <RepositoryUrl>git://github.com/RogueException/Wumpus.Net</RepositoryUrl>
+    <Description>Provides a low-level RPC client for local Discord Clients</Description>
     <TargetFrameworks>netstandard1.3</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>

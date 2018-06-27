@@ -1,12 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../Voltaic.targets" />
   <PropertyGroup>
     <RootNamespace>Voltaic.Serialization.Utf8</RootNamespace>
     <AssemblyName>Voltaic.Serialization.Utf8</AssemblyName>
     <VersionPrefix>0.1.0</VersionPrefix>
-    <PackageTags>voltaic;serialization;string</PackageTags>
-    <PackageProjectUrl>https://github.com/RogueException/Voltaic.Serialization.Utf8</PackageProjectUrl>
-    <RepositoryUrl>git://github.com/RogueException/Voltaic.Serialization.Utf8</RepositoryUrl>
+    <PackageTags>voltaic;serialization;utf8;rogueexception</PackageTags>
+    <PackageProjectUrl>https://github.com/RogueException/Wumpus.Net</PackageProjectUrl>
+    <RepositoryUrl>git://github.com/RogueException/Wumpus.Net</RepositoryUrl>
     <Description>A test extension for Voltaic.Serialization adding String support via Utf8Parser/Utf8Formatter</Description>
     <TargetFrameworks>netstandard1.1</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
