@@ -1,7 +1,7 @@
 using System;
 using System.Buffers;
 
-namespace Voltaic.Serialization.Json
+namespace Voltaic.Serialization.Etf
 {
     public class EtfSerializer : Serializer
     {
@@ -10,11 +10,13 @@ namespace Voltaic.Serialization.Json
         {
         }
 
-        public T Read<T>(ReadOnlyMemory<byte> data, ValueConverter<T> converter = null)
-            => base.Read<T>(data.Span, converter);
-        public new T Read<T>(ReadOnlySpan<byte> data, ValueConverter<T> converter = null)
-            => base.Read<T>(data, converter);
-        public new ReadOnlyMemory<byte> Write<T>(T value, ValueConverter<T> converter = null)
-            => base.Write<T>(value, converter).AsMemory();
+        public override T Read<T>(ReadOnlySpan<byte> data, ValueConverter<T> converter = null)
+        {
+            // Strip header
+            if (data.Length > 0 && data[0] == 131)
+                data = data.Slice(1); 
+
+            return base.Read(data, converter);
+        }
     }
 }

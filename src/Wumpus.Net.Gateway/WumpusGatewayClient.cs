@@ -2,6 +2,9 @@
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Voltaic.Serialization;
+using Voltaic.Serialization.Etf;
+using Wumpus.Events;
 
 namespace Wumpus
 {
@@ -15,21 +18,26 @@ namespace Wumpus
 
     public class WumpusGatewayClient : IDisposable
     {
-        private SemaphoreSlim _stateLock;
-        private ClientWebSocket _client;
+        private readonly EtfSerializer _serializer;
+        private readonly ResizableMemory<byte> _receiveBuffer;
+        private readonly ClientWebSocket _client;
+        private readonly SemaphoreSlim _stateLock;
+
         private ConnectionState _state;
         private Task _connectionTask;
         private CancellationTokenSource _connectionCts;
 
-        public WumpusGatewayClient()
+        public WumpusGatewayClient(EtfSerializer serializer = null)
         {
+            _serializer = serializer;
+            _receiveBuffer = new ResizableMemory<byte>(new byte[10 * 1024]); // 10 KB
             _client = new ClientWebSocket();
             _stateLock = new SemaphoreSlim(1, 1);
             _connectionTask = Task.CompletedTask;
             _connectionCts = new CancellationTokenSource();
         }
 
-        public async Task ConnectAsync(string url, int shardId, int shardNum)
+        public async Task ConnectAsync(string url, int? shardId = null, int? shardNum = null)
         {
             TaskCompletionSource<bool> connectResult;
             await _stateLock.WaitAsync().ConfigureAwait(false);
@@ -62,13 +70,13 @@ namespace Wumpus
             }
         }
 
-        private async Task RunAsync(string url, int shardId, int shardNum, CancellationToken cancelToken, TaskCompletionSource<bool> connectResult)
+        private async Task RunAsync(string url, int? shardId, int? shardNum, CancellationToken cancelToken, TaskCompletionSource<bool> connectResult)
         {
             try
             {
                 _state = ConnectionState.Connecting;
 
-                var uri = new Uri(url);
+                var uri = new Uri(url + $"?v={DiscordGatewayConstants.APIVersion}&encoding=etf"); // TODO: Add &compress=zlib-stream
                 await _client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);
 
                 _state = ConnectionState.Connected;
@@ -93,7 +101,7 @@ namespace Wumpus
             await Task.WhenAll(tasks).ConfigureAwait(false);
 
             // receiveTask and sendTask must have completed before we can send/receive from a different thread
-            try { await _client.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None); }
+            try { await _client.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None).ConfigureAwait(false); }
             catch { } // We don't actually care if sending a close msg fails
 
             _state = ConnectionState.Disconnected;
@@ -118,7 +126,28 @@ namespace Wumpus
             {
                 while (!cancelToken.IsCancellationRequested)
                 {
-                    await Task.Delay(1000, cancelToken);
+                    _receiveBuffer.Clear();
+
+                    WebSocketReceiveResult result;
+                    do
+                    {
+                        var buffer = _receiveBuffer.GetSegment(10 * 1024); // 10 KB
+                        result = await _client.ReceiveAsync(buffer, cancelToken);
+                        _receiveBuffer.Advance(result.Count);
+
+                        if (result.CloseStatus != null)
+                        {
+                            if (!string.IsNullOrEmpty(result.CloseStatusDescription))
+                                throw new Exception($"WebSocket was closed: {result.CloseStatus.Value} ({result.CloseStatusDescription})"); // TODO: Exception type?
+                            else
+                                throw new Exception($"WebSocket was closed: {result.CloseStatus.Value}"); // TODO: Exception type?
+                        }
+                    }
+                    while (!result.EndOfMessage);
+
+                    var frame = _serializer.Read<GatewayFrame>(_receiveBuffer.AsReadOnlySpan());
+                    await Task.Delay(-1);
+                    // TODO: 
                 }
             }
             catch (OperationCanceledException) { } // Ignore
@@ -131,7 +160,7 @@ namespace Wumpus
             {
                 while (!cancelToken.IsCancellationRequested)
                 {
-                    await Task.Delay(1000, cancelToken);
+                    await Task.Delay(1000, cancelToken).ConfigureAwait(false);
                 }
             }
             catch (OperationCanceledException) { } // Ignore

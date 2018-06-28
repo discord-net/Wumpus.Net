@@ -33,6 +33,16 @@ namespace Voltaic.Serialization
             return Array[--Length];
         }
 
+        public ArraySegment<T> GetSegment(int minimumLength)
+        {
+            RequestLength(minimumLength);
+            return new ArraySegment<T>(Array, Length, Array.Length - Length);
+        }
+        public Memory<T> GetMemory(int minimumLength)
+        {
+            RequestLength(minimumLength);
+            return new Memory<T>(Array, Length, Array.Length - Length);
+        }
         public Span<T> GetSpan(int minimumLength)
         {
             RequestLength(minimumLength);

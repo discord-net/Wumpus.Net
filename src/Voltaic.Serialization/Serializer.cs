@@ -25,7 +25,9 @@ namespace Voltaic.Serialization
             _converters = converters ?? new ConverterCollection();
         }
 
-        public T Read<T>(ReadOnlySpan<byte> data, ValueConverter<T> converter = null)
+        public T Read<T>(ReadOnlyMemory<byte> data, ValueConverter<T> converter = null)
+            => Read<T>(data.Span, converter);
+        public virtual T Read<T>(ReadOnlySpan<byte> data, ValueConverter<T> converter = null)
         {
             if (converter == null)
                 converter = _converters.Get<T>(this);

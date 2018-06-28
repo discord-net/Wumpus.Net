@@ -69,5 +69,10 @@ namespace Voltaic.Serialization.Etf
                     throw new SerializationException($"Unexpected type id ({b})");
             }
         }
+
+        public static bool Skip(ref ReadOnlySpan<byte> remaining, out ReadOnlySpan<byte> skipped)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
