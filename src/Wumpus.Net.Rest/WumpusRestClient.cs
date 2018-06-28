@@ -247,6 +247,16 @@ namespace Wumpus
             return _api.TriggerTypingIndicatorAsync(channelId);
         }
 
+        // Gateway
+        public Task<GetGatewayResponse> GetGatewayAsync()
+        {
+            return _api.GetGatewayAsync();
+        }
+        public Task<GetBotGatewayResponse> GetBotGatewayAsync()
+        {
+            return _api.GetBotGatewayAsync();
+        }
+
         // Guild
 
         public Task<Guild> GetGuildAsync(Snowflake guildId)

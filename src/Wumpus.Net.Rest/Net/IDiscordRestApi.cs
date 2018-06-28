@@ -92,6 +92,13 @@ namespace Wumpus.Net
         [Post("channels/{channelId}/typing")]
         Task TriggerTypingIndicatorAsync([Path] Snowflake channelId);
 
+        // Gateway
+
+        [Get("gateway")]
+        Task<GetGatewayResponse> GetGatewayAsync();
+        [Get("gateway/bot")]
+        Task<GetBotGatewayResponse> GetBotGatewayAsync();
+
         // Guild
 
         [Get("guilds/{guildId}")]
