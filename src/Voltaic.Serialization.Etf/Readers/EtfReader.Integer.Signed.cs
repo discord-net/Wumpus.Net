@@ -61,7 +61,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         //remaining = remaining.Slice(1);
                         byte bytes = remaining[1];
-                        bool isPositive = remaining[2] == 0;                        
+                        bool isPositive = remaining[2] == 0;
                         remaining = remaining.Slice(2);
                         return TryReadSignedBigNumber(bytes, isPositive, ref remaining, out result);
                     }
@@ -96,7 +96,7 @@ namespace Voltaic.Serialization.Etf
                     }
                 case 2:
                     {
-                        result = BinaryPrimitives.ReadUInt16BigEndian(remaining);
+                        result = BinaryPrimitives.ReadUInt16LittleEndian(remaining);
                         if (!isPositive)
                             result = -result;
                         remaining = remaining.Slice(2);
@@ -104,7 +104,7 @@ namespace Voltaic.Serialization.Etf
                     }
                 case 4:
                     {
-                        result = BinaryPrimitives.ReadUInt32BigEndian(remaining);
+                        result = BinaryPrimitives.ReadUInt32LittleEndian(remaining);
                         if (!isPositive)
                             result = -result;
                         remaining = remaining.Slice(2);
@@ -112,7 +112,7 @@ namespace Voltaic.Serialization.Etf
                     }
                 case 8:
                     {
-                        ulong unsignedResult = BinaryPrimitives.ReadUInt64BigEndian(remaining);
+                        ulong unsignedResult = BinaryPrimitives.ReadUInt64LittleEndian(remaining);
                         if (isPositive)
                         {
                             if (unsignedResult > long.MaxValue)

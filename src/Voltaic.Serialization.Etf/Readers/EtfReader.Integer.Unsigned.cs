@@ -99,19 +99,19 @@ namespace Voltaic.Serialization.Etf
                     }
                 case 2:
                     {
-                        result = BinaryPrimitives.ReadUInt16BigEndian(remaining);
+                        result = BinaryPrimitives.ReadUInt16LittleEndian(remaining);
                         remaining = remaining.Slice(2);
                         return true;
                     }
                 case 4:
                     {
-                        result = BinaryPrimitives.ReadUInt32BigEndian(remaining);
+                        result = BinaryPrimitives.ReadUInt32LittleEndian(remaining);
                         remaining = remaining.Slice(2);
                         return true;
                     }
                 case 8:
                     {
-                        result = BinaryPrimitives.ReadUInt64BigEndian(remaining);
+                        result = BinaryPrimitives.ReadUInt64LittleEndian(remaining);
                         remaining = remaining.Slice(2);
                         return true;
                     }
