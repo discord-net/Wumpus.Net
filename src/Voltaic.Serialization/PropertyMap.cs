@@ -129,7 +129,7 @@ namespace Voltaic.Serialization
 
                 var converterProviderType = typeof(ConverterProvider<,,>).MakeGenericType(typeof(TModel), keyType, typeof(TValue)).GetTypeInfo();
                 var converterConstructor = converterProviderType.DeclaredConstructors.Single();
-                var converterProvider = converterConstructor.Invoke(new object[] { serializer, this, keyProp, mapProp }) as ConverterProvider<TModel, TValue>;
+                var converterProvider = converterConstructor.Invoke(new object[] { serializer, propInfo, keyProp, mapProp }) as ConverterProvider<TModel, TValue>;
                 converterProviders.Add(converterProvider);
 
                 if (keyProp.Index == null)

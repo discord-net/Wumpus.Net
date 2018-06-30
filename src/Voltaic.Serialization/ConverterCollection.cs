@@ -186,14 +186,21 @@ namespace Voltaic.Serialization
             => Get(serializer, typeof(T), propInfo, throwOnNotFound) as ValueConverter<T>;
         internal ValueConverter<T> Get<T>(Serializer serializer, Type type, PropertyInfo propInfo = null, bool throwOnNotFound = true)
         {
-            if (!(Get(serializer, type, propInfo, throwOnNotFound) is ValueConverter<T> converter))
-                throw new InvalidOperationException($"Converter for {type.Name} is not assignable to {typeof(ValueConverter<T>).Name}");
-            return converter;
+            var converter = Get(serializer, type, propInfo, throwOnNotFound);
+            if (converter is ValueConverter<T> genericConverter)
+                return genericConverter;
+
+            // Types dont match, build an adapter
+            // TODO: How much of a perf is doing uncached reflection here?
+            if (!typeof(T).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+                throw new InvalidOperationException($"Converter for {type.Name} is not assignable to {typeof(T).Name}");
+            var adapterType = typeof(ValueConverterAdapter<,>).MakeGenericType(typeof(T), type).GetTypeInfo();
+            var constructor = adapterType.DeclaredConstructors.Single();
+            return constructor.Invoke(new object[] { converter }) as ValueConverter<T>;
         }
         internal ValueConverter Get(Serializer serializer, Type type, PropertyInfo propInfo = null, bool throwOnNotFound = true)
         {
             bool canCache = propInfo == null; // Can't cache top-level due to attribute influences
-
             if (canCache && _cache.TryGetValue(type, out var converter))
                 return converter;
 
@@ -204,7 +211,7 @@ namespace Voltaic.Serialization
             if (canCache)
                 _cache.TryAdd(type, converter);
             return converter;
-        }
+        }        
 
         private ValueConverter FindAndBuildConverter(Serializer serializer, TypeInfo valueTypeInfo, PropertyInfo propInfo, bool throwOnNotFound)
         {
