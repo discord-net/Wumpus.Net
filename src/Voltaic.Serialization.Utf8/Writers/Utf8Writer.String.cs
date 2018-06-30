@@ -32,20 +32,17 @@ namespace Voltaic.Serialization.Utf8
         }
 
         public static bool TryWrite(ref ResizableMemory<byte> writer, Utf8String value)
-        {
-            var srcSpan = value.Bytes;
-            var dstSpan = writer.GetSpan(srcSpan.Length);
-            srcSpan.CopyTo(dstSpan);
-            writer.Advance(srcSpan.Length);
-            return true;
-        }
-
+            => TryWriteString(ref writer, value.Bytes);
         public static bool TryWrite(ref ResizableMemory<byte> writer, Utf8Span value)
+            => TryWriteString(ref writer, value.Bytes);
+
+        public static bool TryWriteString(ref ResizableMemory<byte> writer, ReadOnlyMemory<byte> value)
+            => TryWriteString(ref writer, value.Span);
+        public static bool TryWriteString(ref ResizableMemory<byte> writer, ReadOnlySpan<byte> value)
         {
-            var srcSpan = value.Bytes;
-            var dstSpan = writer.GetSpan(srcSpan.Length);
-            srcSpan.CopyTo(dstSpan);
-            writer.Advance(srcSpan.Length);
+            var dstSpan = writer.GetSpan(value.Length);
+            value.CopyTo(dstSpan);
+            writer.Advance(value.Length);
             return true;
         }
     }

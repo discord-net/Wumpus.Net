@@ -7,7 +7,7 @@ namespace Voltaic.Serialization.Json
 {
     public static partial class JsonReader
     {
-        private enum StringOperationStatus
+        public enum StringOperationStatus
         {
             Failed,
             Builder,
@@ -95,7 +95,7 @@ namespace Voltaic.Serialization.Json
             return false;
         }
 
-        private static StringOperationStatus TryReadUtf8Bytes(ref ReadOnlySpan<byte> remaining, out ResizableMemory<byte> builder, out ReadOnlySpan<byte> directResult)
+        public static StringOperationStatus TryReadUtf8Bytes(ref ReadOnlySpan<byte> remaining, out ResizableMemory<byte> builder, out ReadOnlySpan<byte> directResult)
         {
             builder = default;
             directResult = default;
