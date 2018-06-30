@@ -5,54 +5,46 @@ namespace Voltaic.Serialization.Json
 {
     public static partial class JsonWriter
     {
-        public static bool TryWrite(ref ResizableMemory<byte> writer, float value, StandardFormat standardFormat)
+        public static bool TryWrite(ref ResizableMemory<byte> writer, float value, StandardFormat standardFormat = default)
         {
-            if (standardFormat.Symbol != JsonSerializer.FloatFormat.Symbol || float.IsInfinity(value) || float.IsNaN(value))
+            if (standardFormat.IsDefault && !float.IsInfinity(value) && !float.IsNaN(value))
             {
-                writer.Push((byte)'"');
-                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                if (!Utf8Writer.TryWrite(ref writer, value, JsonSerializer.FloatFormat.Symbol))
                     return false;
-                writer.Push((byte)'"');
             }
             else
             {
-                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                writer.Push((byte)'"');
+                if (!Utf8Writer.TryWrite(ref writer, value, !standardFormat.IsDefault ? standardFormat : JsonSerializer.FloatFormat.Symbol))
                     return false;
+                writer.Push((byte)'"');
             }
             return true;
         }
 
-        public static bool TryWrite(ref ResizableMemory<byte> writer, double value, StandardFormat standardFormat)
+        public static bool TryWrite(ref ResizableMemory<byte> writer, double value, StandardFormat standardFormat = default)
         {
-            if (standardFormat.Symbol != JsonSerializer.FloatFormat.Symbol || double.IsInfinity(value) || double.IsNaN(value))
+            if (standardFormat.IsDefault && !double.IsInfinity(value) && !double.IsNaN(value))
             {
-                writer.Push((byte)'"');
-                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                if (!Utf8Writer.TryWrite(ref writer, value, JsonSerializer.FloatFormat.Symbol))
                     return false;
-                writer.Push((byte)'"');
             }
             else
             {
-                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                writer.Push((byte)'"');
+                if (!Utf8Writer.TryWrite(ref writer, value, !standardFormat.IsDefault ? standardFormat  : JsonSerializer.FloatFormat.Symbol))
                     return false;
+                writer.Push((byte)'"');
             }
             return true;
         }
 
-        public static bool TryWrite(ref ResizableMemory<byte> writer, decimal value, StandardFormat standardFormat)
+        public static bool TryWrite(ref ResizableMemory<byte> writer, decimal value, StandardFormat standardFormat = default)
         {
-            if (standardFormat.Symbol != JsonSerializer.FloatFormat.Symbol)
-            {
-                writer.Push((byte)'"');
-                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
-                    return false;
-                writer.Push((byte)'"');
-            }
-            else
-            {
-                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
-                    return false;
-            }
+            writer.Push((byte)'"');
+            if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                return false;
+            writer.Push((byte)'"');
             return true;
         }
     }
