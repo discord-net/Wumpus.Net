@@ -42,20 +42,20 @@ namespace Voltaic.Serialization.Utf8.Tests
             switch (test.Type)
             {
                 case TestType.FailRead:
-                    Assert.Throws<SerializationException>(() => _serializer.Read<T>(test.String, converter));
+                    Assert.Throws<SerializationException>(() => _serializer.ReadUtf16<T>(test.String, converter));
                     break;
                 case TestType.FailWrite:
-                    Assert.Throws<SerializationException>(() => _serializer.WriteString(test.Value, converter));
+                    Assert.Throws<SerializationException>(() => _serializer.WriteUtf16String(test.Value, converter));
                     break;
                 case TestType.Read:
-                    Assert.Equal(test.Value, _serializer.Read<T>(test.String, converter), _comparer);
+                    Assert.Equal(test.Value, _serializer.ReadUtf16<T>(test.String, converter), _comparer);
                     break;
                 case TestType.Write:
-                    Assert.Equal(test.String, _serializer.WriteString(test.Value, converter));
+                    Assert.Equal(test.String, _serializer.WriteUtf16String(test.Value, converter));
                     break;
                 case TestType.ReadWrite:
-                    Assert.Equal(test.Value, _serializer.Read<T>(test.String, converter), _comparer);
-                    Assert.Equal(test.String, _serializer.WriteString(test.Value, converter));
+                    Assert.Equal(test.Value, _serializer.ReadUtf16<T>(test.String, converter), _comparer);
+                    Assert.Equal(test.String, _serializer.WriteUtf16String(test.Value, converter));
                     break;
             }
         }
