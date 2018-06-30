@@ -20,17 +20,17 @@ namespace Wumpus
     public class WumpusGatewayClient : IDisposable
     {
         private readonly WumpusEtfSerializer _serializer;
-        private readonly ResizableMemory<byte> _receiveBuffer;
         private readonly ClientWebSocket _client;
         private readonly SemaphoreSlim _stateLock;
 
+        private ResizableMemory<byte> _receiveBuffer;
         private ConnectionState _state;
         private Task _connectionTask;
         private CancellationTokenSource _connectionCts;
 
         public WumpusGatewayClient(WumpusEtfSerializer serializer = null)
         {
-            _serializer = serializer;
+            _serializer = serializer ?? new WumpusEtfSerializer();
             _receiveBuffer = new ResizableMemory<byte>(new byte[10 * 1024]); // 10 KB
             _client = new ClientWebSocket();
             _stateLock = new SemaphoreSlim(1, 1);
@@ -147,8 +147,7 @@ namespace Wumpus
                     while (!result.EndOfMessage);
 
                     var frame = _serializer.Read<GatewayFrame>(_receiveBuffer.AsReadOnlySpan());
-                    await Task.Delay(-1);
-                    // TODO:
+                    await HandleFrameAsync(frame).ConfigureAwait(false);
                 }
             }
             catch (OperationCanceledException) { } // Ignore
@@ -166,6 +165,22 @@ namespace Wumpus
             }
             catch (OperationCanceledException) { } // Ignore
             catch (Exception) { } // TODO: Log
+        }
+
+        private async Task HandleFrameAsync(GatewayFrame frame)
+        {
+            //switch (frame.Operation)
+            //{
+            //}
+            await Task.CompletedTask;
+        }
+
+        private async Task HandleDispatchEventAsync(GatewayFrame frame)
+        {
+            //switch (frame.DispatchType)
+            //{
+            //}
+            await Task.CompletedTask;
         }
 
         public void Dispose()
