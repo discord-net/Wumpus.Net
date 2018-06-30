@@ -74,9 +74,13 @@ namespace Voltaic.Serialization.Etf
 
         public override T Read<T>(ReadOnlySpan<byte> data, ValueConverter<T> converter = null)
         {
-            // Strip header
-            if (data.Length > 0 && data[0] == 131)
-                data = data.Slice(1);
+            // Strip version
+            if (data.Length == 0)
+                throw new SerializationException("No version byte found");
+            data = data.Slice(1);
+
+            if (data.Length != 0 && EtfReader.GetTokenType(ref data) == EtfTokenType.DistributionHeader)
+                throw new SerializationException("Distribution header is unsupported");
 
             return base.Read(data, converter);
         }
