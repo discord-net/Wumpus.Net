@@ -15,7 +15,7 @@ namespace Wumpus.Events
         public GatewayOpCode Operation { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("t", ExcludeNull = true)]
-        public Utf8String DispatchType { get; set; }
+        public GatewayDispatchType? DispatchType { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("s", ExcludeNull = true)]
         public int? Sequence { get; set; }
@@ -39,7 +39,7 @@ namespace Wumpus.Events
             [GatewayOpCode.StatusUpdate] = typeof(UpdateStatusParams)
         };
 
-        private static Dictionary<GatewayDispatchType, Type> DispatchTypeSelector => new Dictionary<GatewayDispatchType, Type>()
+        private static Dictionary<GatewayDispatchType?, Type> DispatchTypeSelector => new Dictionary<GatewayDispatchType?, Type>()
         {
             [GatewayDispatchType.Ready] = typeof(SocketReadyEvent),
             [GatewayDispatchType.GuildCreate] = typeof(GatewayGuild),
