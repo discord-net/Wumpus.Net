@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers.Binary;
-using Voltaic.Serialization.Etf;
 using Voltaic.Serialization.Utf8;
 
 namespace Voltaic.Serialization.Etf
@@ -16,7 +15,7 @@ namespace Voltaic.Serialization.Etf
 
         public static bool TryReadChar(ref ReadOnlySpan<byte> remaining, out char result)
         {
-            result = default;            
+            result = default;
 
             switch (GetTokenType(ref remaining))
             {

@@ -2,9 +2,9 @@
 
 namespace Voltaic.Serialization.Etf
 {
-    public static partial class EtfReader
+    public static partial class EtfWriter
     {
-        public static bool TryReadBoolean(ref ReadOnlySpan<byte> remaining, out bool result)
+        public static bool TryWrite(ref ResizableMemory<byte> writer, Guid value)
         {
             throw new NotImplementedException();
         }

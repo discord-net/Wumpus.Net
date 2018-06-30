@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Voltaic.Serialization;
 using Voltaic.Serialization.Etf;
 using Wumpus.Events;
+using Wumpus.Serialization;
 
 namespace Wumpus
 {
@@ -18,7 +19,7 @@ namespace Wumpus
 
     public class WumpusGatewayClient : IDisposable
     {
-        private readonly EtfSerializer _serializer;
+        private readonly WumpusEtfSerializer _serializer;
         private readonly ResizableMemory<byte> _receiveBuffer;
         private readonly ClientWebSocket _client;
         private readonly SemaphoreSlim _stateLock;
@@ -27,7 +28,7 @@ namespace Wumpus
         private Task _connectionTask;
         private CancellationTokenSource _connectionCts;
 
-        public WumpusGatewayClient(EtfSerializer serializer = null)
+        public WumpusGatewayClient(WumpusEtfSerializer serializer = null)
         {
             _serializer = serializer;
             _receiveBuffer = new ResizableMemory<byte>(new byte[10 * 1024]); // 10 KB
@@ -147,7 +148,7 @@ namespace Wumpus
 
                     var frame = _serializer.Read<GatewayFrame>(_receiveBuffer.AsReadOnlySpan());
                     await Task.Delay(-1);
-                    // TODO: 
+                    // TODO:
                 }
             }
             catch (OperationCanceledException) { } // Ignore

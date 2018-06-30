@@ -296,11 +296,9 @@ namespace Voltaic.Serialization.Json
                     remaining = remaining.Slice(4);
                     result = null;
                     return true;
-                case JsonTokenType.String:
+                default:
                     return JsonReader.TryReadString(ref remaining, out result);
             }
-            result = default;
-            return false;
         }
         public override bool TryWrite(ref ResizableMemory<byte> writer, string value, PropertyMap propMap = null)
         {
@@ -323,11 +321,9 @@ namespace Voltaic.Serialization.Json
                     remaining = remaining.Slice(4);
                     result = null;
                     return true;
-                case JsonTokenType.String:
+                default:
                     return JsonReader.TryReadUtf8String(ref remaining, out result);
             }
-            result = default;
-            return false;
         }
         public override bool TryWrite(ref ResizableMemory<byte> writer, Utf8String value, PropertyMap propMap = null)
         {
