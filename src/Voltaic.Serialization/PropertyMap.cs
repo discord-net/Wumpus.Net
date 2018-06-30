@@ -144,11 +144,13 @@ namespace Voltaic.Serialization
 
         public override bool TryRead(TModel model, ref ReadOnlySpan<byte> data, uint dependencies)
         {
-            if (!TryGetReadConverter(model, out var converter, dependencies))
-                return false;
-            if (!converter.TryRead(ref data, out var result, this))
-                return false;
-            SetFunc(model, result);
+            // Unknown keys are ignored during reads
+            if (TryGetReadConverter(model, out var converter, dependencies))
+            {
+                if (!converter.TryRead(ref data, out var result, this))
+                    return false;
+                SetFunc(model, result);
+            }
             return true;
         }
 

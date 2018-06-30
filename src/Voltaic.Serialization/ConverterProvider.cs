@@ -46,6 +46,14 @@ namespace Voltaic.Serialization
         }
 
         public override bool TryGet(TModel model, out ValueConverter<TValue> converter)
-            => Converters.TryGetValue(KeyProperty.GetFunc(model), out converter);
+        {
+            var key = KeyProperty.GetFunc(model);
+            if (key == null)
+            {
+                converter = default;
+                return false;
+            }
+            return Converters.TryGetValue(key, out converter);
+        }
     }
 }
