@@ -179,15 +179,12 @@ namespace Voltaic.Serialization.Etf
             => (!propMap.ExcludeDefault && !propMap.ExcludeNull) || !(value is null);
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out string result, PropertyMap propMap = null)
         {
-            switch (EtfReader.GetTokenType(ref remaining))
+            if (EtfReader.TryReadNullSafe(ref remaining))
             {
-                case EtfTokenType.NilExt:
-                    remaining = remaining.Slice(1);
-                    result = null;
-                    return true;
-                default:
-                    return EtfReader.TryReadString(ref remaining, out result);
+                result = null;
+                return true;
             }
+            return EtfReader.TryReadString(ref remaining, out result);
         }
         public override bool TryWrite(ref ResizableMemory<byte> writer, string value, PropertyMap propMap = null)
         {
@@ -204,15 +201,12 @@ namespace Voltaic.Serialization.Etf
             => (!propMap.ExcludeDefault && !propMap.ExcludeNull) || !(value is null);
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out Utf8String result, PropertyMap propMap = null)
         {
-            switch (EtfReader.GetTokenType(ref remaining))
+            if (EtfReader.TryReadNullSafe(ref remaining))
             {
-                case EtfTokenType.NilExt:
-                    remaining = remaining.Slice(1);
-                    result = null;
-                    return true;
-                default:
-                    return EtfReader.TryReadUtf8String(ref remaining, out result);
+                result = null;
+                return true;
             }
+            return EtfReader.TryReadUtf8String(ref remaining, out result);
         }
         public override bool TryWrite(ref ResizableMemory<byte> writer, Utf8String value, PropertyMap propMap = null)
         {

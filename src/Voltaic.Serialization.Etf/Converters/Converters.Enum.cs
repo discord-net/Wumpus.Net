@@ -72,7 +72,7 @@ namespace Voltaic.Serialization.Etf
 
             if (_map.IsStringEnum)
             {
-                if (!_keyConverter.TryRead(ref remaining, out var keyValue, propMap))
+                if (!_keyConverter.TryRead(ref remaining, out var keyValue, propMap) || keyValue == (Utf8String)null)
                     return false;
                 result = _map.FromKey(keyValue);
                 return true;

@@ -20,6 +20,12 @@ namespace Voltaic.Serialization.Etf
 
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out Dictionary<string, T> result, PropertyMap propMap = null)
         {
+            if (EtfReader.TryReadNullSafe(ref remaining))
+            {
+                result = null;
+                return true;
+            }
+
             throw new NotImplementedException();
         }
 

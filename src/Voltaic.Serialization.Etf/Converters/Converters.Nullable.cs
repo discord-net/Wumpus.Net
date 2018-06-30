@@ -18,17 +18,13 @@ namespace Voltaic.Serialization.Etf
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out T? result, PropertyMap propMap = null)
         {
             result = null;
-            switch(EtfReader.GetTokenType(ref remaining))
-            {
-                case EtfTokenType.NilExt:
-                    result = null;
-                    return true;
-                default:
-                    if (!_innerConverter.TryRead(ref remaining, out var resultValue, propMap))
-                        return false;
-                    result = resultValue;
-                    return true;
-            }
+
+            if (EtfReader.TryReadNullSafe(ref remaining))
+                return true;
+            if (!_innerConverter.TryRead(ref remaining, out var resultValue, propMap))
+                return false;
+            result = resultValue;
+            return true;
         }
 
         public override bool TryWrite(ref ResizableMemory<byte> writer, T? value, PropertyMap propMap = null)

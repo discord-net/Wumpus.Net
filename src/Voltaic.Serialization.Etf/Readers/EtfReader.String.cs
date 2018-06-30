@@ -23,6 +23,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (remaining.Length < 2)
                             return false;
+                        remaining = remaining.Slice(1);
                         ushort length = BinaryPrimitives.ReadUInt16BigEndian(remaining);
                         remaining = remaining.Slice(2);
 
@@ -36,6 +37,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (remaining.Length < 4)
                             return false;
+                        remaining = remaining.Slice(1);
                         uint length = BinaryPrimitives.ReadUInt32BigEndian(remaining);
                         remaining = remaining.Slice(4);
 
@@ -60,12 +62,13 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (remaining.Length < 2)
                             return false;
+                        remaining = remaining.Slice(1);
                         ushort length = BinaryPrimitives.ReadUInt16BigEndian(remaining);
                         remaining = remaining.Slice(2);
 
                         if (remaining.Length < length)
                             return false;
-                        var span = remaining.Slice(length);
+                        var span = remaining.Slice(0, length);
                         remaining = remaining.Slice(length);
                         return Utf8Reader.TryReadString(ref span, out result);
                     }
@@ -73,12 +76,13 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (remaining.Length < 4)
                             return false;
+                        remaining = remaining.Slice(1);
                         uint length = BinaryPrimitives.ReadUInt32BigEndian(remaining);
                         remaining = remaining.Slice(4);
 
                         if (remaining.Length < length)
                             return false;
-                        var span = remaining.Slice((int)length);
+                        var span = remaining.Slice(0, (int)length);
                         remaining = remaining.Slice((int)length);
                         return Utf8Reader.TryReadString(ref span, out result);
                     }
@@ -97,12 +101,13 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (remaining.Length < 2)
                             return false;
+                        remaining = remaining.Slice(1);
                         ushort length = BinaryPrimitives.ReadUInt16BigEndian(remaining);
                         remaining = remaining.Slice(2);
 
                         if (remaining.Length < length)
                             return false;
-                        var span = remaining.Slice(length);
+                        var span = remaining.Slice(0, length);
                         remaining = remaining.Slice(length);
                         return Utf8Reader.TryReadUtf8String(ref span, out result);
                     }
@@ -110,13 +115,55 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (remaining.Length < 4)
                             return false;
+                        remaining = remaining.Slice(1);
                         uint length = BinaryPrimitives.ReadUInt32BigEndian(remaining);
                         remaining = remaining.Slice(4);
 
                         if (remaining.Length < length)
                             return false;
-                        var span = remaining.Slice((int)length);
+                        var span = remaining.Slice(0, (int)length);
                         remaining = remaining.Slice((int)length);
+                        return Utf8Reader.TryReadUtf8String(ref span, out result);
+                    }
+                default:
+                    return false;
+            }
+        }
+
+        public static bool TryReadKey(ref ReadOnlySpan<byte> remaining, out Utf8String result)
+        {
+            result = default;
+
+            switch (GetTokenType(ref remaining))
+            {
+                case EtfTokenType.AtomExt:
+                case EtfTokenType.AtomUtf8Ext:
+                    {
+                        if (remaining.Length < 3)
+                            return false;
+                        remaining = remaining.Slice(1);
+                        ushort length = BinaryPrimitives.ReadUInt16BigEndian(remaining);
+                        remaining = remaining.Slice(2);
+
+                        if (remaining.Length < length)
+                            return false;
+                        var span = remaining.Slice(0, length);
+                        remaining = remaining.Slice(length);
+                        return Utf8Reader.TryReadUtf8String(ref span, out result);
+                    }
+                case EtfTokenType.SmallAtomExt:
+                case EtfTokenType.SmallAtomUtf8Ext:
+                    {
+                        if (remaining.Length < 3)
+                            return false;
+                        //remaining = remaining.Slice(1);
+                        byte length = remaining[1];
+                        remaining = remaining.Slice(2);
+
+                        if (remaining.Length < length)
+                            return false;
+                        var span = remaining.Slice(0, length);
+                        remaining = remaining.Slice(length);
                         return Utf8Reader.TryReadUtf8String(ref span, out result);
                     }
                 default:
