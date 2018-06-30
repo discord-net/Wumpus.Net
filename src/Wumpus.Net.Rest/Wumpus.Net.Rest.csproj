@@ -14,7 +14,7 @@
     <PackageReference Include="RestEase" Version="1.4.5" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Wumpus.Net.Core\Wumpus.Net.Core.csproj" />
-    <ProjectReference Include="..\Voltaic.Serialization.Json\Voltaic.Serialization.Json.csproj" />
+    <ProjectReference Include="../Wumpus.Net.Core/Wumpus.Net.Core.csproj" />
+    <ProjectReference Include="../Voltaic.Serialization.Json/Voltaic.Serialization.Json.csproj" />
   </ItemGroup>
 </Project>

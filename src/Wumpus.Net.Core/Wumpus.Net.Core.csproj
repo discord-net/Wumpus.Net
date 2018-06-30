@@ -11,6 +11,6 @@
     <TargetFrameworks>netstandard1.3</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Voltaic.Serialization.Json\Voltaic.Serialization.Json.csproj" />
+    <ProjectReference Include="../Voltaic.Serialization.Json/Voltaic.Serialization.Json.csproj" />
   </ItemGroup>
 </Project>

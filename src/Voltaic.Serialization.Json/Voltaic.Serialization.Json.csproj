@@ -14,6 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="../Voltaic.Core/Voltaic.Core.csproj" />
     <ProjectReference Include="../Voltaic.Serialization/Voltaic.Serialization.csproj" />
-    <ProjectReference Include="..\Voltaic.Serialization.Utf8\Voltaic.Serialization.Utf8.csproj" />
+    <ProjectReference Include="../Voltaic.Serialization.Utf8/Voltaic.Serialization.Utf8.csproj" />
   </ItemGroup>
 </Project>
