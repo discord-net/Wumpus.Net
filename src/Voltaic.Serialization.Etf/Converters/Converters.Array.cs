@@ -37,7 +37,38 @@ namespace Voltaic.Serialization.Etf
             if (value == null)
                 return EtfWriter.TryWriteNull(ref writer);
 
-            throw new NotImplementedException();
+            var start = writer.Length;
+            if (value.Length < 256)
+            {
+                writer.Push((byte)EtfTokenType.SmallTupleExt);
+                writer.Advance(1);
+            }
+            else
+            {
+                writer.Push((byte)EtfTokenType.LargeTupleExt);
+                writer.Advance(4);
+            }
+
+            uint count = 0;
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (!_innerConverter.CanWrite(value[i], propMap))
+                    continue;
+                if (!_innerConverter.TryWrite(ref writer, value[i], propMap))
+                    return false;
+                count++;
+            }
+
+            if (value.Length < 256)
+                writer.Array[start + 1] = (byte)count;
+            else
+            {
+                writer.Array[start + 1] = (byte)(count >> 24);
+                writer.Array[start + 2] = (byte)(count >> 16);
+                writer.Array[start + 3] = (byte)(count >> 8);
+                writer.Array[start + 4] = (byte)count;
+            }
+            return true;
         }
     }
 
@@ -77,7 +108,38 @@ namespace Voltaic.Serialization.Etf
             if (value == null)
                 return EtfWriter.TryWriteNull(ref writer);
 
-            throw new NotImplementedException();
+            var start = writer.Length;
+            if (value.Count < 256)
+            {
+                writer.Push((byte)EtfTokenType.SmallTupleExt);
+                writer.Advance(1);
+            }
+            else
+            {
+                writer.Push((byte)EtfTokenType.LargeTupleExt);
+                writer.Advance(4);
+            }
+
+            uint count = 0;
+            for (int i = 0; i < value.Count; i++)
+            {
+                if (!_innerConverter.CanWrite(value[i], propMap))
+                    continue;
+                if (!_innerConverter.TryWrite(ref writer, value[i], propMap))
+                    return false;
+                count++;
+            }
+
+            if (value.Count < 256)
+                writer.Array[start + 1] = (byte)count;
+            else
+            {
+                writer.Array[start + 1] = (byte)(count >> 24);
+                writer.Array[start + 2] = (byte)(count >> 16);
+                writer.Array[start + 3] = (byte)(count >> 8);
+                writer.Array[start + 4] = (byte)count;
+            }
+            return true;
         }
     }
 

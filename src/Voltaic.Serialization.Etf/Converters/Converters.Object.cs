@@ -43,7 +43,7 @@ namespace Voltaic.Serialization.Etf
 
                     for (int i = 0; i < arity; i++)
                     {
-                        if (!EtfReader.TryReadKey(ref remaining, out var key))
+                        if (!EtfReader.TryReadUtf8Key(ref remaining, out var key))
                             return false;
 
                         // Unknown Property
@@ -90,33 +90,34 @@ namespace Voltaic.Serialization.Etf
 
         public override bool TryWrite(ref ResizableMemory<byte> writer, T value, PropertyMap propMap = null)
         {
-            throw new NotImplementedException();
-            //if (value == null)
-            //    return EtfWriter.TryWriteNull(ref writer);
+            if (value == null)
+                return EtfWriter.TryWriteNull(ref writer);
 
-            //writer.Push(116); // MAP_EXT
+            var start = writer.Length;
+            writer.Push((byte)EtfTokenType.MapExt);
+            writer.Advance(4);
 
-            //var properties = _map.Properties;
+            uint count = 0;
+            var properties = _map.Properties;
+            for (int i = 0; i < properties.Count; i++)
+            {
+                var key = properties[i].Key;
+                var innerPropMap = properties[i].Value as PropertyMap<T>;
+                if (!innerPropMap.CanWrite(value))
+                    continue;
 
-            //uint count = 0;            
-            //for (int i = 0; i < properties.Count; i++)
-            //{
-            //    var key = properties[i].Key;
-            //    var innerPropMap = properties[i].Value as PropertyMap<T>;
-            //    if (!innerPropMap.CanWrite(value))
-            //        continue;
+                if (!EtfWriter.TryWriteUtf8Key(ref writer, key.Span))
+                    return false;
+                if (!innerPropMap.TryWrite(value, ref writer))
+                    return false;
+                count++;
+            }
 
-            //    if (!EtfWriter.TryWriteUtf8String(ref writer, key.Span))
-            //        return false;
-            //    if (!innerPropMap.TryWrite(value, ref writer))
-            //        return false;
-            //    count++;
-            //}
-
-            //// Go back and write the count
-            //BinaryPrimitives.WriteUInt32BigEndian(writer.AsSpan().Slice(1), count);
-            //writer.Advance(4);
-            //return true;
+            writer.Array[start + 1] = (byte)(count >> 24);
+            writer.Array[start + 2] = (byte)(count >> 16);
+            writer.Array[start + 3] = (byte)(count >> 8);
+            writer.Array[start + 4] = (byte)count;
+            return true;
         }
     }
 }

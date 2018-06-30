@@ -23,7 +23,7 @@ namespace Voltaic.Serialization.Etf
         private readonly StandardFormat _format;
         public DateTimeEtfConverter(StandardFormat format = default)
         {
-            // Offsets using the default parser has unpredicatble behavior with quotes. Since it's ignored anyway, default to no offsets (G).
+            // Offsets using the default parser has unpredictable behavior with quotes. Since it's ignored anyway, default to no offsets (G).
             _format = !format.IsDefault ? format : 'G';
         }
         public override bool CanWrite(DateTime value, PropertyMap propMap)
