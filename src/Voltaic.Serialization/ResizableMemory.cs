@@ -48,10 +48,6 @@ namespace Voltaic.Serialization
             RequestLength(minimumLength);
             return new Span<T>(Array, Length, Array.Length - Length);
         }
-        //public void Advance(Span<T> span)
-        //{
-        //    Length += span.Length;
-        //}
         public void Advance(int count)
         {
             Length += count;

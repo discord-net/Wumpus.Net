@@ -36,7 +36,7 @@ namespace Voltaic.Serialization
             return result;
         }
 
-        public ResizableMemory<byte> Write(object value, object converter = null)
+        public ResizableMemory<byte> Write(object value, ValueConverter converter = null)
         {
             var type = value.GetType();
             var method = _writeMethods.GetOrAdd(type, t =>
@@ -47,16 +47,20 @@ namespace Voltaic.Serialization
             });
             return method.Invoke(value, converter);
         }
-        private ResizableMemory<byte> WriteInternal<T>(object value, object converter = null)
+        private ResizableMemory<byte> WriteInternal<T>(object value, ValueConverter converter = null)
             => Write((T)value, (ValueConverter<T>)converter);
         public ResizableMemory<byte> Write<T>(T value, ValueConverter<T> converter = null)
         {
             var writer = new ResizableMemory<byte>(1024, pool: _pool);
+            Write(value, ref writer, converter);
+            return writer;
+        }
+        public virtual void Write<T>(T value, ref ResizableMemory<byte> writer, ValueConverter<T> converter = null)
+        {
             if (converter == null)
                 converter = _converters.Get<T>(this);
             if (!converter.TryWrite(ref writer, value))
                 throw new SerializationException($"Failed to serialize {typeof(T).Name}");
-            return writer;
         }
 
         public ModelMap GetMap(Type modelType, PropertyInfo propInfo = null)

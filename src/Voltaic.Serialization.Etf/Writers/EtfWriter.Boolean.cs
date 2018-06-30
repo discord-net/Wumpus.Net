@@ -1,12 +1,45 @@
 ﻿using System;
+using System.Buffers;
+using Voltaic.Serialization.Utf8;
 
 namespace Voltaic.Serialization.Etf
 {
     public static partial class EtfWriter
     {
-        public static bool TryWrite(ref ResizableMemory<byte> writer, bool value)
+        private readonly static ReadOnlyMemory<byte> _trueValue = new ReadOnlyMemory<byte>(
+            new byte[] { (byte)EtfTokenType.SmallAtomExt, 4, (byte)'t', (byte)'r', (byte)'u', (byte)'e' });
+        private readonly static ReadOnlyMemory<byte> _falseValue = new ReadOnlyMemory<byte>(
+            new byte[] { (byte)EtfTokenType.SmallAtomExt, 5, (byte)'f', (byte)'a', (byte)'l', (byte)'s', (byte)'e' });
+
+        public static bool TryWrite(ref ResizableMemory<byte> writer, bool value, StandardFormat standardFormat)
         {
-            throw new NotImplementedException();
+            if (standardFormat.IsDefault)
+            {
+                if (value)
+                {
+                    _trueValue.Span.CopyTo(writer.GetSpan(6));
+                    writer.Advance(6);
+                }
+                else
+                {
+                    _falseValue.Span.CopyTo(writer.GetSpan(7));
+                    writer.Advance(7);
+                }
+            }
+            else
+            {
+                writer.Push((byte)EtfTokenType.StringExt);
+                writer.Advance(2);
+                int start = writer.Length;
+                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                    return false;
+                int length = writer.Length - start;
+                if (length > ushort.MaxValue)
+                    return false;
+                writer.Array[start - 2] = (byte)(length >> 8);
+                writer.Array[start - 1] = (byte)(length & 0xFF);
+            }
+            return true;
         }
     }
 }

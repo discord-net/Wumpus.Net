@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Buffers;
 
-namespace Voltaic.Serialization.Json
+namespace Voltaic.Serialization
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class StandardFormatAttribute : Attribute

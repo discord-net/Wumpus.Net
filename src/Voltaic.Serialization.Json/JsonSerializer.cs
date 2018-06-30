@@ -137,16 +137,16 @@ namespace Voltaic.Serialization.Json
 
         public ReadOnlyMemory<byte> WriteUtf8<T>(T value, ValueConverter<T> converter = null)
             => Write(value, converter).AsReadOnlyMemory();
-        public ReadOnlyMemory<byte> WriteUtf8(object value, object converter = null)
+        public ReadOnlyMemory<byte> WriteUtf8(object value, ValueConverter converter = null)
             => Write(value, converter).AsReadOnlyMemory();
         public Utf8String WriteUtf8String<T>(T value, ValueConverter<T> converter = null)
             => new Utf8String(Write(value, converter).AsReadOnlySpan());
-        public Utf8String WriteUtf8String(object value, object converter = null)
+        public Utf8String WriteUtf8String(object value, ValueConverter converter = null)
             => new Utf8String(Write(value, converter).AsReadOnlySpan());
 
         public ReadOnlyMemory<char> WriteUtf16<T>(T value, ValueConverter<T> converter = null)
             => FinishWriteUtf16(Write(value, converter));
-        public ReadOnlyMemory<char> WriteUtf16(object value, object converter = null)
+        public ReadOnlyMemory<char> WriteUtf16(object value, ValueConverter converter = null)
             => FinishWriteUtf16(Write(value, converter));
         private ReadOnlyMemory<char> FinishWriteUtf16(ResizableMemory<byte> data)
         {
@@ -167,7 +167,7 @@ namespace Voltaic.Serialization.Json
         }
         public string WriteUtf16String<T>(T value, ValueConverter<T> converter = null)
             => FinishWriteUtf16String(Write(value, converter));
-        public string WriteUtf16String(object value, object converter = null)
+        public string WriteUtf16String(object value, ValueConverter converter = null)
             => FinishWriteUtf16String(Write(value, converter));
         private string FinishWriteUtf16String(ResizableMemory<byte> data)
         {
