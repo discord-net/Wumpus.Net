@@ -18,7 +18,7 @@ namespace Voltaic.Serialization.Json
         {
             result = default;
 
-            switch (TryReadUtf8String(ref remaining, out var builder, out var direct))
+            switch (TryReadUtf8Bytes(ref remaining, out var builder, out var direct))
             {
                 case StringOperationStatus.Failed:
                     return false;
@@ -46,7 +46,7 @@ namespace Voltaic.Serialization.Json
         {
             result = default;
 
-            switch (TryReadUtf8String(ref remaining, out var builder, out var direct))
+            switch (TryReadUtf8Bytes(ref remaining, out var builder, out var direct))
             {
                 case StringOperationStatus.Failed:
                     return false;
@@ -74,7 +74,7 @@ namespace Voltaic.Serialization.Json
         {
             result = default;
 
-            switch (TryReadUtf8String(ref remaining, out var builder, out var direct))
+            switch (TryReadUtf8Bytes(ref remaining, out var builder, out var direct))
             {
                 case StringOperationStatus.Failed:
                     return false;
@@ -95,7 +95,7 @@ namespace Voltaic.Serialization.Json
             return false;
         }
 
-        private static StringOperationStatus TryReadUtf8String(ref ReadOnlySpan<byte> remaining, out ResizableMemory<byte> builder, out ReadOnlySpan<byte> directResult)
+        private static StringOperationStatus TryReadUtf8Bytes(ref ReadOnlySpan<byte> remaining, out ResizableMemory<byte> builder, out ReadOnlySpan<byte> directResult)
         {
             builder = default;
             directResult = default;

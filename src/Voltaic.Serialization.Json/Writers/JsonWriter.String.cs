@@ -20,7 +20,7 @@ namespace Voltaic.Serialization.Json
                     return false;
 
                 writer.Push((byte)'\"');
-                if (!TryWriteUtf8(ref writer, data.AsSpan(0, length)))
+                if (!TryWriteUtf8Bytes(ref writer, data.AsSpan(0, length)))
                     return false;
                 writer.Push((byte)'\"');
             }
@@ -44,7 +44,7 @@ namespace Voltaic.Serialization.Json
                     return false;
 
                 writer.Push((byte)'\"');
-                if (!TryWriteUtf8(ref writer, data.AsSpan(0, length)))
+                if (!TryWriteUtf8Bytes(ref writer, data.AsSpan(0, length)))
                     return false;
                 writer.Push((byte)'\"');
             }
@@ -58,7 +58,7 @@ namespace Voltaic.Serialization.Json
         public static bool TryWrite(ref ResizableMemory<byte> writer, Utf8String value)
         {
             writer.Push((byte)'\"');
-            if (!TryWriteUtf8(ref writer, value.Bytes))
+            if (!TryWriteUtf8Bytes(ref writer, value.Bytes))
                 return false;
             writer.Push((byte)'\"');
             return true;
@@ -66,15 +66,15 @@ namespace Voltaic.Serialization.Json
         public static bool TryWrite(ref ResizableMemory<byte> writer, Utf8Span value)
         {
             writer.Push((byte)'\"');
-            if (!TryWriteUtf8(ref writer, value.Bytes))
+            if (!TryWriteUtf8Bytes(ref writer, value.Bytes))
                 return false;
             writer.Push((byte)'\"');
             return true;
         }
 
-        public static bool TryWriteUtf8(ref ResizableMemory<byte> writer, ReadOnlyMemory<byte> value)
-            => TryWriteUtf8(ref writer, value.Span);
-        public static bool TryWriteUtf8(ref ResizableMemory<byte> writer, ReadOnlySpan<byte> value)
+        private static bool TryWriteUtf8Bytes(ref ResizableMemory<byte> writer, ReadOnlyMemory<byte> value)
+            => TryWriteUtf8Bytes(ref writer, value.Span);
+        private static bool TryWriteUtf8Bytes(ref ResizableMemory<byte> writer, ReadOnlySpan<byte> value)
         {            
             int i = 0;
             int start = 0;
