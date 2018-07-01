@@ -18,6 +18,7 @@ namespace Voltaic.Serialization
         public static readonly EnumMap<T> Instance = new EnumMap<T>();
 
         public bool IsStringEnum { get; } = typeof(T).GetTypeInfo().GetCustomAttribute<ModelStringEnumAttribute>() != null;
+        public bool IsFlagsEnum { get; } = typeof(T).GetTypeInfo().GetCustomAttribute<FlagsAttribute>() != null;
 
         private readonly Dictionary<string, T> _keyToValue;
         private readonly MemoryDictionary<T> _utf8KeyToValue;
@@ -32,6 +33,8 @@ namespace Voltaic.Serialization
             var typeInfo = typeof(T).GetTypeInfo();
             if (!typeInfo.IsEnum)
                 throw new InvalidOperationException($"{typeInfo.Name} is not an Enum");
+            if (IsStringEnum && IsFlagsEnum)
+                throw new NotSupportedException("ModelStringEnum cannot be used on a Flags enum");
 
             _keyToValue = new Dictionary<string, T>();
             _utf8KeyToValue = new MemoryDictionary<T>();
@@ -98,42 +101,82 @@ namespace Voltaic.Serialization
             => FromKey(key.Span);
         public T FromKey(ReadOnlySpan<byte> key)
         {
-            if (_utf8KeyToValue.TryGetValue(key, out var value))
-                return value;
-            throw new SerializationException($"Unknown enum key: {key.ToString()}");
+            if (!IsFlagsEnum)
+            {
+                if (_utf8KeyToValue.TryGetValue(key, out var value))
+                    return value;
+                throw new SerializationException($"Unknown enum key: {key.ToString()}");
+            }
+            else
+                throw new NotSupportedException("FromKey is not support on a Flags enum");
         }
         public Utf8String ToUtf8Key(T value)
         {
-            if (_valueToUtf8Key.TryGetValue(value, out var key))
+            if (!IsFlagsEnum)
+            {
+                if (_valueToUtf8Key.TryGetValue(value, out var key))
                 return key;
-            throw new SerializationException($"Unknown enum value: {value}");
+                throw new SerializationException($"Unknown enum value: {value}");
+            }
+            else
+                throw new NotSupportedException("ToUtf8Key is not support on a Flags enum");
         }
         public string ToUtf16Key(T value)
         {
-            if (_valueToKey.TryGetValue(value, out var key))
+            if (!IsFlagsEnum)
+            {
+                if (_valueToKey.TryGetValue(value, out var key))
                 return key;
-            throw new SerializationException($"Unknown enum value: {value}");
+                throw new SerializationException($"Unknown enum value: {value}");
+            }
+            else
+                throw new NotSupportedException("ToUtf16Key is not support on a Flags enum");
         }
 
         public T FromValue(ulong intValue)
-            => FromValue((long)intValue);
+        {
+            if (!IsFlagsEnum)
+            {
+                if (_intToValue.TryGetValue((long)intValue, out var enumValue))
+                    return enumValue;
+                throw new SerializationException($"Unknown enum value: {intValue}");
+            }
+            else
+                return (T)(ValueType)intValue;
+        }
         public T FromValue(long intValue)
         {
-            if (_intToValue.TryGetValue(intValue, out var enumValue))
-                return enumValue;
-            throw new SerializationException($"Unknown enum value: {intValue}");
+            if (!IsFlagsEnum)
+            {
+                if (_intToValue.TryGetValue(intValue, out var enumValue))
+                    return enumValue;
+                throw new SerializationException($"Unknown enum value: {intValue}");
+            }
+            else
+                return (T)(ValueType)intValue;
         }
+
         public ulong ToUInt64(T value)
         {
-            if (_valueToInt.TryGetValue(value, out var intValue))
-                return (ulong)intValue;
-            throw new SerializationException($"Unknown enum value: {value}");
+            if (!IsFlagsEnum)
+            {
+                if (_valueToInt.TryGetValue(value, out var intValue))
+                    return (ulong)intValue;
+                throw new SerializationException($"Unknown enum value: {value}");
+            }
+            else
+                return (ulong)(ValueType)value;
         }
         public long ToInt64(T value)
         {
-            if (_valueToInt.TryGetValue(value, out var intValue))
-                return intValue;
-            throw new SerializationException($"Unknown enum value: {value}");
+            if (!IsFlagsEnum)
+            {
+                if (_valueToInt.TryGetValue(value, out var intValue))
+                    return intValue;
+                throw new SerializationException($"Unknown enum value: {value}");
+            }
+            else
+                return (long)(ValueType)value;
         }
     }
 }
