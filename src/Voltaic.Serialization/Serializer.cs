@@ -14,14 +14,14 @@ namespace Voltaic.Serialization
             .Single(x => x.IsGenericMethodDefinition);
 
         protected readonly ConcurrentDictionary<Type, ModelMap> _modelMaps;
-        protected readonly ConcurrentDictionary<Type, Func<object, object, ResizableMemory<byte>>> _writeMethods;
+        protected readonly ConcurrentDictionary<Type, Func<object, ValueConverter, ResizableMemory<byte>>> _writeMethods;
         protected readonly ConverterCollection _converters;
 
         protected Serializer(ConverterCollection converters = null, ArrayPool<byte> pool = null)
         {
             _pool = pool ?? ArrayPool<byte>.Shared;
             _modelMaps = new ConcurrentDictionary<Type, ModelMap>();
-            _writeMethods = new ConcurrentDictionary<Type, Func<object, object, ResizableMemory<byte>>>();
+            _writeMethods = new ConcurrentDictionary<Type, Func<object, ValueConverter, ResizableMemory<byte>>>();
             _converters = converters ?? new ConverterCollection();
         }
 
@@ -42,8 +42,8 @@ namespace Voltaic.Serialization
             var method = _writeMethods.GetOrAdd(type, t =>
             {
                 return _writeMethod.MakeGenericMethod(t)
-                    .CreateDelegate(typeof(Func<object, object, ResizableMemory<byte>>), this)
-                    as Func<object, object, ResizableMemory<byte>>;
+                    .CreateDelegate(typeof(Func<object, ValueConverter, ResizableMemory<byte>>), this)
+                    as Func<object, ValueConverter, ResizableMemory<byte>>;
             });
             return method.Invoke(value, converter);
         }
