@@ -1,5 +1,4 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Buffers.Binary;
 using Voltaic.Serialization.Utf8;
 
@@ -25,7 +24,7 @@ namespace Voltaic.Serialization.Etf
                 if (length > ushort.MaxValue)
                     return false;
                 writer.Array[start - 2] = (byte)(length >> 8);
-                writer.Array[start - 1] = (byte)0xFF;
+                writer.Array[start - 1] = (byte)length;
             }
             return true;
         }
@@ -34,6 +33,9 @@ namespace Voltaic.Serialization.Etf
         {
             if (standardFormat.IsDefault)
             {
+                if (value <= byte.MaxValue)
+                    return TryWrite(ref writer, (byte)value, standardFormat);
+
                 writer.Push((byte)EtfTokenType.IntegerExt);
                 BinaryPrimitives.WriteInt32BigEndian(writer.GetSpan(4), value);
                 writer.Advance(4);
@@ -58,6 +60,11 @@ namespace Voltaic.Serialization.Etf
         {
             if (standardFormat.IsDefault)
             {
+                if (value <= byte.MaxValue)
+                    return TryWrite(ref writer, (byte)value, standardFormat);
+                if (value <= int.MaxValue)
+                    return TryWrite(ref writer, (int)value, standardFormat);
+
                 writer.Push((byte)EtfTokenType.SmallBigExt);
                 writer.Push(8);
                 writer.Push(0);
@@ -84,6 +91,11 @@ namespace Voltaic.Serialization.Etf
         {
             if (standardFormat.IsDefault)
             {
+                if (value <= byte.MaxValue)
+                    return TryWrite(ref writer, (byte)value, standardFormat);
+                if (value <= int.MaxValue)
+                    return TryWrite(ref writer, (int)value, standardFormat);
+
                 writer.Push((byte)EtfTokenType.SmallBigExt);
                 writer.Push(8);
                 writer.Push(0);
