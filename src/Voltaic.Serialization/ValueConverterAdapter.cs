@@ -14,8 +14,9 @@ namespace Voltaic.Serialization
 
         public override bool CanWrite(TBase baseValue, PropertyMap propMap = null)
         {
-            if (!(baseValue is TValue value))
-                return false;
+            //if (!(baseValue is TValue value))
+            //    return true;
+            var value = (TValue)baseValue;
             return _innerConverter.CanWrite(value, propMap);
         }
 
@@ -32,8 +33,9 @@ namespace Voltaic.Serialization
 
         public override bool TryWrite(ref ResizableMemory<byte> writer, TBase baseValue, PropertyMap propMap = null)
         {
-            if (!(baseValue is TValue value))
-                return false;
+            //if (!(baseValue is TValue value))
+            //    return false;
+            var value = (TValue)baseValue;
             return _innerConverter.TryWrite(ref writer, value, propMap);
         }
     }
