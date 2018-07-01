@@ -11,30 +11,34 @@ namespace Voltaic.Serialization.Etf
         public static bool TryWrite(ref ResizableMemory<byte> writer, char value)
         {
             int start = writer.Length;
-            writer.Push((byte)EtfTokenType.StringExt);
-            writer.Advance(2);
+            writer.Push((byte)EtfTokenType.BinaryExt);
+            writer.Advance(4);
             if (!Utf8Writer.TryWrite(ref writer, value))
                 return false;
             int length = writer.Length - start;
             if (length > ushort.MaxValue)
                 return false;
-            writer.Array[start + 1] = (byte)(length >> 8);
-            writer.Array[start + 2] = (byte)(length & 0xFF);
+            writer.Array[start + 1] = (byte)(length >> 24);
+            writer.Array[start + 2] = (byte)(length >> 16);
+            writer.Array[start + 3] = (byte)(length >> 8);
+            writer.Array[start + 4] = (byte)length;
             return true;
         }
 
         public static bool TryWrite(ref ResizableMemory<byte> writer, string value)
         {
             int start = writer.Length;
-            writer.Push((byte)EtfTokenType.StringExt);
-            writer.Advance(2);
+            writer.Push((byte)EtfTokenType.BinaryExt);
+            writer.Advance(4);
             if (!Utf8Writer.TryWrite(ref writer, value))
                 return false;
             int length = writer.Length - start;
             if (length > ushort.MaxValue)
                 return false;
-            writer.Array[start + 1] = (byte)(length >> 8);
-            writer.Array[start + 2] = (byte)(length & 0xFF);
+            writer.Array[start + 1] = (byte)(length >> 24);
+            writer.Array[start + 2] = (byte)(length >> 16);
+            writer.Array[start + 3] = (byte)(length >> 8);
+            writer.Array[start + 4] = (byte)length;
             return true;
         }
 
@@ -50,9 +54,9 @@ namespace Voltaic.Serialization.Etf
             if (value.Length > ushort.MaxValue)
                 return false;
 
-            writer.Push((byte)EtfTokenType.StringExt);
-            BinaryPrimitives.WriteUInt16BigEndian(writer.GetSpan(2), (ushort)value.Length);
-            writer.Advance(2);
+            writer.Push((byte)EtfTokenType.BinaryExt);
+            BinaryPrimitives.WriteUInt32BigEndian(writer.GetSpan(4), (ushort)value.Length);
+            writer.Advance(4);
             if (!Utf8Writer.TryWriteString(ref writer, value))
                 return false;
             return true;
@@ -91,20 +95,23 @@ namespace Voltaic.Serialization.Etf
         public static bool TryWriteUtf8Key(ref ResizableMemory<byte> writer, ReadOnlySpan<byte> value)
         {
             int length = value.Length;
-            if (length < 256)
-            {
-                writer.Push((byte)EtfTokenType.SmallAtomUtf8Ext);
-                writer.Push((byte)length);
-            }
-            else if (length < ushort.MaxValue)
-            {
-                writer.Push((byte)EtfTokenType.AtomUtf8Ext);
-                BinaryPrimitives.WriteUInt16BigEndian(writer.GetSpan(2), (ushort)length);
-                writer.Advance(2);
-            }
-            else
-                return false;
-            
+            //if (length < 256)
+            //{
+            //    writer.Push((byte)EtfTokenType.SmallAtomUtf8Ext);
+            //    writer.Push((byte)length);
+            //}
+            //else if (length < ushort.MaxValue)
+            //{
+            //    writer.Push((byte)EtfTokenType.AtomUtf8Ext);
+            //    BinaryPrimitives.WriteUInt16BigEndian(writer.GetSpan(2), (ushort)length);
+            //    writer.Advance(2);
+            //}
+            //else
+            //    return false;
+
+            writer.Push((byte)EtfTokenType.BinaryExt);
+            BinaryPrimitives.WriteUInt32BigEndian(writer.GetSpan(4), (uint)length);
+            writer.Advance(4);
             if (!Utf8Writer.TryWriteString(ref writer, value))
                 return false;
             return true;

@@ -61,7 +61,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
-                        return Utf8Reader.TryReadBoolean(ref remaining, out result, standardFormat);
+                        return Utf8Reader.TryReadBoolean(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;

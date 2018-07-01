@@ -26,7 +26,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
-                        return Utf8Reader.TryReadSingle(ref remaining, out result, standardFormat);
+                        return Utf8Reader.TryReadSingle(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;
@@ -53,7 +53,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
-                        return Utf8Reader.TryReadDouble(ref remaining, out result, standardFormat);
+                        return Utf8Reader.TryReadDouble(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;
@@ -71,7 +71,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
-                        return Utf8Reader.TryReadDecimal(ref remaining, out result, standardFormat);
+                        return Utf8Reader.TryReadDecimal(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;

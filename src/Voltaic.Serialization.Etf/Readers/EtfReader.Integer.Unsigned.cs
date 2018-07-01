@@ -30,7 +30,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
-                        return Utf8Reader.TryReadUInt8(ref remaining, out result, standardFormat);
+                        return Utf8Reader.TryReadUInt8(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;
@@ -61,7 +61,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
-                        return Utf8Reader.TryReadUInt16(ref remaining, out result, standardFormat);
+                        return Utf8Reader.TryReadUInt16(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;
@@ -92,7 +92,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
-                        return Utf8Reader.TryReadUInt32(ref remaining, out result, standardFormat);
+                        return Utf8Reader.TryReadUInt32(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;
@@ -126,7 +126,7 @@ namespace Voltaic.Serialization.Etf
                         //remaining = remaining.Slice(1);
                         byte bytes = remaining[1];
                         bool isPositive = remaining[2] == 0;
-                        remaining = remaining.Slice(2);
+                        remaining = remaining.Slice(3);
                         return TryReadUnsignedBigNumber(bytes, isPositive, ref remaining, out result);
                     }
                 case EtfTokenType.LargeBigExt:
@@ -145,7 +145,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
-                        return Utf8Reader.TryReadUInt64(ref remaining, out result, standardFormat);
+                        return Utf8Reader.TryReadUInt64(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;
@@ -162,7 +162,7 @@ namespace Voltaic.Serialization.Etf
                 case 1:
                     {
                         result = remaining[3];
-                        remaining = remaining.Slice(3);
+                        remaining = remaining.Slice(1);
                         return true;
                     }
                 case 2:
@@ -174,13 +174,13 @@ namespace Voltaic.Serialization.Etf
                 case 4:
                     {
                         result = BinaryPrimitives.ReadUInt32LittleEndian(remaining);
-                        remaining = remaining.Slice(2);
+                        remaining = remaining.Slice(4);
                         return true;
                     }
                 case 8:
                     {
                         result = BinaryPrimitives.ReadUInt64LittleEndian(remaining);
-                        remaining = remaining.Slice(2);
+                        remaining = remaining.Slice(8);
                         return true;
                     }
                 default:
@@ -190,6 +190,7 @@ namespace Voltaic.Serialization.Etf
                         ulong multiplier = 1;
                         for (int i = 0; i < bytes; i++, multiplier *= 256)
                             result += remaining[i] * multiplier;
+                        remaining = remaining.Slice(bytes);
                         return true;
                     }
             }

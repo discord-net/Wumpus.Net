@@ -16,7 +16,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
-                        return Utf8Reader.TryReadDateTime(ref remaining, out result, standardFormat);
+                        return Utf8Reader.TryReadDateTime(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;
@@ -34,7 +34,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
-                        return Utf8Reader.TryReadDateTimeOffset(ref remaining, out result, standardFormat);
+                        return Utf8Reader.TryReadDateTimeOffset(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;
@@ -52,7 +52,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
-                        return Utf8Reader.TryReadTimeSpan(ref remaining, out result, standardFormat);
+                        return Utf8Reader.TryReadTimeSpan(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;

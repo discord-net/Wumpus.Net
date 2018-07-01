@@ -30,7 +30,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
-                        return Utf8Reader.TryReadInt8(ref remaining, out result, standardFormat);
+                        return Utf8Reader.TryReadInt8(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;
@@ -61,7 +61,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
-                        return Utf8Reader.TryReadInt16(ref remaining, out result, standardFormat);
+                        return Utf8Reader.TryReadInt16(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;
@@ -92,7 +92,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
-                        return Utf8Reader.TryReadInt32(ref remaining, out result, standardFormat);
+                        return Utf8Reader.TryReadInt32(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;
@@ -142,7 +142,7 @@ namespace Voltaic.Serialization.Etf
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
-                        return Utf8Reader.TryReadInt64(ref remaining, out result, standardFormat);
+                        return Utf8Reader.TryReadInt64(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;
@@ -159,7 +159,7 @@ namespace Voltaic.Serialization.Etf
                         result = remaining[3];
                         if (!isPositive)
                             result = -result;
-                        remaining = remaining.Slice(3);
+                        remaining = remaining.Slice(1);
                         return true;
                     }
                 case 2:
@@ -175,7 +175,7 @@ namespace Voltaic.Serialization.Etf
                         result = BinaryPrimitives.ReadUInt32LittleEndian(remaining);
                         if (!isPositive)
                             result = -result;
-                        remaining = remaining.Slice(2);
+                        remaining = remaining.Slice(4);
                         return true;
                     }
                 case 8:
@@ -196,7 +196,7 @@ namespace Voltaic.Serialization.Etf
                             else
                                 result = (long)unsignedResult;
                         }
-                        remaining = remaining.Slice(2);
+                        remaining = remaining.Slice(8);
                         return true;
                     }
                 default:
@@ -222,6 +222,7 @@ namespace Voltaic.Serialization.Etf
                             else
                                 result = (long)unsignedResult;
                         }
+                        remaining = remaining.Slice(bytes);
                         return true;
                     }
             }
