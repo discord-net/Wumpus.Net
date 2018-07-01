@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Voltaic;
 using Voltaic.Serialization;
 using Wumpus.Entities;
 using Wumpus.Requests;
@@ -33,7 +32,7 @@ namespace Wumpus.Events
 
             [GatewayOpCode.Identify] = typeof(IdentifyParams),
             [GatewayOpCode.Resume] = typeof(ResumeParams),
-            [GatewayOpCode.Heartbeat] = typeof(int),
+            [GatewayOpCode.Heartbeat] = typeof(int?),
             [GatewayOpCode.RequestGuildMembers] = typeof(RequestMembersParams),
             [GatewayOpCode.VoiceStateUpdate] = typeof(UpdateVoiceStateParams),
             [GatewayOpCode.StatusUpdate] = typeof(UpdateStatusParams)
