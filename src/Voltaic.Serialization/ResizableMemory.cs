@@ -58,7 +58,7 @@ namespace Voltaic.Serialization
             Length = 0;
         }
 
-        public ArraySegment<T> AsSegment() => new ArraySegment<T>(Array);
+        public ArraySegment<T> AsSegment() => new ArraySegment<T>(Array, 0, Length);
         public Memory<T> AsMemory() => new Memory<T>(Array, 0, Length);
         public ReadOnlyMemory<T> AsReadOnlyMemory() => new ReadOnlyMemory<T>(Array, 0, Length);
         public Span<T> AsSpan() => new Span<T>(Array, 0, Length);
