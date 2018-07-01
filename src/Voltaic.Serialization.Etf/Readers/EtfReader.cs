@@ -101,9 +101,11 @@ namespace Voltaic.Serialization.Etf
                         // remaining = remaining.Slice(1);
                         if (remaining.Length < 1)
                             return false;
+
                         byte len = remaining[1];
                         if (remaining.Length < len + 1)
                             return false;
+
                         skipped = remaining.Slice(0, len + 1);
                         remaining = remaining.Slice(len + 1);
                         return true;
@@ -114,11 +116,13 @@ namespace Voltaic.Serialization.Etf
                         // remaining = remaining.Slice(1);
                         if (remaining.Length < 2)
                             return false;
+
                         byte len = remaining[1];
-                        if (remaining.Length < len + 2)
+                        if (remaining.Length < len + 3)
                             return false;
-                        skipped = remaining.Slice(0, len + 2);
-                        remaining = remaining.Slice(len + 2);
+
+                        skipped = remaining.Slice(0, len + 3);
+                        remaining = remaining.Slice(len + 3);
                         return true;
                     }
 
@@ -126,41 +130,51 @@ namespace Voltaic.Serialization.Etf
                 case EtfTokenType.AtomUtf8Ext:
                 case EtfTokenType.StringExt:
                     {
-                        // remaining = remaining.Slice(1);
                         if (remaining.Length < 3)
                             return false;
-                        ushort len = BinaryPrimitives.ReadUInt16BigEndian(remaining.Slice(1));
-                        if (remaining.Length < len + 3)
+
+                        var initial = remaining;
+                        remaining = remaining.Slice(1);
+                        ushort len = BinaryPrimitives.ReadUInt16BigEndian(remaining);
+
+                        if (remaining.Length < len + 2)
                             return false;
-                        skipped = remaining.Slice(0, len + 3);
-                        remaining = remaining.Slice(len + 3);
+                        skipped = initial.Slice(0, len + 3);
+                        remaining = remaining.Slice(len + 2);
                         return true;
                     }
 
                 case EtfTokenType.BinaryExt: // Variable (1 Header + 4 Length)
                     {
-                        // remaining = remaining.Slice(1);
                         if (remaining.Length < 5)
                             return false;
-                        uint len = BinaryPrimitives.ReadUInt32BigEndian(remaining.Slice(1));
-                        if (remaining.Length < len + 5L)
+
+                        var initial = remaining;
+                        remaining = remaining.Slice(1);
+                        uint len = BinaryPrimitives.ReadUInt32BigEndian(remaining);
+
+                        if (remaining.Length < len + 4L)
                             return false;
-                        skipped = remaining.Slice(0, (int)len + 5);
-                        remaining = remaining.Slice((int)len + 5);
+                        skipped = initial.Slice(0, (int)len + 5);
+                        remaining = remaining.Slice((int)len + 4);
                         return true;
                     }
 
                 case EtfTokenType.LargeBigExt: // Variable (1 Header + 4 Length + 1 Payload)
                 case EtfTokenType.BitBinaryExt:
                     {
-                        // remaining = remaining.Slice(1);
                         if (remaining.Length < 6)
                             return false;
-                        uint len = BinaryPrimitives.ReadUInt32BigEndian(remaining.Slice(1));
-                        if (remaining.Length < len + 6L)
+
+                        var initial = remaining;
+                        remaining = remaining.Slice(1);
+                        uint len = BinaryPrimitives.ReadUInt32BigEndian(remaining);
+                        //remaining = remaining.Slice(1);
+
+                        if (remaining.Length < len + 5L)
                             return false;
-                        skipped = remaining.Slice(0, (int)len + 6);
-                        remaining = remaining.Slice((int)len + 6);
+                        skipped = initial.Slice(0, (int)len + 6);
+                        remaining = remaining.Slice((int)len + 5);
                         return true;
                     }
 
@@ -171,10 +185,9 @@ namespace Voltaic.Serialization.Etf
                             return false;
 
                         var initial = remaining;
-                        int len = 0;
-
                         byte count = remaining[1];
                         remaining = remaining.Slice(2);
+                        int len = 0;
 
                         for (int i = 0; i < count; i++)
                         {
@@ -188,15 +201,14 @@ namespace Voltaic.Serialization.Etf
                     }
                 case EtfTokenType.LargeTupleExt: // Variable (1 Header + 4 Element Count)
                     {
-                        // remaining = remaining.Slice(1);
                         if (remaining.Length < 5)
                             return false;
 
                         var initial = remaining;
+                        remaining = remaining.Slice(1);
+                        uint count = BinaryPrimitives.ReadUInt32BigEndian(remaining);
+                        remaining = remaining.Slice(4);
                         int len = 0;
-
-                        uint count = BinaryPrimitives.ReadUInt32BigEndian(remaining.Slice(1));
-                        remaining = remaining.Slice(5);
 
                         for (int i = 0; i < count; i++)
                         {
@@ -211,15 +223,14 @@ namespace Voltaic.Serialization.Etf
 
                 case EtfTokenType.MapExt: // Variable (1 Header + 4 Key+Element Count)
                     {
-                        // remaining = remaining.Slice(1);
                         if (remaining.Length < 5)
                             return false;
 
                         var initial = remaining;
+                        remaining = remaining.Slice(1);
+                        uint count = BinaryPrimitives.ReadUInt32BigEndian(remaining) * 2;
+                        remaining = remaining.Slice(4);
                         int len = 0;
-
-                        uint count = BinaryPrimitives.ReadUInt32BigEndian(remaining.Slice(1)) * 2;
-                        remaining = remaining.Slice(5);
 
                         for (int i = 0; i < count; i++)
                         {
@@ -234,15 +245,14 @@ namespace Voltaic.Serialization.Etf
 
                 case EtfTokenType.ListExt: // Variable (1 Header + 4 Element Count + Tail Element)
                     {
-                        // remaining = remaining.Slice(1);
                         if (remaining.Length < 5)
                             return false;
 
                         var initial = remaining;
+                        remaining = remaining.Slice(1);
+                        uint count = BinaryPrimitives.ReadUInt32BigEndian(remaining) + 1;
+                        remaining = remaining.Slice(4);
                         int len = 0;
-
-                        uint count = BinaryPrimitives.ReadUInt32BigEndian(remaining.Slice(1)) + 1;
-                        remaining = remaining.Slice(5);
 
                         for (int i = 0; i < count; i++)
                         {
