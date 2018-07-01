@@ -123,7 +123,7 @@ namespace Voltaic.Serialization.Json
 
             if (JsonReader.GetTokenType(ref remaining) == JsonTokenType.EndArray)
             {
-                result = new ResizableMemory<T>(EmptyArray<T>.Value, pool);
+                result = new ResizableMemory<T>(0, pool);
                 remaining = remaining.Slice(1);
                 return true;
             }

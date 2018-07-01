@@ -5,17 +5,10 @@ namespace Voltaic.Serialization
 {
     public struct ResizableMemory<T>
     {
-
         public ResizableMemory(int initalCapacity, ArrayPool<T> pool = null)
         {
             Pool = pool ?? ArrayPool<T>.Shared;
             Array = Pool.Rent(initalCapacity);
-            Length = 0;
-        }
-        public ResizableMemory(T[] array, ArrayPool<T> pool = null)
-        {
-            Pool = pool ?? ArrayPool<T>.Shared;
-            Array = array;
             Length = 0;
         }
 
