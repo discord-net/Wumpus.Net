@@ -67,17 +67,6 @@ namespace Voltaic.Serialization.Etf
                         remaining = remaining.Slice((int)length);
                         return true;
                     }
-                default:
-                    return false;
-            }
-        }
-
-        public static bool TryReadUtf16Key(ref ReadOnlySpan<byte> remaining, out string result)
-        {
-            result = default;
-
-            switch (GetTokenType(ref remaining))
-            {
                 case EtfTokenType.AtomExt:
                 case EtfTokenType.AtomUtf8Ext:
                     {
@@ -89,9 +78,9 @@ namespace Voltaic.Serialization.Etf
 
                         if (remaining.Length < length)
                             return false;
-                        var span = remaining.Slice(0, length);
+                        result = remaining.Slice(0, length);
                         remaining = remaining.Slice(length);
-                        return Utf8Reader.TryReadString(ref span, out result);
+                        return true;
                     }
                 case EtfTokenType.SmallAtomExt:
                 case EtfTokenType.SmallAtomUtf8Ext:
@@ -104,50 +93,9 @@ namespace Voltaic.Serialization.Etf
 
                         if (remaining.Length < length)
                             return false;
-                        var span = remaining.Slice(0, length);
+                        result = remaining.Slice(0, length);
                         remaining = remaining.Slice(length);
-                        return Utf8Reader.TryReadString(ref span, out result);
-                    }
-                default:
-                    return false;
-            }
-        }
-
-        public static bool TryReadUtf8Key(ref ReadOnlySpan<byte> remaining, out Utf8String result)
-        {
-            result = default;
-
-            switch (GetTokenType(ref remaining))
-            {
-                case EtfTokenType.AtomExt:
-                case EtfTokenType.AtomUtf8Ext:
-                    {
-                        if (remaining.Length < 3)
-                            return false;
-                        remaining = remaining.Slice(1);
-                        ushort length = BinaryPrimitives.ReadUInt16BigEndian(remaining);
-                        remaining = remaining.Slice(2);
-
-                        if (remaining.Length < length)
-                            return false;
-                        var span = remaining.Slice(0, length);
-                        remaining = remaining.Slice(length);
-                        return Utf8Reader.TryReadUtf8String(ref span, out result);
-                    }
-                case EtfTokenType.SmallAtomExt:
-                case EtfTokenType.SmallAtomUtf8Ext:
-                    {
-                        if (remaining.Length < 3)
-                            return false;
-                        //remaining = remaining.Slice(1);
-                        byte length = remaining[1];
-                        remaining = remaining.Slice(2);
-
-                        if (remaining.Length < length)
-                            return false;
-                        var span = remaining.Slice(0, length);
-                        remaining = remaining.Slice(length);
-                        return Utf8Reader.TryReadUtf8String(ref span, out result);
+                        return true;
                     }
                 default:
                     return false;

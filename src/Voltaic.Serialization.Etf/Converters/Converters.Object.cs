@@ -43,7 +43,7 @@ namespace Voltaic.Serialization.Etf
 
                     for (int i = 0; i < arity; i++)
                     {
-                        if (!EtfReader.TryReadUtf8Key(ref remaining, out var key))
+                        if (!EtfReader.TryReadUtf8String(ref remaining, out var key)) 
                             return false;
 
                         // Unknown Property

@@ -33,7 +33,7 @@ namespace Voltaic.Serialization.Etf
 
             for (int i = 0; i < length; i++)
             {
-                if (!EtfReader.TryReadUtf16Key(ref remaining, out var key))
+                if (!EtfReader.TryReadString(ref remaining, out var key))
                     return false;
                 if (!_innerConverter.TryRead(ref remaining, out var value, propMap))
                     return false;
