@@ -31,14 +31,14 @@ namespace Voltaic.Serialization.Etf.Tests
 
     public class DateTimeOffsetTests : BaseTest<DateTimeOffset>
     {
-        public static IEnumerable<object[]> GetGData() => TextToBinary(Utf8.Tests.DateTimeOffsetTests.GetGData());
+        public static IEnumerable<object[]> GetGData() => TextToBinary(Utf8.Tests.DateTimeOffsetTests.GetDefaultData());
         public static IEnumerable<object[]> GetRData() => TextToBinary(Utf8.Tests.DateTimeOffsetTests.GetRData());
         public static IEnumerable<object[]> GetLittleLData() => TextToBinary(Utf8.Tests.DateTimeOffsetTests.GetLittleLData());
         public static IEnumerable<object[]> GetOData() => TextToBinary(Utf8.Tests.DateTimeOffsetTests.GetOData());
 
         [Theory]
         [MemberData(nameof(GetGData))]
-        public void Format_G(BinaryTestData<DateTimeOffset> data) => RunTest(data, new DateTimeOffsetEtfConverter('G'));
+        public void Format_Default(BinaryTestData<DateTimeOffset> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetRData))]
         public void Format_R(BinaryTestData<DateTimeOffset> data) => RunTest(data, new DateTimeOffsetEtfConverter('R'));

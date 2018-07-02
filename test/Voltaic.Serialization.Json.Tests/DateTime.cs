@@ -15,7 +15,7 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetGData))]
-        public void Format_G(TextTestData<DateTime> data) => RunQuoteTest(data);
+        public void Format_G(TextTestData<DateTime> data) => RunQuoteTest(data, new DateTimeJsonConverter('G'));
         //[Theory]
         //[MemberData(nameof(GetDefaultData))]
         //public void Format_Default(TestData<DateTime> data) => RunQuoteTest(data, new DateTimeJsonConverter(default));
@@ -32,14 +32,14 @@ namespace Voltaic.Serialization.Json.Tests
 
     public class DateTimeOffsetTests : BaseTest<DateTimeOffset>
     {
-        public static IEnumerable<object[]> GetGData() => Utf8.Tests.DateTimeOffsetTests.GetGData();
+        public static IEnumerable<object[]> GetDefaultData() => Utf8.Tests.DateTimeOffsetTests.GetDefaultData();
         public static IEnumerable<object[]> GetRData() => Utf8.Tests.DateTimeOffsetTests.GetRData();
         public static IEnumerable<object[]> GetLittleLData() => Utf8.Tests.DateTimeOffsetTests.GetLittleLData();
         public static IEnumerable<object[]> GetOData() => Utf8.Tests.DateTimeOffsetTests.GetOData();
 
         [Theory]
-        [MemberData(nameof(GetGData))]
-        public void Format_G(TextTestData<DateTimeOffset> data) => RunQuoteTest(data);
+        [MemberData(nameof(GetDefaultData))]
+        public void Format_Default(TextTestData<DateTimeOffset> data) => RunQuoteTest(data, new DateTimeJsonConverter(default));
         [Theory]
         [MemberData(nameof(GetRData))]
         public void Format_R(TextTestData<DateTimeOffset> data) => RunQuoteTest(data, new DateTimeOffsetJsonConverter('R'));

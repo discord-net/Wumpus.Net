@@ -105,7 +105,16 @@ namespace Voltaic.Serialization.Etf.Tests
             foreach (var test in tests)
             {
                 var textTest = test[0] as TextTestData<T>;
-                foreach (var x in CreateTests(textTest.Type, textTest.String, textTest.Value))
+                var type = textTest.Type;
+                switch (type)
+                {
+                    case TestType.Write:
+                        continue;
+                    case TestType.ReadWrite:
+                        type = TestType.Read;
+                        break;
+                }
+                foreach (var x in CreateTests(type, textTest.String, textTest.Value))
                     yield return x;
             }
         }

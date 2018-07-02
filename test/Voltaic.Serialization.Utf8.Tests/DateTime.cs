@@ -106,7 +106,8 @@ namespace Voltaic.Serialization.Utf8.Tests
 
     public class DateTimeOffsetTests : BaseTest<DateTimeOffset>
     {
-        public static IEnumerable<object[]> GetGData()
+        // Corefx's comments say G == default, but G actually redirects to DateTime's G and assumes local time
+        public static IEnumerable<object[]> GetDefaultData()
         {
             yield return FailRead("12/31/0000 12:59:59 +00:00"); // Min - 1ms
             yield return ReadWrite("01/01/0001 00:00:00 +00:00", //Min
@@ -196,7 +197,7 @@ namespace Voltaic.Serialization.Utf8.Tests
         }
 
         [Theory]
-        [MemberData(nameof(GetGData))]
+        [MemberData(nameof(GetDefaultData))]
         public void Format_G(TextTestData<DateTimeOffset> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetRData))]
