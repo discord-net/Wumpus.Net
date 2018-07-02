@@ -11,7 +11,7 @@ namespace Voltaic.Serialization.Etf
         public static bool TryWrite(ref ResizableMemory<byte> writer, char value)
         {
             int start = writer.Length;
-            writer.Push((byte)EtfTokenType.BinaryExt);
+            writer.Push((byte)EtfTokenType.Binary);
             writer.Advance(4);
             if (!Utf8Writer.TryWrite(ref writer, value))
                 return false;
@@ -28,7 +28,7 @@ namespace Voltaic.Serialization.Etf
         public static bool TryWrite(ref ResizableMemory<byte> writer, string value)
         {
             int start = writer.Length;
-            writer.Push((byte)EtfTokenType.BinaryExt);
+            writer.Push((byte)EtfTokenType.Binary);
             writer.Advance(4);
             if (!Utf8Writer.TryWrite(ref writer, value))
                 return false;
@@ -54,7 +54,7 @@ namespace Voltaic.Serialization.Etf
             if (value.Length > ushort.MaxValue)
                 return false;
 
-            writer.Push((byte)EtfTokenType.BinaryExt);
+            writer.Push((byte)EtfTokenType.Binary);
             BinaryPrimitives.WriteUInt32BigEndian(writer.GetSpan(4), (ushort)value.Length);
             writer.Advance(4);
             if (!Utf8Writer.TryWriteString(ref writer, value))
@@ -68,12 +68,12 @@ namespace Voltaic.Serialization.Etf
                 return false;
             if (length < 256)
             {
-                writer.Push((byte)EtfTokenType.SmallAtomUtf8Ext);
+                writer.Push((byte)EtfTokenType.SmallAtomUtf8);
                 writer.Push((byte)length);
             }
             else if (length < ushort.MaxValue)
             {
-                writer.Push((byte)EtfTokenType.AtomUtf8Ext);
+                writer.Push((byte)EtfTokenType.AtomUtf8);
                 BinaryPrimitives.WriteUInt16BigEndian(writer.GetSpan(2), (ushort)length);
                 writer.Advance(2);
             }
@@ -109,7 +109,7 @@ namespace Voltaic.Serialization.Etf
             //else
             //    return false;
 
-            writer.Push((byte)EtfTokenType.BinaryExt);
+            writer.Push((byte)EtfTokenType.Binary);
             BinaryPrimitives.WriteUInt32BigEndian(writer.GetSpan(4), (uint)length);
             writer.Advance(4);
             if (!Utf8Writer.TryWriteString(ref writer, value))

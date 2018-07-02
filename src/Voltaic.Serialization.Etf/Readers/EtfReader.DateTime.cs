@@ -11,8 +11,8 @@ namespace Voltaic.Serialization.Etf
 
             switch (GetTokenType(ref remaining))
             {
-                case EtfTokenType.StringExt:
-                case EtfTokenType.BinaryExt:
+                case EtfTokenType.String:
+                case EtfTokenType.Binary:
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
@@ -29,8 +29,8 @@ namespace Voltaic.Serialization.Etf
 
             switch (GetTokenType(ref remaining))
             {
-                case EtfTokenType.StringExt:
-                case EtfTokenType.BinaryExt:
+                case EtfTokenType.String:
+                case EtfTokenType.Binary:
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;
@@ -47,8 +47,8 @@ namespace Voltaic.Serialization.Etf
 
             switch (GetTokenType(ref remaining))
             {
-                case EtfTokenType.StringExt:
-                case EtfTokenType.BinaryExt:
+                case EtfTokenType.String:
+                case EtfTokenType.Binary:
                     {
                         if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                             return false;

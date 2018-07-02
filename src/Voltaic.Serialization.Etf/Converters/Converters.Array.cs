@@ -40,12 +40,12 @@ namespace Voltaic.Serialization.Etf
             var start = writer.Length;
             if (value.Length < 256)
             {
-                writer.Push((byte)EtfTokenType.SmallTupleExt);
+                writer.Push((byte)EtfTokenType.SmallTuple);
                 writer.Advance(1);
             }
             else
             {
-                writer.Push((byte)EtfTokenType.LargeTupleExt);
+                writer.Push((byte)EtfTokenType.LargeTuple);
                 writer.Advance(4);
             }
 
@@ -111,12 +111,12 @@ namespace Voltaic.Serialization.Etf
             var start = writer.Length;
             if (value.Count < 256)
             {
-                writer.Push((byte)EtfTokenType.SmallTupleExt);
+                writer.Push((byte)EtfTokenType.SmallTuple);
                 writer.Advance(1);
             }
             else
             {
-                writer.Push((byte)EtfTokenType.LargeTupleExt);
+                writer.Push((byte)EtfTokenType.LargeTuple);
                 writer.Advance(4);
             }
 
@@ -158,7 +158,7 @@ namespace Voltaic.Serialization.Etf
 
             switch (EtfReader.GetTokenType(ref remaining))
             {
-                case EtfTokenType.SmallTupleExt:
+                case EtfTokenType.SmallTuple:
                     {
                         if (remaining.Length < 2)
                             return false;
@@ -176,7 +176,7 @@ namespace Voltaic.Serialization.Etf
                         }
                         return true;
                     }
-                case EtfTokenType.LargeTupleExt:
+                case EtfTokenType.LargeTuple:
                     {
                         if (remaining.Length < 5)
                             return false;
@@ -198,7 +198,7 @@ namespace Voltaic.Serialization.Etf
                         return true;
                     }
 
-                case EtfTokenType.ListExt:
+                case EtfTokenType.List:
                     {
                         if (remaining.Length < 5)
                             return false;
@@ -218,7 +218,7 @@ namespace Voltaic.Serialization.Etf
                         }
 
                         // Tail element
-                        if (EtfReader.GetTokenType(ref remaining) != EtfTokenType.NilExt)
+                        if (EtfReader.GetTokenType(ref remaining) != EtfTokenType.Nil)
                             return false;
                         remaining = remaining.Slice(1);
 

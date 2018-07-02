@@ -28,7 +28,7 @@ namespace Voltaic.Serialization.Etf
 
             switch (EtfReader.GetTokenType(ref remaining))
             {
-                case EtfTokenType.MapExt:
+                case EtfTokenType.Map:
                     remaining = remaining.Slice(1);
 
                     uint arity = BinaryPrimitives.ReadUInt32BigEndian(remaining); // count
@@ -94,7 +94,7 @@ namespace Voltaic.Serialization.Etf
                 return EtfWriter.TryWriteNull(ref writer);
 
             var start = writer.Length;
-            writer.Push((byte)EtfTokenType.MapExt);
+            writer.Push((byte)EtfTokenType.Map);
             writer.Advance(4);
 
             uint count = 0;

@@ -39,7 +39,7 @@ namespace Voltaic.Serialization.Etf
 
             switch (GetTokenType(ref remaining))
             {
-                case EtfTokenType.StringExt:
+                case EtfTokenType.String:
                     {
                         if (remaining.Length < 2)
                             return false;
@@ -53,7 +53,7 @@ namespace Voltaic.Serialization.Etf
                         remaining = remaining.Slice(length);
                         return true;
                     }
-                case EtfTokenType.BinaryExt:
+                case EtfTokenType.Binary:
                     {
                         if (remaining.Length < 4)
                             return false;
@@ -67,8 +67,8 @@ namespace Voltaic.Serialization.Etf
                         remaining = remaining.Slice((int)length);
                         return true;
                     }
-                case EtfTokenType.AtomExt:
-                case EtfTokenType.AtomUtf8Ext:
+                case EtfTokenType.Atom:
+                case EtfTokenType.AtomUtf8:
                     {
                         if (remaining.Length < 3)
                             return false;
@@ -82,8 +82,8 @@ namespace Voltaic.Serialization.Etf
                         remaining = remaining.Slice(length);
                         return true;
                     }
-                case EtfTokenType.SmallAtomExt:
-                case EtfTokenType.SmallAtomUtf8Ext:
+                case EtfTokenType.SmallAtom:
+                case EtfTokenType.SmallAtomUtf8:
                     {
                         if (remaining.Length < 3)
                             return false;

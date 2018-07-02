@@ -9,7 +9,7 @@ namespace Voltaic.Serialization.Etf
         public static bool TryWrite(ref ResizableMemory<byte> writer, Guid value, StandardFormat standardFormat)
         {
             int start = writer.Length;
-            writer.Push((byte)EtfTokenType.BinaryExt);
+            writer.Push((byte)EtfTokenType.Binary);
             writer.Advance(4);
             if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                 return false;

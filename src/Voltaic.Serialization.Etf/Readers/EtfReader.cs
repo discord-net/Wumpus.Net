@@ -14,33 +14,33 @@ namespace Voltaic.Serialization.Etf
             switch (b)
             {
                 case 68: return EtfTokenType.DistributionHeader;
-                case 70: return EtfTokenType.NewFloatExt;
-                case 77: return EtfTokenType.BitBinaryExt;
+                case 70: return EtfTokenType.NewFloat;
+                case 77: return EtfTokenType.BitBinary;
                 case 80: return EtfTokenType.Compressed;
                 case 82: return EtfTokenType.AtomCacheRef;
-                case 97: return EtfTokenType.SmallIntegerExt;
-                case 98: return EtfTokenType.IntegerExt;
-                case 99: return EtfTokenType.FloatExt;
-                case 100: return EtfTokenType.AtomExt;
-                case 101: return EtfTokenType.ReferenceExt;
-                case 102: return EtfTokenType.PortExt;
-                case 103: return EtfTokenType.PidExt;
-                case 104: return EtfTokenType.SmallTupleExt;
-                case 105: return EtfTokenType.LargeTupleExt;
-                case 106: return EtfTokenType.NilExt;
-                case 107: return EtfTokenType.StringExt;
-                case 108: return EtfTokenType.ListExt;
-                case 109: return EtfTokenType.BinaryExt;
-                case 110: return EtfTokenType.SmallBigExt;
-                case 111: return EtfTokenType.LargeBigExt;
-                case 112: return EtfTokenType.NewFunExt;
-                case 113: return EtfTokenType.ExportExt;
-                case 114: return EtfTokenType.NewReferenceExt;
-                case 115: return EtfTokenType.SmallAtomExt;
-                case 116: return EtfTokenType.MapExt;
-                case 117: return EtfTokenType.FunExt;
-                case 118: return EtfTokenType.AtomUtf8Ext;
-                case 119: return EtfTokenType.SmallAtomUtf8Ext;
+                case 97: return EtfTokenType.SmallInteger;
+                case 98: return EtfTokenType.Integer;
+                case 99: return EtfTokenType.Float;
+                case 100: return EtfTokenType.Atom;
+                case 101: return EtfTokenType.Reference;
+                case 102: return EtfTokenType.Port;
+                case 103: return EtfTokenType.Pid;
+                case 104: return EtfTokenType.SmallTuple;
+                case 105: return EtfTokenType.LargeTuple;
+                case 106: return EtfTokenType.Nil;
+                case 107: return EtfTokenType.String;
+                case 108: return EtfTokenType.List;
+                case 109: return EtfTokenType.Binary;
+                case 110: return EtfTokenType.SmallBig;
+                case 111: return EtfTokenType.LargeBig;
+                case 112: return EtfTokenType.NewFun;
+                case 113: return EtfTokenType.Export;
+                case 114: return EtfTokenType.NewReference;
+                case 115: return EtfTokenType.SmallAtom;
+                case 116: return EtfTokenType.Map;
+                case 117: return EtfTokenType.Fun;
+                case 118: return EtfTokenType.AtomUtf8;
+                case 119: return EtfTokenType.SmallAtomUtf8;
                 default:
                     throw new SerializationException($"Unexpected type id ({b})");
             }
@@ -52,13 +52,13 @@ namespace Voltaic.Serialization.Etf
 
             switch (GetTokenType(ref remaining))
             {
-                case EtfTokenType.NilExt: // 1 Byte (1 Header)
+                case EtfTokenType.Nil: // 1 Byte (1 Header)
                     {
                         skipped = remaining.Slice(0, 1);
                         remaining = remaining.Slice(1);
                         return true;
                     }
-                case EtfTokenType.SmallIntegerExt: // 2 Byte (1 Header + 1 Payload)
+                case EtfTokenType.SmallInteger: // 2 Byte (1 Header + 1 Payload)
                     {
                         // remaining = remaining.Slice(1);
                         if (remaining.Length < 2)
@@ -67,7 +67,7 @@ namespace Voltaic.Serialization.Etf
                         remaining = remaining.Slice(2);
                         return true;
                     }
-                case EtfTokenType.IntegerExt: // 5 Byte (1 Header + 4 Payload)
+                case EtfTokenType.Integer: // 5 Byte (1 Header + 4 Payload)
                     {
                         // remaining = remaining.Slice(1);
                         if (remaining.Length < 5)
@@ -76,7 +76,7 @@ namespace Voltaic.Serialization.Etf
                         remaining = remaining.Slice(5);
                         return true;
                     }
-                case EtfTokenType.NewFloatExt: // 9 Byte (1 Header + 8 Payload)
+                case EtfTokenType.NewFloat: // 9 Byte (1 Header + 8 Payload)
                     {
                         // remaining = remaining.Slice(1);
                         if (remaining.Length < 9)
@@ -85,7 +85,7 @@ namespace Voltaic.Serialization.Etf
                         remaining = remaining.Slice(9);
                         return true;
                     }
-                case EtfTokenType.FloatExt: // 32 Byte (1 Header + 31 Payload)
+                case EtfTokenType.Float: // 32 Byte (1 Header + 31 Payload)
                     {
                         // remaining = remaining.Slice(1);
                         if (remaining.Length < 32)
@@ -95,8 +95,8 @@ namespace Voltaic.Serialization.Etf
                         return true;
                     }
 
-                case EtfTokenType.SmallAtomExt: // Variable (1 Header + 1 Length)
-                case EtfTokenType.SmallAtomUtf8Ext:
+                case EtfTokenType.SmallAtom: // Variable (1 Header + 1 Length)
+                case EtfTokenType.SmallAtomUtf8:
                     {
                         // remaining = remaining.Slice(1);
                         if (remaining.Length < 1)
@@ -111,7 +111,7 @@ namespace Voltaic.Serialization.Etf
                         return true;
                     }
 
-                case EtfTokenType.SmallBigExt: // Variable (1 Header + 1 Length + 1 Payload)
+                case EtfTokenType.SmallBig: // Variable (1 Header + 1 Length + 1 Payload)
                     {
                         // remaining = remaining.Slice(1);
                         if (remaining.Length < 2)
@@ -126,9 +126,9 @@ namespace Voltaic.Serialization.Etf
                         return true;
                     }
 
-                case EtfTokenType.AtomExt: // Variable (1 Header + 2 Length)
-                case EtfTokenType.AtomUtf8Ext:
-                case EtfTokenType.StringExt:
+                case EtfTokenType.Atom: // Variable (1 Header + 2 Length)
+                case EtfTokenType.AtomUtf8:
+                case EtfTokenType.String:
                     {
                         if (remaining.Length < 3)
                             return false;
@@ -144,7 +144,7 @@ namespace Voltaic.Serialization.Etf
                         return true;
                     }
 
-                case EtfTokenType.BinaryExt: // Variable (1 Header + 4 Length)
+                case EtfTokenType.Binary: // Variable (1 Header + 4 Length)
                     {
                         if (remaining.Length < 5)
                             return false;
@@ -160,8 +160,8 @@ namespace Voltaic.Serialization.Etf
                         return true;
                     }
 
-                case EtfTokenType.LargeBigExt: // Variable (1 Header + 4 Length + 1 Payload)
-                case EtfTokenType.BitBinaryExt:
+                case EtfTokenType.LargeBig: // Variable (1 Header + 4 Length + 1 Payload)
+                case EtfTokenType.BitBinary:
                     {
                         if (remaining.Length < 6)
                             return false;
@@ -178,7 +178,7 @@ namespace Voltaic.Serialization.Etf
                         return true;
                     }
 
-                case EtfTokenType.SmallTupleExt: // Variable (1 Header + 1 Element Count)
+                case EtfTokenType.SmallTuple: // Variable (1 Header + 1 Element Count)
                     {
                         // remaining = remaining.Slice(1);
                         if (remaining.Length < 2)
@@ -199,7 +199,7 @@ namespace Voltaic.Serialization.Etf
 
                         return true;
                     }
-                case EtfTokenType.LargeTupleExt: // Variable (1 Header + 4 Element Count)
+                case EtfTokenType.LargeTuple: // Variable (1 Header + 4 Element Count)
                     {
                         if (remaining.Length < 5)
                             return false;
@@ -221,7 +221,7 @@ namespace Voltaic.Serialization.Etf
                         return true;
                     }
 
-                case EtfTokenType.MapExt: // Variable (1 Header + 4 Key+Element Count)
+                case EtfTokenType.Map: // Variable (1 Header + 4 Key+Element Count)
                     {
                         if (remaining.Length < 5)
                             return false;
@@ -243,7 +243,7 @@ namespace Voltaic.Serialization.Etf
                         return true;
                     }
 
-                case EtfTokenType.ListExt: // Variable (1 Header + 4 Element Count + Tail Element)
+                case EtfTokenType.List: // Variable (1 Header + 4 Element Count + Tail Element)
                     {
                         if (remaining.Length < 5)
                             return false;
@@ -275,15 +275,15 @@ namespace Voltaic.Serialization.Etf
         {
             switch (GetTokenType(ref remaining))
             {
-                case EtfTokenType.NilExt:
+                case EtfTokenType.Nil:
                     {
                         if (remaining.Length < 1)
                             return false;
                         remaining = remaining.Slice(1);
                         return true;
                     }
-                case EtfTokenType.AtomExt:
-                case EtfTokenType.AtomUtf8Ext:
+                case EtfTokenType.Atom:
+                case EtfTokenType.AtomUtf8:
                     {
                         if (remaining.Length < 6)
                             return false;
@@ -293,8 +293,8 @@ namespace Voltaic.Serialization.Etf
                         remaining = remaining.Slice(6);
                         return true;
                     }
-                case EtfTokenType.SmallAtomExt:
-                case EtfTokenType.SmallAtomUtf8Ext:
+                case EtfTokenType.SmallAtom:
+                case EtfTokenType.SmallAtomUtf8:
                     {
                         if (remaining.Length < 5)
                             return false;

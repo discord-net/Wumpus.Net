@@ -5,7 +5,7 @@ namespace Voltaic.Serialization.Etf
     public static partial class EtfWriter
     {
         private readonly static ReadOnlyMemory<byte> _nilValue = new ReadOnlyMemory<byte>(
-            new byte[] { (byte)EtfTokenType.SmallAtomExt, 3, (byte)'n', (byte)'i', (byte)'l' });
+            new byte[] { (byte)EtfTokenType.SmallAtom, 3, (byte)'n', (byte)'i', (byte)'l' });
 
         public static bool TryWriteNull(ref ResizableMemory<byte> writer)
         {

@@ -7,9 +7,9 @@ namespace Voltaic.Serialization.Etf
     public static partial class EtfWriter
     {
         private readonly static ReadOnlyMemory<byte> _trueValue = new ReadOnlyMemory<byte>(
-            new byte[] { (byte)EtfTokenType.SmallAtomExt, 4, (byte)'t', (byte)'r', (byte)'u', (byte)'e' });
+            new byte[] { (byte)EtfTokenType.SmallAtom, 4, (byte)'t', (byte)'r', (byte)'u', (byte)'e' });
         private readonly static ReadOnlyMemory<byte> _falseValue = new ReadOnlyMemory<byte>(
-            new byte[] { (byte)EtfTokenType.SmallAtomExt, 5, (byte)'f', (byte)'a', (byte)'l', (byte)'s', (byte)'e' });
+            new byte[] { (byte)EtfTokenType.SmallAtom, 5, (byte)'f', (byte)'a', (byte)'l', (byte)'s', (byte)'e' });
 
         public static bool TryWrite(ref ResizableMemory<byte> writer, bool value, StandardFormat standardFormat)
         {
@@ -29,7 +29,7 @@ namespace Voltaic.Serialization.Etf
             else
             {
                 int start = writer.Length;
-                writer.Push((byte)EtfTokenType.BinaryExt);
+                writer.Push((byte)EtfTokenType.Binary);
                 writer.Advance(4);
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;

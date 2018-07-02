@@ -13,14 +13,14 @@ namespace Voltaic.Serialization.Etf
                 if (/*value <= byte.MaxValue &&*/ value >= byte.MinValue)
                     return TryWrite(ref writer, (byte)value, standardFormat);
 
-                writer.Push((byte)EtfTokenType.IntegerExt);
+                writer.Push((byte)EtfTokenType.Integer);
                 BinaryPrimitives.WriteInt32BigEndian(writer.GetSpan(4), value);
                 writer.Advance(4);
             }
             else
             {
                 int start = writer.Length;
-                writer.Push((byte)EtfTokenType.BinaryExt);
+                writer.Push((byte)EtfTokenType.Binary);
                 writer.Advance(4);
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
@@ -42,14 +42,14 @@ namespace Voltaic.Serialization.Etf
                 if (value <= byte.MaxValue && value >= byte.MinValue)
                     return TryWrite(ref writer, (byte)value, standardFormat);
 
-                writer.Push((byte)EtfTokenType.IntegerExt);
+                writer.Push((byte)EtfTokenType.Integer);
                 BinaryPrimitives.WriteInt32BigEndian(writer.GetSpan(4), value);
                 writer.Advance(4);
             }
             else
             {
                 int start = writer.Length;
-                writer.Push((byte)EtfTokenType.BinaryExt);
+                writer.Push((byte)EtfTokenType.Binary);
                 writer.Advance(4);
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
@@ -71,14 +71,14 @@ namespace Voltaic.Serialization.Etf
                 if (value <= byte.MaxValue && value >= byte.MinValue)
                     return TryWrite(ref writer, (byte)value, standardFormat);
 
-                writer.Push((byte)EtfTokenType.IntegerExt);
+                writer.Push((byte)EtfTokenType.Integer);
                 BinaryPrimitives.WriteInt32BigEndian(writer.GetSpan(4), value);
                 writer.Advance(4);
             }
             else
             {
                 int start = writer.Length;
-                writer.Push((byte)EtfTokenType.BinaryExt);
+                writer.Push((byte)EtfTokenType.Binary);
                 writer.Advance(4);
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
@@ -102,7 +102,7 @@ namespace Voltaic.Serialization.Etf
                 if (value <= int.MaxValue && value >= int.MinValue)
                     return TryWrite(ref writer, (int)value, standardFormat);
 
-                writer.Push((byte)EtfTokenType.SmallBigExt);
+                writer.Push((byte)EtfTokenType.SmallBig);
                 writer.Push(8);
                 if (value >= 0)
                 {
@@ -119,7 +119,7 @@ namespace Voltaic.Serialization.Etf
             else
             {
                 int start = writer.Length;
-                writer.Push((byte)EtfTokenType.BinaryExt);
+                writer.Push((byte)EtfTokenType.Binary);
                 writer.Advance(4);
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;

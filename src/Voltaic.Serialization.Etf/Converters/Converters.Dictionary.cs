@@ -49,7 +49,7 @@ namespace Voltaic.Serialization.Etf
                 return EtfWriter.TryWriteNull(ref writer);
 
             var start = writer.Length;
-            writer.Push((byte)EtfTokenType.MapExt);
+            writer.Push((byte)EtfTokenType.Map);
             writer.Advance(4);
 
             uint count = 0;
