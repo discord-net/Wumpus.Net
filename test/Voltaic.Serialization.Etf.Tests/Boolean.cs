@@ -25,19 +25,25 @@ namespace Voltaic.Serialization.Etf.Tests
             yield return Read(EtfTokenType.AtomUtf8, new byte[] { 0x00, 0x04, 0x74, 0x72, 0x75, 0x65 }, true);
             yield return Read(EtfTokenType.AtomUtf8, new byte[] { 0x00, 0x05, 0x66, 0x61, 0x6C, 0x73, 0x65 }, false);
         }
+        public static IEnumerable<object[]> GetGData() => TextToBinary(Utf8.Tests.BooleanTests.GetGData());
+        public static IEnumerable<object[]> GetLittleLData() => TextToBinary(Utf8.Tests.BooleanTests.GetLittleLData());
 
         [Theory]
         [MemberData(nameof(GetSmallAtomData))]
-        public void SmallAtom(TestData<bool> data) => RunTest(data);
+        public void SmallAtom(BinaryTestData<bool> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetSmallAtomUtf8Data))]
-        public void SmallAtomUtf8(TestData<bool> data) => RunTest(data);
+        public void SmallAtomUtf8(BinaryTestData<bool> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetAtomData))]
-        public void Atom(TestData<bool> data) => RunTest(data);
+        public void Atom(BinaryTestData<bool> data) => RunTest(data);
+
         [Theory]
-        [MemberData(nameof(GetAtomUtf8Data))]
-        public void AtomUtf8(TestData<bool> data) => RunTest(data);
+        [MemberData(nameof(GetGData))]
+        public void Format_G(BinaryTestData<bool> data) => RunTest(data, new BooleanEtfConverter('G'));
+        [Theory]
+        [MemberData(nameof(GetLittleLData))]
+        public void Format_LittleL(BinaryTestData<bool> data) => RunTest(data, new BooleanEtfConverter('l'));
 
     }
 }
