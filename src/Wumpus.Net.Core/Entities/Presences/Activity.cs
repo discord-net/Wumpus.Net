@@ -54,7 +54,7 @@ namespace Wumpus.Entities
         public Optional<Utf8String> Id { get; set; }
         /// <summary> used to show the party's current and maximum size </summary>
         [ModelProperty("size")]
-        public Optional<int[]> Size { get; set; }
+        public Optional<long[]> Size { get; set; }
     }
 
     /// <summary> https://discordapp.com/developers/docs/topics/gateway#activity-object-activity-assets </summary>
