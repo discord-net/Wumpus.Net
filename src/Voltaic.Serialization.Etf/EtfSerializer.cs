@@ -44,13 +44,13 @@ namespace Voltaic.Serialization.Etf
             _converters.SetDefault<TimeSpan, TimeSpanEtfConverter>(
                 (t, p) => new TimeSpanEtfConverter(GetStandardFormat(p)));
             _converters.AddConditional<DateTime, DateTimeEpochConverter>(
-                (t, p) => p.GetCustomAttribute<EpochAttribute>() != null,
+                (t, p) => p?.GetCustomAttribute<EpochAttribute>() != null,
                 (t, p) => new DateTimeEpochConverter(this, p.GetCustomAttribute<EpochAttribute>().Type));
             _converters.AddConditional<DateTimeOffset, DateTimeOffsetEpochConverter>(
-                (t, p) => p.GetCustomAttribute<EpochAttribute>() != null,
+                (t, p) => p?.GetCustomAttribute<EpochAttribute>() != null,
                 (t, p) => new DateTimeOffsetEpochConverter(this, p.GetCustomAttribute<EpochAttribute>().Type));
             _converters.AddConditional<TimeSpan, TimeSpanEpochConverter>(
-                (t, p) => p.GetCustomAttribute<EpochAttribute>() != null,
+                (t, p) => p?.GetCustomAttribute<EpochAttribute>() != null,
                 (t, p) => new TimeSpanEpochConverter(this, p.GetCustomAttribute<EpochAttribute>().Type));
 
             // Collections
