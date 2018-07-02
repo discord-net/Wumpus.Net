@@ -15,7 +15,7 @@ namespace Voltaic.Serialization.Etf
             writer.Advance(4);
             if (!Utf8Writer.TryWrite(ref writer, value))
                 return false;
-            int length = writer.Length - start;
+            int length = writer.Length - start - 5;
             if (length > ushort.MaxValue)
                 return false;
             writer.Array[start + 1] = (byte)(length >> 24);
@@ -32,7 +32,7 @@ namespace Voltaic.Serialization.Etf
             writer.Advance(4);
             if (!Utf8Writer.TryWrite(ref writer, value))
                 return false;
-            int length = writer.Length - start;
+            int length = writer.Length - start - 5;
             if (length > ushort.MaxValue)
                 return false;
             writer.Array[start + 1] = (byte)(length >> 24);
