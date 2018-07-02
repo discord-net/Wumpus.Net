@@ -85,7 +85,7 @@ namespace Voltaic.Serialization.Etf
                 case EtfTokenType.SmallAtom:
                 case EtfTokenType.SmallAtomUtf8:
                     {
-                        if (remaining.Length < 3)
+                        if (remaining.Length < 2)
                             return false;
                         //remaining = remaining.Slice(1);
                         byte length = remaining[1];
