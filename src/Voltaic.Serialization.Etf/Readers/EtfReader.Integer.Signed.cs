@@ -123,7 +123,7 @@ namespace Voltaic.Serialization.Etf
                         //remaining = remaining.Slice(1);
                         byte bytes = remaining[1];
                         bool isPositive = remaining[2] == 0;
-                        remaining = remaining.Slice(2);
+                        remaining = remaining.Slice(3);
                         return TryReadSignedBigNumber(bytes, isPositive, ref remaining, out result);
                     }
                 case EtfTokenType.LargeBigExt:
