@@ -1,26 +1,20 @@
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using Voltaic.Serialization.Utf8.Tests;
 using Xunit;
 
 namespace Voltaic.Serialization.Etf.Tests
 {
-    public enum TestType : byte
-    {
-        FailRead,
-        FailWrite,
-        Read,
-        Write,
-        ReadWrite
-    }
-
-    public class TestData<T>
+    public class BinaryTestData<T>
     {
         public T Value { get; }
         public ReadOnlyMemory<byte> Bytes { get; }
         public TestType Type { get; }
 
-        public TestData(TestType type, EtfTokenType tokenType, IEnumerable<byte> bytes, T value)
+        public BinaryTestData(TestType type, EtfTokenType tokenType, IEnumerable<byte> bytes, T value)
         {
             Type = type;
             Bytes = new ReadOnlyMemory<byte>(new byte[] { 131, (byte)tokenType }.Concat(bytes).ToArray());
@@ -39,7 +33,7 @@ namespace Voltaic.Serialization.Etf.Tests
             _comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
-        protected void RunTest(TestData<T> test, ValueConverter<T> converter = null)
+        protected void RunTest(BinaryTestData<T> test, ValueConverter<T> converter = null)
         {
             switch (test.Type)
             {
@@ -62,15 +56,58 @@ namespace Voltaic.Serialization.Etf.Tests
             }
         }
 
-        public static object[] FailRead(EtfTokenType tokenType, IEnumerable<byte> bytes)
-          => new object[] { new TestData<T>(TestType.FailRead, tokenType, bytes, default) };
+        public static object[] FailRead(EtfTokenType tokenType, byte[] bytes)
+          => new object[] { new BinaryTestData<T>(TestType.FailRead, tokenType, bytes, default) };
         public static object[] FailWrite(T value)
-          => new object[] { new TestData<T>(TestType.FailWrite, EtfTokenType.None, default, value) };
-        public static object[] Read(EtfTokenType tokenType, IEnumerable<byte> bytes, T value)
-          => new object[] { new TestData<T>(TestType.Read, tokenType, bytes, value) };
-        public static object[] Write(EtfTokenType tokenType, IEnumerable<byte> bytes, T value)
-          => new object[] { new TestData<T>(TestType.Write, tokenType, bytes, value) };
-        public static object[] ReadWrite(EtfTokenType tokenType, IEnumerable<byte> bytes, T value)
-          => new object[] { new TestData<T>(TestType.ReadWrite, tokenType, bytes, value) };
+          => new object[] { new BinaryTestData<T>(TestType.FailWrite, EtfTokenType.None, default, value) };
+        public static object[] Read(EtfTokenType tokenType, byte[] bytes, T value)
+          => new object[] { new BinaryTestData<T>(TestType.Read, tokenType, bytes, value) };
+        public static object[] Write(EtfTokenType tokenType, byte[] bytes, T value)
+          => new object[] { new BinaryTestData<T>(TestType.Write, tokenType, bytes, value) };
+        public static object[] ReadWrite(EtfTokenType tokenType, byte[] bytes, T value)
+          => new object[] { new BinaryTestData<T>(TestType.ReadWrite, tokenType, bytes, value) };
+
+        public static IEnumerable<object[]> FailReads(string str)
+            => CreateTests(TestType.FailRead, str, default);
+        public static IEnumerable<object[]> Reads(string str, T value)
+            => CreateTests(TestType.Read, str, value);
+        public static IEnumerable<object[]> Writes(string str, T value)
+            => CreateTests(TestType.Write, str, value);
+        public static IEnumerable<object[]> ReadWrites(string str, T value)
+            => CreateTests(TestType.ReadWrite, str, value);
+        private static IEnumerable<object[]> CreateTests(TestType type, string str, T value)
+        {
+            var utf8 = Encoding.UTF8.GetBytes(str);
+            if (utf8.Length <= byte.MaxValue)
+            {
+                var header = new byte[] { (byte)utf8.Length };
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.SmallAtom, header.Concat(utf8), value) };
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.SmallAtomUtf8, header.Concat(utf8), value) };
+            }
+            if (utf8.Length <= ushort.MaxValue )
+            {
+                var header = new byte[2];
+                BinaryPrimitives.WriteUInt16BigEndian(header, (ushort)utf8.Length);
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.Atom, header.Concat(utf8), value) };
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.AtomUtf8, header.Concat(utf8), value) };
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.String, header.Concat(utf8), value) };
+            }
+            // if (utf8.Length <= uint.MaxValue)
+            {
+                var header = new byte[4];
+                BinaryPrimitives.WriteUInt32BigEndian(header, (uint)utf8.Length);
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.Binary, header.Concat(utf8), value) };
+            }
+        }
+
+        protected static IEnumerable<object[]> TextToBinary(IEnumerable<object[]> tests)
+        {
+            foreach (var test in tests)
+            {
+                var textTest = test[0] as TextTestData<T>;
+                foreach (var x in CreateTests(textTest.Type, textTest.String, textTest.Value))
+                    yield return x;
+            }
+        }
     }
 }
