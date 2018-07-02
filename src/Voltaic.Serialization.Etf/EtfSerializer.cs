@@ -12,37 +12,46 @@ namespace Voltaic.Serialization.Etf
         {
             // Integers
             _converters.SetDefault<sbyte, SByteEtfConverter>(
-                (s, t, p) => new SByteEtfConverter(GetStandardFormat(p)));
+                (t, p) => new SByteEtfConverter(GetStandardFormat(p)));
             _converters.SetDefault<byte, ByteEtfConverter>(
-                (s, t, p) => new ByteEtfConverter(GetStandardFormat(p)));
+                (t, p) => new ByteEtfConverter(GetStandardFormat(p)));
             _converters.SetDefault<short, Int16EtfConverter>(
-                (s, t, p) => new Int16EtfConverter(GetStandardFormat(p)));
+                (t, p) => new Int16EtfConverter(GetStandardFormat(p)));
             _converters.SetDefault<ushort, UInt16EtfConverter>(
-                (s, t, p) => new UInt16EtfConverter(GetStandardFormat(p)));
+                (t, p) => new UInt16EtfConverter(GetStandardFormat(p)));
             _converters.SetDefault<int, Int32EtfConverter>(
-                (s, t, p) => new Int32EtfConverter(GetStandardFormat(p)));
+                (t, p) => new Int32EtfConverter(GetStandardFormat(p)));
             _converters.SetDefault<uint, UInt32EtfConverter>(
-                (s, t, p) => new UInt32EtfConverter(GetStandardFormat(p)));
+                (t, p) => new UInt32EtfConverter(GetStandardFormat(p)));
             _converters.SetDefault<long, Int64EtfConverter>(
-                (s, t, p) => new Int64EtfConverter(GetStandardFormat(p)));
+                (t, p) => new Int64EtfConverter(GetStandardFormat(p)));
             _converters.SetDefault<ulong, UInt64EtfConverter>(
-                (s, t, p) => new UInt64EtfConverter(GetStandardFormat(p)));
+                (t, p) => new UInt64EtfConverter(GetStandardFormat(p)));
 
             // Floats
             _converters.SetDefault<float, SingleEtfConverter>(
-                (s, t, p) => new SingleEtfConverter(GetStandardFormat(p)));
+                (t, p) => new SingleEtfConverter(GetStandardFormat(p)));
             _converters.SetDefault<double, DoubleEtfConverter>(
-                (s, t, p) => new DoubleEtfConverter(GetStandardFormat(p)));
+                (t, p) => new DoubleEtfConverter(GetStandardFormat(p)));
             _converters.SetDefault<decimal, DecimalEtfConverter>(
-                (s, t, p) => new DecimalEtfConverter(GetStandardFormat(p)));
+                (t, p) => new DecimalEtfConverter(GetStandardFormat(p)));
 
             // Dates/TimeSpans
             _converters.SetDefault<DateTime, DateTimeEtfConverter>(
-                (s, t, p) => new DateTimeEtfConverter(GetStandardFormat(p)));
+                (t, p) => new DateTimeEtfConverter(GetStandardFormat(p)));
             _converters.SetDefault<DateTimeOffset, DateTimeOffsetEtfConverter>(
-                (s, t, p) => new DateTimeOffsetEtfConverter(GetStandardFormat(p)));
+                (t, p) => new DateTimeOffsetEtfConverter(GetStandardFormat(p)));
             _converters.SetDefault<TimeSpan, TimeSpanEtfConverter>(
-                (s, t, p) => new TimeSpanEtfConverter(GetStandardFormat(p)));
+                (t, p) => new TimeSpanEtfConverter(GetStandardFormat(p)));
+            _converters.AddConditional<DateTime, DateTimeEpochConverter>(
+                (t, p) => p.GetCustomAttribute<EpochAttribute>() != null,
+                (t, p) => new DateTimeEpochConverter(this, p.GetCustomAttribute<EpochAttribute>().Type));
+            _converters.AddConditional<DateTimeOffset, DateTimeOffsetEpochConverter>(
+                (t, p) => p.GetCustomAttribute<EpochAttribute>() != null,
+                (t, p) => new DateTimeOffsetEpochConverter(this, p.GetCustomAttribute<EpochAttribute>().Type));
+            _converters.AddConditional<TimeSpan, TimeSpanEpochConverter>(
+                (t, p) => p.GetCustomAttribute<EpochAttribute>() != null,
+                (t, p) => new TimeSpanEpochConverter(this, p.GetCustomAttribute<EpochAttribute>().Type));
 
             // Collections
             _converters.AddGlobalConditional(typeof(ArrayEtfConverter<>),
@@ -77,9 +86,9 @@ namespace Voltaic.Serialization.Etf
 
             // Others
             _converters.SetDefault<bool, BooleanEtfConverter>(
-                (s, t, p) => new BooleanEtfConverter(GetStandardFormat(p)));
+                (t, p) => new BooleanEtfConverter(GetStandardFormat(p)));
             _converters.SetDefault<Guid, GuidEtfConverter>(
-                (s, t, p) => new GuidEtfConverter(GetStandardFormat(p)));
+                (t, p) => new GuidEtfConverter(GetStandardFormat(p)));
             _converters.SetGenericDefault(typeof(Nullable<>), typeof(NullableEtfConverter<>),
                 (t) => t.GenericTypeArguments[0]);
             _converters.SetGenericDefault(typeof(Optional<>), typeof(OptionalEtfConverter<>),
