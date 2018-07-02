@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Reflection;
 using Voltaic.Serialization;
-using Voltaic.Serialization.Etf;
+using Voltaic.Serialization.Json;
 
 namespace Wumpus.Serialization
 {
-    public class EntityOrIdEtfConverter<T> : ValueConverter<EntityOrId<T>>
+    public class EntityOrIdConverter<T> : ValueConverter<EntityOrId<T>>
     {
         private readonly ValueConverter<Snowflake> _idConverter;
         private readonly ValueConverter<T> _entityConverter;
 
-        public EntityOrIdEtfConverter(Serializer serializer, PropertyInfo propInfo)
+        public EntityOrIdConverter(Serializer serializer, PropertyInfo propInfo)
         {
             _idConverter = serializer.GetConverter<Snowflake>(propInfo, true);
             _entityConverter = serializer.GetConverter<T>(propInfo, true);
@@ -23,12 +23,9 @@ namespace Wumpus.Serialization
         {
             result = default;
 
-            switch (EtfReader.GetTokenType(ref remaining))
+            switch (JsonReader.GetTokenType(ref remaining))
             {
-                case EtfTokenType.SmallIntegerExt:
-                case EtfTokenType.IntegerExt:
-                case EtfTokenType.SmallBigExt:
-                case EtfTokenType.LargeBigExt:
+                case JsonTokenType.Number:
                     if (!_idConverter.TryRead(ref remaining, out var idValue, propMap))
                         return false;
                     result = new EntityOrId<T>(idValue);

@@ -6,12 +6,12 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Serialization
 {
-    public class ImageJsonConverter : ValueConverter<Image>
+    public class ImageConverter : ValueConverter<Image>
     {
         private readonly ValueConverter<Utf8String> _hashConverter;
         private readonly ValueConverter<string> _base64Converter;
 
-        public ImageJsonConverter(Serializer serializer, PropertyInfo propInfo)
+        public ImageConverter(Serializer serializer, PropertyInfo propInfo)
         {
             _hashConverter = serializer.GetConverter<Utf8String>(propInfo, true);
             _base64Converter = serializer.GetConverter<string>(propInfo, true);
