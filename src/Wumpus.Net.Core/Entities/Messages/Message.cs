@@ -24,9 +24,11 @@ namespace Wumpus.Entities
         public Optional<Utf8String> Content { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("timestamp")]
+        [StandardFormat('O')]
         public Optional<DateTimeOffset> Timestamp { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("edited_timestamp")]
+        [StandardFormat('O')]
         public Optional<DateTimeOffset?> EditedTimestamp { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("tts")]

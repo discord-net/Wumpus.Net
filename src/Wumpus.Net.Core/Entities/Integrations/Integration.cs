@@ -39,6 +39,7 @@ namespace Wumpus.Entities
         public IntegrationAccount Account { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("synced_at")]
+        [StandardFormat('O')]
         public DateTimeOffset SyncedAt { get; set; }
     }
 }

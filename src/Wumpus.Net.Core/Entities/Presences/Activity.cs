@@ -1,4 +1,5 @@
-﻿using Voltaic;
+﻿using System;
+using Voltaic;
 using Voltaic.Serialization;
 
 namespace Wumpus.Entities
@@ -37,10 +38,12 @@ namespace Wumpus.Entities
     {
         /// <summary> unix time (in milliseconds) of when the activity started </summary>
         [ModelProperty("start")]
-        public Optional<int> Start { get; set; }
+        [Epoch(EpochType.UnixMillis)]
+        public Optional<DateTimeOffset> Start { get; set; }
         /// <summary> unix time (in milliseconds) of when the activity ends </summary>
         [ModelProperty("end")]
-        public Optional<int> End { get; set; }
+        [Epoch(EpochType.UnixMillis)]
+        public Optional<DateTimeOffset> End { get; set; }
     }
 
     /// <summary> https://discordapp.com/developers/docs/topics/gateway#activity-object-activity-party </summary>
