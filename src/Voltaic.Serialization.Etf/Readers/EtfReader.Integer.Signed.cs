@@ -10,93 +10,60 @@ namespace Voltaic.Serialization.Etf
         {
             result = default;
 
-            switch (GetTokenType(ref remaining))
+            if (standardFormat != '\0')
             {
-                case EtfTokenType.SmallInteger:
-                case EtfTokenType.Integer:
-                case EtfTokenType.SmallBig:
-                case EtfTokenType.LargeBig:
-                    {
-                        result = default;
-                        if (!TryReadInt64(ref remaining, out long longResult, standardFormat))
-                            return false;
-                        if (longResult > sbyte.MaxValue || longResult < sbyte.MinValue)
-                            return false;
-                        result = (sbyte)longResult;
-                        return true;
-                    }
-                case EtfTokenType.String:
-                case EtfTokenType.Binary:
-                    {
-                        if (!TryReadUtf8Bytes(ref remaining, out var bytes))
-                            return false;
-                        return Utf8Reader.TryReadInt8(ref bytes, out result, standardFormat);
-                    }
-                default:
+                if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                     return false;
+                return Utf8Reader.TryReadInt8(ref bytes, out result, standardFormat);
             }
+
+            result = default;
+            if (!TryReadInt64(ref remaining, out long longResult, standardFormat))
+                return false;
+            if (longResult > sbyte.MaxValue || longResult < sbyte.MinValue)
+                return false;
+            result = (sbyte)longResult;
+            return true;
         }
 
         public static bool TryReadInt16(ref ReadOnlySpan<byte> remaining, out short result, char standardFormat)
         {
             result = default;
 
-            switch (GetTokenType(ref remaining))
+            if (standardFormat != '\0')
             {
-                case EtfTokenType.SmallInteger:
-                case EtfTokenType.Integer:
-                case EtfTokenType.SmallBig:
-                case EtfTokenType.LargeBig:
-                    {
-                        result = default;
-                        if (!TryReadInt64(ref remaining, out long longResult, standardFormat))
-                            return false;
-                        if (longResult > short.MaxValue || longResult < short.MinValue)
-                            return false;
-                        result = (short)longResult;
-                        return true;
-                    }
-                case EtfTokenType.String:
-                case EtfTokenType.Binary:
-                    {
-                        if (!TryReadUtf8Bytes(ref remaining, out var bytes))
-                            return false;
-                        return Utf8Reader.TryReadInt16(ref bytes, out result, standardFormat);
-                    }
-                default:
+                if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                     return false;
+                return Utf8Reader.TryReadInt16(ref bytes, out result, standardFormat);
             }
+
+            result = default;
+            if (!TryReadInt64(ref remaining, out long longResult, standardFormat))
+                return false;
+            if (longResult > short.MaxValue || longResult < short.MinValue)
+                return false;
+            result = (short)longResult;
+            return true;
         }
 
         public static bool TryReadInt32(ref ReadOnlySpan<byte> remaining, out int result, char standardFormat)
         {
             result = default;
 
-            switch (GetTokenType(ref remaining))
+            if (standardFormat != '\0')
             {
-                case EtfTokenType.SmallInteger:
-                case EtfTokenType.Integer:
-                case EtfTokenType.SmallBig:
-                case EtfTokenType.LargeBig:
-                    {
-                        result = default;
-                        if (!TryReadInt64(ref remaining, out long longResult, standardFormat))
-                            return false;
-                        if (longResult > int.MaxValue || longResult < int.MinValue)
-                            return false;
-                        result = (int)longResult;
-                        return true;
-                    }
-                case EtfTokenType.String:
-                case EtfTokenType.Binary:
-                    {
-                        if (!TryReadUtf8Bytes(ref remaining, out var bytes))
-                            return false;
-                        return Utf8Reader.TryReadInt32(ref bytes, out result, standardFormat);
-                    }
-                default:
+                if (!TryReadUtf8Bytes(ref remaining, out var bytes))
                     return false;
+                return Utf8Reader.TryReadInt32(ref bytes, out result, standardFormat);
             }
+
+            result = default;
+            if (!TryReadInt64(ref remaining, out long longResult, standardFormat))
+                return false;
+            if (longResult > int.MaxValue || longResult < int.MinValue)
+                return false;
+            result = (int)longResult;
+            return true;
         }
 
         public static bool TryReadInt64(ref ReadOnlySpan<byte> remaining, out long result, char standardFormat)

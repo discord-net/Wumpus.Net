@@ -10,6 +10,13 @@ namespace Voltaic.Serialization.Etf
         {
             result = default;
 
+            if (standardFormat != '\0')
+            {
+                if (!TryReadUtf8Bytes(ref remaining, out var bytes))
+                    return false;
+                return Utf8Reader.TryReadBoolean(ref bytes, out result, standardFormat);
+            }
+
             switch (GetTokenType(ref remaining))
             {
                 case EtfTokenType.SmallAtom:
@@ -55,13 +62,6 @@ namespace Voltaic.Serialization.Etf
                             default:
                                 return false;
                         }
-                    }
-                case EtfTokenType.String:
-                case EtfTokenType.Binary:
-                    {
-                        if (!TryReadUtf8Bytes(ref remaining, out var bytes))
-                            return false;
-                        return Utf8Reader.TryReadBoolean(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;

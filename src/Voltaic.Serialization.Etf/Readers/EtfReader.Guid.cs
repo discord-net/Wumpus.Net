@@ -9,18 +9,9 @@ namespace Voltaic.Serialization.Etf
         {
             result = default;
 
-            switch (GetTokenType(ref remaining))
-            {
-                case EtfTokenType.String:
-                case EtfTokenType.Binary:
-                    {
-                        if (!TryReadUtf8Bytes(ref remaining, out var bytes))
-                            return false;
-                        return Utf8Reader.TryReadGuid(ref bytes, out result, standardFormat);
-                    }
-                default:
-                    return false;
-            }
+            if (!TryReadUtf8Bytes(ref remaining, out var bytes))
+                return false;
+            return Utf8Reader.TryReadGuid(ref bytes, out result, standardFormat);
         }
     }
 }
