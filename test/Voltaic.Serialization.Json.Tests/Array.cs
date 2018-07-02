@@ -41,7 +41,7 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void Array(TestData<int[]> data) => RunTest(data);
+        public void Array(TextTestData<int[]> data) => RunTest(data);
     }
 
     public class ListTests : BaseTest<List<int>>
@@ -80,6 +80,6 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void Array(TestData<List<int>> data) => RunTest(data);
+        public void Array(TextTestData<List<int>> data) => RunTest(data);
     }
 }

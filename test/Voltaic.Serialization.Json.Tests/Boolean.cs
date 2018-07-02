@@ -11,13 +11,13 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetLittleLData))]
-        public void Boolean(TestData<bool> data) => RunTest(data);
+        public void Boolean(TextTestData<bool> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetLittleLData))]
-        public void Format_LittleL(TestData<bool> data) => RunQuoteTest(data, onlyReads: true);
+        public void Format_LittleL(TextTestData<bool> data) => RunQuoteTest(data, onlyReads: true);
         [Theory]
         [MemberData(nameof(GetGData))]
-        public void Format_G(TestData<bool> data) => RunQuoteTest(data, new BooleanJsonConverter('G'));
+        public void Format_G(TextTestData<bool> data) => RunQuoteTest(data, new BooleanJsonConverter('G'));
 
     }
 }

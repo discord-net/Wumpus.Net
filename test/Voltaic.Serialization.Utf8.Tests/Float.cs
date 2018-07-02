@@ -96,19 +96,19 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetGData))]
-        public void Format_G(TestData<float> data) => RunTest(data);
+        public void Format_G(TextTestData<float> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetLittleGData))]
-        public void Format_LittleG(TestData<float> data) => RunTest(data, new SingleUtf8Converter('g'));
+        public void Format_LittleG(TextTestData<float> data) => RunTest(data, new SingleUtf8Converter('g'));
         [Theory]
         [MemberData(nameof(GetFData))]
-        public void Format_F(TestData<float> data) => RunTest(data, new SingleUtf8Converter('F'));
+        public void Format_F(TextTestData<float> data) => RunTest(data, new SingleUtf8Converter('F'));
         [Theory]
         [MemberData(nameof(GetEData))]
-        public void Format_E(TestData<float> data) => RunTest(data, new SingleUtf8Converter('E'));
+        public void Format_E(TextTestData<float> data) => RunTest(data, new SingleUtf8Converter('E'));
         [Theory]
         [MemberData(nameof(GetLittleEData))]
-        public void Format_LittleE(TestData<float> data) => RunTest(data, new SingleUtf8Converter('e'));
+        public void Format_LittleE(TextTestData<float> data) => RunTest(data, new SingleUtf8Converter('e'));
     }
 
     public class DoubleTests : BaseTest<double>
@@ -216,19 +216,19 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetGData))]
-        public void Format_G(TestData<double> data) => RunTest(data);
+        public void Format_G(TextTestData<double> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetLittleGData))]
-        public void Format_LittleG(TestData<double> data) => RunTest(data, new DoubleUtf8Converter('g'));
+        public void Format_LittleG(TextTestData<double> data) => RunTest(data, new DoubleUtf8Converter('g'));
         [Theory]
         [MemberData(nameof(GetFData))]
-        public void Format_F(TestData<double> data) => RunTest(data, new DoubleUtf8Converter('F'));
+        public void Format_F(TextTestData<double> data) => RunTest(data, new DoubleUtf8Converter('F'));
         [Theory]
         [MemberData(nameof(GetEData))]
-        public void Format_E(TestData<double> data) => RunTest(data, new DoubleUtf8Converter('E'));
+        public void Format_E(TextTestData<double> data) => RunTest(data, new DoubleUtf8Converter('E'));
         [Theory]
         [MemberData(nameof(GetLittleEData))]
-        public void Format_LittleE(TestData<double> data) => RunTest(data, new DoubleUtf8Converter('e'));
+        public void Format_LittleE(TextTestData<double> data) => RunTest(data, new DoubleUtf8Converter('e'));
     }
 
     public class DecimalTests : BaseTest<decimal>
@@ -290,15 +290,15 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetGData))]
-        public void Format_G(TestData<decimal> data) => RunTest(data);
+        public void Format_G(TextTestData<decimal> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetFData))]
-        public void Format_F(TestData<decimal> data) => RunTest(data, new DecimalUtf8Converter('F'));
+        public void Format_F(TextTestData<decimal> data) => RunTest(data, new DecimalUtf8Converter('F'));
         [Theory]
         [MemberData(nameof(GetEData))]
-        public void Format_E(TestData<decimal> data) => RunTest(data, new DecimalUtf8Converter('E'));
+        public void Format_E(TextTestData<decimal> data) => RunTest(data, new DecimalUtf8Converter('E'));
         [Theory]
         [MemberData(nameof(GetLittleEData))]
-        public void Format_LittleE(TestData<decimal> data) => RunTest(data, new DecimalUtf8Converter('e'));
+        public void Format_LittleE(TextTestData<decimal> data) => RunTest(data, new DecimalUtf8Converter('e'));
     }
 }

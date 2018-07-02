@@ -12,13 +12,13 @@ namespace Voltaic.Serialization.Utf8.Tests
         ReadWrite
     }
 
-    public class TestData<T>
+    public class TextTestData<T>
     {
         public T Value { get; }
         public string String { get; }
         public TestType Type { get; }
 
-        public TestData(TestType type, string str, T value)
+        public TextTestData(TestType type, string str, T value)
         {
             Type = type;
             String = str;
@@ -37,7 +37,7 @@ namespace Voltaic.Serialization.Utf8.Tests
             _comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
-        protected void RunTest(TestData<T> test, ValueConverter<T> converter = null)
+        protected void RunTest(TextTestData<T> test, ValueConverter<T> converter = null)
         {
             switch (test.Type)
             {
@@ -61,14 +61,14 @@ namespace Voltaic.Serialization.Utf8.Tests
         }
 
         public static object[] FailRead(string str)
-          => new object[] { new TestData<T>(TestType.FailRead, str, default) };
+          => new object[] { new TextTestData<T>(TestType.FailRead, str, default) };
         public static object[] FailWrite(T value)
-          => new object[] { new TestData<T>(TestType.FailWrite, default, value) };
+          => new object[] { new TextTestData<T>(TestType.FailWrite, default, value) };
         public static object[] Read(string str, T value)
-          => new object[] { new TestData<T>(TestType.Read, str, value) };
+          => new object[] { new TextTestData<T>(TestType.Read, str, value) };
         public static object[] Write(string str, T value)
-          => new object[] { new TestData<T>(TestType.Write, str, value) };
+          => new object[] { new TextTestData<T>(TestType.Write, str, value) };
         public static object[] ReadWrite(string str, T value)
-          => new object[] { new TestData<T>(TestType.ReadWrite, str, value) };
+          => new object[] { new TextTestData<T>(TestType.ReadWrite, str, value) };
     }
 }

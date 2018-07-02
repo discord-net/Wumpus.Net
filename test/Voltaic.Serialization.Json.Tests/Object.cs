@@ -58,6 +58,6 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void Object(TestData<TestClass1> data) => RunTest(data);
+        public void Object(TextTestData<TestClass1> data) => RunTest(data);
     }
 }

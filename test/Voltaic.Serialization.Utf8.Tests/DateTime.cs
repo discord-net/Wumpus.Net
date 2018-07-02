@@ -89,19 +89,19 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetDefaultData))]
-        public void Format_Default(TestData<DateTime> data) => RunTest(data);
+        public void Format_Default(TextTestData<DateTime> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetGData))]
-        public void Format_G(TestData<DateTime> data) => RunTest(data, new DateTimeUtf8Converter('G'));
+        public void Format_G(TextTestData<DateTime> data) => RunTest(data, new DateTimeUtf8Converter('G'));
         [Theory]
         [MemberData(nameof(GetRData))]
-        public void Format_R(TestData<DateTime> data) => RunTest(data, new DateTimeUtf8Converter('R'));
+        public void Format_R(TextTestData<DateTime> data) => RunTest(data, new DateTimeUtf8Converter('R'));
         [Theory]
         [MemberData(nameof(GetLittleLData))]
-        public void Format_LittleL(TestData<DateTime> data) => RunTest(data, new DateTimeUtf8Converter('l'));
+        public void Format_LittleL(TextTestData<DateTime> data) => RunTest(data, new DateTimeUtf8Converter('l'));
         [Theory]
         [MemberData(nameof(GetOData))]
-        public void Format_O(TestData<DateTime> data) => RunTest(data, new DateTimeUtf8Converter('O'));
+        public void Format_O(TextTestData<DateTime> data) => RunTest(data, new DateTimeUtf8Converter('O'));
     }
 
     public class DateTimeOffsetTests : BaseTest<DateTimeOffset>
@@ -197,16 +197,16 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetGData))]
-        public void Format_G(TestData<DateTimeOffset> data) => RunTest(data);
+        public void Format_G(TextTestData<DateTimeOffset> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetRData))]
-        public void Format_R(TestData<DateTimeOffset> data) => RunTest(data, new DateTimeOffsetUtf8Converter('R'));
+        public void Format_R(TextTestData<DateTimeOffset> data) => RunTest(data, new DateTimeOffsetUtf8Converter('R'));
         [Theory]
         [MemberData(nameof(GetLittleLData))]
-        public void Format_LittleL(TestData<DateTimeOffset> data) => RunTest(data, new DateTimeOffsetUtf8Converter('l'));
+        public void Format_LittleL(TextTestData<DateTimeOffset> data) => RunTest(data, new DateTimeOffsetUtf8Converter('l'));
         [Theory]
         [MemberData(nameof(GetOData))]
-        public void Format_O(TestData<DateTimeOffset> data) => RunTest(data, new DateTimeOffsetUtf8Converter('O'));
+        public void Format_O(TextTestData<DateTimeOffset> data) => RunTest(data, new DateTimeOffsetUtf8Converter('O'));
     }
 
     public class TimeSpanTests : BaseTest<TimeSpan>
@@ -244,12 +244,12 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetLittleCData))]
-        public void Format_LittleC(TestData<TimeSpan> data) => RunTest(data);
+        public void Format_LittleC(TextTestData<TimeSpan> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetGData))]
-        public void Format_G(TestData<TimeSpan> data) => RunTest(data, new TimeSpanUtf8Converter('G'));
+        public void Format_G(TextTestData<TimeSpan> data) => RunTest(data, new TimeSpanUtf8Converter('G'));
         [Theory]
         [MemberData(nameof(GetLittleGData))]
-        public void Format_LittleG(TestData<TimeSpan> data) => RunTest(data, new TimeSpanUtf8Converter('g'));
+        public void Format_LittleG(TextTestData<TimeSpan> data) => RunTest(data, new TimeSpanUtf8Converter('g'));
     }
 }

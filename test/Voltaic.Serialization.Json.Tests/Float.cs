@@ -10,7 +10,7 @@ namespace Voltaic.Serialization.Json.Tests
         {
             foreach (var data in Utf8.Tests.SingleTests.GetLittleGData())
             {
-                var value = (data[0] as TestData<float>).Value;
+                var value = (data[0] as TextTestData<float>).Value;
                 if (float.IsFinite(value))
                     yield return data;
             }
@@ -27,22 +27,22 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetNumberData))]
-        public void Number(TestData<float> data) => RunTest(data);
+        public void Number(TextTestData<float> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetLittleGData))]
-        public void Format_LittleG(TestData<float> data) => RunQuoteTest(data, onlyReads: true);
+        public void Format_LittleG(TextTestData<float> data) => RunQuoteTest(data, onlyReads: true);
         [Theory]
         [MemberData(nameof(GetGData))]
-        public void Format_G(TestData<float> data) => RunQuoteTest(data, new SingleJsonConverter('G'));
+        public void Format_G(TextTestData<float> data) => RunQuoteTest(data, new SingleJsonConverter('G'));
         [Theory]
         [MemberData(nameof(GetFData))]
-        public void Format_F(TestData<float> data) => RunQuoteTest(data, new SingleJsonConverter('F'));
+        public void Format_F(TextTestData<float> data) => RunQuoteTest(data, new SingleJsonConverter('F'));
         [Theory]
         [MemberData(nameof(GetEData))]
-        public void Format_E(TestData<float> data) => RunQuoteTest(data, new SingleJsonConverter('E'));
+        public void Format_E(TextTestData<float> data) => RunQuoteTest(data, new SingleJsonConverter('E'));
         [Theory]
         [MemberData(nameof(GetLittleEData))]
-        public void Format_LittleE(TestData<float> data) => RunQuoteTest(data, new SingleJsonConverter('e'));
+        public void Format_LittleE(TextTestData<float> data) => RunQuoteTest(data, new SingleJsonConverter('e'));
     }
 
     public class DoubleTests : BaseTest<double>
@@ -51,7 +51,7 @@ namespace Voltaic.Serialization.Json.Tests
         {
             foreach (var data in Utf8.Tests.DoubleTests.GetLittleGData())
             {
-                var value = (data[0] as TestData<double>).Value;
+                var value = (data[0] as TextTestData<double>).Value;
                 if (double.IsFinite(value))
                     yield return data;
             }
@@ -68,22 +68,22 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetNumberData))]
-        public void Number(TestData<double> data) => RunTest(data);
+        public void Number(TextTestData<double> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetLittleGData))]
-        public void Format_LittleG(TestData<double> data) => RunQuoteTest(data, onlyReads: true);
+        public void Format_LittleG(TextTestData<double> data) => RunQuoteTest(data, onlyReads: true);
         [Theory]
         [MemberData(nameof(GetGData))]
-        public void Format_G(TestData<double> data) => RunQuoteTest(data, new DoubleJsonConverter('G'));
+        public void Format_G(TextTestData<double> data) => RunQuoteTest(data, new DoubleJsonConverter('G'));
         [Theory]
         [MemberData(nameof(GetFData))]
-        public void Format_F(TestData<double> data) => RunQuoteTest(data, new DoubleJsonConverter('F'));
+        public void Format_F(TextTestData<double> data) => RunQuoteTest(data, new DoubleJsonConverter('F'));
         [Theory]
         [MemberData(nameof(GetEData))]
-        public void Format_E(TestData<double> data) => RunQuoteTest(data, new DoubleJsonConverter('E'));
+        public void Format_E(TextTestData<double> data) => RunQuoteTest(data, new DoubleJsonConverter('E'));
         [Theory]
         [MemberData(nameof(GetLittleEData))]
-        public void Format_LittleE(TestData<double> data) => RunQuoteTest(data, new DoubleJsonConverter('e'));
+        public void Format_LittleE(TextTestData<double> data) => RunQuoteTest(data, new DoubleJsonConverter('e'));
     }
 
     public class DecimalTests : BaseTest<decimal>
@@ -95,15 +95,15 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetGData))]
-        public void Format_G(TestData<decimal> data) => RunQuoteTest(data);
+        public void Format_G(TextTestData<decimal> data) => RunQuoteTest(data);
         [Theory]
         [MemberData(nameof(GetFData))]
-        public void Format_F(TestData<decimal> data) => RunQuoteTest(data, new DecimalJsonConverter('F'));
+        public void Format_F(TextTestData<decimal> data) => RunQuoteTest(data, new DecimalJsonConverter('F'));
         [Theory]
         [MemberData(nameof(GetEData))]
-        public void Format_E(TestData<decimal> data) => RunQuoteTest(data, new DecimalJsonConverter('E'));
+        public void Format_E(TextTestData<decimal> data) => RunQuoteTest(data, new DecimalJsonConverter('E'));
         [Theory]
         [MemberData(nameof(GetLittleEData))]
-        public void Format_LittleE(TestData<decimal> data) => RunQuoteTest(data, new DecimalJsonConverter('e'));
+        public void Format_LittleE(TextTestData<decimal> data) => RunQuoteTest(data, new DecimalJsonConverter('e'));
     }
 }

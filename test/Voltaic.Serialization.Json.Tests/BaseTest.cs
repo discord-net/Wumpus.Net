@@ -15,7 +15,7 @@ namespace Voltaic.Serialization.Json.Tests
             _comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
-        protected void RunTest(TestData<T> test, ValueConverter<T> converter = null)
+        protected void RunTest(TextTestData<T> test, ValueConverter<T> converter = null)
         {
             switch (test.Type)
             {
@@ -45,7 +45,7 @@ namespace Voltaic.Serialization.Json.Tests
             }
         }
 
-        protected void RunQuoteTest(TestData<T> test, ValueConverter<T> converter = null, bool onlyReads = false)
+        protected void RunQuoteTest(TextTestData<T> test, ValueConverter<T> converter = null, bool onlyReads = false)
         {
             switch (test.Type)
             {
@@ -77,14 +77,14 @@ namespace Voltaic.Serialization.Json.Tests
         }
 
         public static object[] FailRead(string str)
-          => new object[] { new TestData<T>(TestType.FailRead, str, default) };
+          => new object[] { new TextTestData<T>(TestType.FailRead, str, default) };
         public static object[] FailWrite(T value)
-          => new object[] { new TestData<T>(TestType.FailWrite, default, value) };
+          => new object[] { new TextTestData<T>(TestType.FailWrite, default, value) };
         public static object[] Read(string str, T value)
-          => new object[] { new TestData<T>(TestType.Read, str, value) };
+          => new object[] { new TextTestData<T>(TestType.Read, str, value) };
         public static object[] Write(string str, T value)
-          => new object[] { new TestData<T>(TestType.Write, str, value) };
+          => new object[] { new TextTestData<T>(TestType.Write, str, value) };
         public static object[] ReadWrite(string str, T value)
-          => new object[] { new TestData<T>(TestType.ReadWrite, str, value) };
+          => new object[] { new TextTestData<T>(TestType.ReadWrite, str, value) };
     }
 }
