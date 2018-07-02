@@ -39,7 +39,7 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetDefaultData))]
-        public void Format_Default(TextTestData<DateTimeOffset> data) => RunQuoteTest(data, new DateTimeJsonConverter(default));
+        public void Format_Default(TextTestData<DateTimeOffset> data) => RunQuoteTest(data, new DateTimeOffsetJsonConverter(default));
         [Theory]
         [MemberData(nameof(GetRData))]
         public void Format_R(TextTestData<DateTimeOffset> data) => RunQuoteTest(data, new DateTimeOffsetJsonConverter('R'));

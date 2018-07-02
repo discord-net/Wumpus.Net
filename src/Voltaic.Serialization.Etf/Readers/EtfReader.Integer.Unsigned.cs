@@ -69,6 +69,14 @@ namespace Voltaic.Serialization.Etf
         public static bool TryReadUInt64(ref ReadOnlySpan<byte> remaining, out ulong result, char standardFormat)
         {
             result = default;
+
+            if (standardFormat != '\0')
+            {
+                if (!TryReadUtf8Bytes(ref remaining, out var bytes))
+                    return false;
+                return Utf8Reader.TryReadUInt64(ref bytes, out result, standardFormat);
+            }
+
             switch (GetTokenType(ref remaining))
             {
                 case EtfTokenType.SmallInteger:
@@ -106,13 +114,6 @@ namespace Voltaic.Serialization.Etf
                         bool isPositive = remaining[2] == 0;
                         remaining = remaining.Slice(6);
                         return TryReadUnsignedBigNumber((int)bytes, isPositive, ref remaining, out result);
-                    }
-                case EtfTokenType.String:
-                case EtfTokenType.Binary:
-                    {
-                        if (!TryReadUtf8Bytes(ref remaining, out var bytes))
-                            return false;
-                        return Utf8Reader.TryReadUInt64(ref bytes, out result, standardFormat);
                     }
                 default:
                     return false;
