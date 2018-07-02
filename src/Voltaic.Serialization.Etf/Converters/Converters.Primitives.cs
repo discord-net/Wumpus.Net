@@ -169,21 +169,6 @@ namespace Voltaic.Serialization.Etf
             => EtfWriter.TryWrite(ref writer, value, _format);
     }
 
-    public class Int53EtfConverter : ValueConverter<long>
-    {
-        private readonly StandardFormat _format;
-        public Int53EtfConverter(StandardFormat format = default)
-        {
-            _format = format;
-        }
-        public override bool CanWrite(long value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
-        public override bool TryRead(ref ReadOnlySpan<byte> remaining, out long result, PropertyMap propMap = null)
-            => EtfReader.TryReadInt64(ref remaining, out result, _format.Symbol);
-        public override bool TryWrite(ref ResizableMemory<byte> writer, long value, PropertyMap propMap = null)
-            => EtfWriter.TryWrite(ref writer, value, _format);
-    }
-
     public class Int64EtfConverter : ValueConverter<long>
     {
         private readonly StandardFormat _format;
@@ -241,21 +226,6 @@ namespace Voltaic.Serialization.Etf
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out uint result, PropertyMap propMap = null)
             => EtfReader.TryReadUInt32(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, uint value, PropertyMap propMap = null)
-            => EtfWriter.TryWrite(ref writer, value, _format);
-    }
-
-    public class UInt53EtfConverter : ValueConverter<ulong>
-    {
-        private readonly StandardFormat _format;
-        public UInt53EtfConverter(StandardFormat format = default)
-        {
-            _format = format;
-        }
-        public override bool CanWrite(ulong value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
-        public override bool TryRead(ref ReadOnlySpan<byte> remaining, out ulong result, PropertyMap propMap = null)
-            => EtfReader.TryReadUInt64(ref remaining, out result, _format.Symbol);
-        public override bool TryWrite(ref ResizableMemory<byte> writer, ulong value, PropertyMap propMap = null)
             => EtfWriter.TryWrite(ref writer, value, _format);
     }
 
