@@ -1,60 +1,43 @@
 using System.Collections.Generic;
-using Voltaic.Serialization.Etf;
 using Xunit;
 
-namespace Voltaic.Serialization.Json.Tests
+namespace Voltaic.Serialization.Etf.Tests
 {
     public class BooleanTests : BaseTest<bool>
     {
-        public static IEnumerable<object[]> GetSmallAtomExtData()
+        public static IEnumerable<object[]> GetSmallAtomData()
         {
-            yield return Read(new byte[] { 131, (byte)EtfTokenType.SmallAtomExt,
-                4, (byte)'t', (byte)'r', (byte)'u', (byte)'e' }, 
-                true);
-            yield return Read(new byte[] { 131, (byte)EtfTokenType.SmallAtomExt,
-                5, (byte)'f', (byte)'a', (byte)'l', (byte)'s', (byte)'e' }, 
-                false);
+            yield return ReadWrite(EtfTokenType.SmallAtom, new byte[] { 0x04, 0x74, 0x72, 0x75, 0x65 }, true);
+            yield return ReadWrite(EtfTokenType.SmallAtom, new byte[] { 0x05, 0x66, 0x61, 0x6C, 0x73, 0x65 }, false);
         }
-        public static IEnumerable<object[]> GetSmallAtomUtf8ExtData()
+        public static IEnumerable<object[]> GetSmallAtomUtf8Data()
         {
-            yield return Read(new byte[] { 131, (byte)EtfTokenType.SmallAtomUtf8Ext,
-                4, (byte)'t', (byte)'r', (byte)'u', (byte)'e' },
-                true);
-            yield return Read(new byte[] { 131, (byte)EtfTokenType.SmallAtomUtf8Ext,
-                5, (byte)'f', (byte)'a', (byte)'l', (byte)'s', (byte)'e' },
-                false);
+            yield return Read(EtfTokenType.SmallAtomUtf8, new byte[] { 0x04, 0x74, 0x72, 0x75, 0x65 }, true);
+            yield return Read(EtfTokenType.SmallAtomUtf8, new byte[] { 0x05, 0x66, 0x61, 0x6C, 0x73, 0x65 }, false);
         }
-        public static IEnumerable<object[]> GetAtomExtData()
+        public static IEnumerable<object[]> GetAtomData()
         {
-            yield return Read(new byte[] { 131, (byte)EtfTokenType.AtomExt,
-                0, 4, (byte)'t', (byte)'r', (byte)'u', (byte)'e' },
-                true);
-            yield return Read(new byte[] { 131, (byte)EtfTokenType.AtomExt,
-                0, 5, (byte)'f', (byte)'a', (byte)'l', (byte)'s', (byte)'e' },
-                false);
+            yield return Read(EtfTokenType.Atom, new byte[] { 0x00, 0x04, 0x74, 0x72, 0x75, 0x65 }, true);
+            yield return Read(EtfTokenType.Atom, new byte[] { 0x00, 0x05, 0x66, 0x61, 0x6C, 0x73, 0x65 }, false);
         }
-        public static IEnumerable<object[]> GetAtomUtf8ExtData()
+        public static IEnumerable<object[]> GetAtomUtf8Data()
         {
-            yield return Read(new byte[] { 131, (byte)EtfTokenType.AtomUtf8Ext,
-                0, 4, (byte)'t', (byte)'r', (byte)'u', (byte)'e' },
-                true);
-            yield return Read(new byte[] { 131, (byte)EtfTokenType.AtomUtf8Ext,
-                0, 5, (byte)'f', (byte)'a', (byte)'l', (byte)'s', (byte)'e' },
-                false);
+            yield return Read(EtfTokenType.AtomUtf8, new byte[] { 0x00, 0x04, 0x74, 0x72, 0x75, 0x65 }, true);
+            yield return Read(EtfTokenType.AtomUtf8, new byte[] { 0x00, 0x05, 0x66, 0x61, 0x6C, 0x73, 0x65 }, false);
         }
 
         [Theory]
-        [MemberData(nameof(GetSmallAtomExtData))]
-        public void SmallAtomExt(TestData<bool> data) => RunTest(data);
+        [MemberData(nameof(GetSmallAtomData))]
+        public void SmallAtom(TestData<bool> data) => RunTest(data);
         [Theory]
-        [MemberData(nameof(GetSmallAtomUtf8ExtData))]
-        public void SmallAtomUtf8Ext(TestData<bool> data) => RunTest(data);
+        [MemberData(nameof(GetSmallAtomUtf8Data))]
+        public void SmallAtomUtf8(TestData<bool> data) => RunTest(data);
         [Theory]
-        [MemberData(nameof(GetAtomExtData))]
-        public void AtomExt(TestData<bool> data) => RunTest(data);
+        [MemberData(nameof(GetAtomData))]
+        public void Atom(TestData<bool> data) => RunTest(data);
         [Theory]
-        [MemberData(nameof(GetAtomUtf8ExtData))]
-        public void AtomUtf8Ext(TestData<bool> data) => RunTest(data);
+        [MemberData(nameof(GetAtomUtf8Data))]
+        public void AtomUtf8(TestData<bool> data) => RunTest(data);
 
     }
 }
