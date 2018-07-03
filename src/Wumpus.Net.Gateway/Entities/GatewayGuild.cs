@@ -18,6 +18,7 @@ namespace Wumpus.Entities
 
         /// <summary> xxx </summary>
         [ModelProperty("presences")]
+        [IgnoreErrors]
         public Presence[] Presences { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("members")]
