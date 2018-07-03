@@ -6,11 +6,13 @@ namespace Voltaic.Serialization.Json
 {
     public class ArrayJsonConverter<T> : ValueConverter<T[]>
     {
+        private readonly JsonSerializer _serializer;
         private readonly ValueConverter<T> _innerConverter;
         private readonly ArrayPool<T> _pool;
 
-        public ArrayJsonConverter(ValueConverter<T> innerConverter, ArrayPool<T> pool = null)
+        public ArrayJsonConverter(JsonSerializer serializer, ValueConverter<T> innerConverter, ArrayPool<T> pool = null)
         {
+            _serializer = serializer;
             _innerConverter = innerConverter;
             _pool = pool;
         }
@@ -20,7 +22,7 @@ namespace Voltaic.Serialization.Json
 
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out T[] result, PropertyMap propMap = null)
         {
-            if (!JsonCollectionReader.TryRead(ref remaining, out var resultBuilder, propMap, _innerConverter, _pool))
+            if (!JsonCollectionReader.TryRead(_serializer, ref remaining, out var resultBuilder, propMap, _innerConverter, _pool))
             {
                 result = default;
                 return false;
@@ -52,11 +54,13 @@ namespace Voltaic.Serialization.Json
 
     public class ListJsonConverter<T> : ValueConverter<List<T>>
     {
+        private readonly JsonSerializer _serializer;
         private readonly ValueConverter<T> _innerConverter;
         private readonly ArrayPool<T> _pool;
 
-        public ListJsonConverter(ValueConverter<T> innerConverter, ArrayPool<T> pool = null)
+        public ListJsonConverter(JsonSerializer serializer, ValueConverter<T> innerConverter, ArrayPool<T> pool = null)
         {
+            _serializer = serializer;
             _innerConverter = innerConverter;
             _pool = pool;
         }
@@ -66,7 +70,7 @@ namespace Voltaic.Serialization.Json
 
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out List<T> result, PropertyMap propMap = null)
         {
-            if (!JsonCollectionReader.TryRead(ref remaining, out var resultBuilder, propMap, _innerConverter, _pool))
+            if (!JsonCollectionReader.TryRead(_serializer, ref remaining, out var resultBuilder, propMap, _innerConverter, _pool))
             {
                 result = default;
                 return false;
@@ -104,7 +108,7 @@ namespace Voltaic.Serialization.Json
             public static readonly T[] Value = new T[0];
         }
 
-        public static bool TryRead<T>(ref ReadOnlySpan<byte> remaining, out ResizableMemory<T> result, 
+        public static bool TryRead<T>(JsonSerializer serializer, ref ReadOnlySpan<byte> remaining, out ResizableMemory<T> result, 
             PropertyMap propMap, ValueConverter<T> innerConverter, ArrayPool<T> pool)
         {
             result = default;
@@ -148,8 +152,20 @@ namespace Voltaic.Serialization.Json
                             return false;
                         break;
                 }
+
+                var restore = remaining;
                 if (!innerConverter.TryRead(ref remaining, out var item, propMap))
-                    return false;
+                {
+                    if (propMap?.IgnoreErrors == true)
+                    {
+                        remaining = restore;
+                        if (!JsonReader.Skip(ref remaining, out _))
+                            return false;
+                        serializer.RaiseFailedProperty(propMap, i);
+                    }
+                    else
+                        return false;
+                }
                 result.Push(item);
             }
         }

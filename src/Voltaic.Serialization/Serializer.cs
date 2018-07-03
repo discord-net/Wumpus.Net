@@ -89,17 +89,27 @@ namespace Voltaic.Serialization
         protected void RaiseUnknownProperty(ModelMap model, Utf8String propName)
         {
             if (UnknownProperty != null)
-                UnknownProperty?.Invoke(model.Name + "." + propName.ToString());
+                UnknownProperty?.Invoke($"{model.Name}.{propName.ToString()}");
         }
         protected void RaiseUnknownProperty(ModelMap model, string propName)
         {
             if (UnknownProperty != null)
-                UnknownProperty?.Invoke(model.Name + "." + propName);
+                UnknownProperty?.Invoke($"{model.Name}.{propName}");
         }
         protected void RaiseFailedProperty(ModelMap model, PropertyMap prop)
         {
             if (FailedProperty != null)
-                FailedProperty?.Invoke(model.Name + "." + prop.Name);
+                FailedProperty?.Invoke($"{model.Name}.{prop.Name}");
+        }
+        protected void RaiseFailedProperty(PropertyMap prop, int i)
+        {
+            if (FailedProperty != null)
+            {
+                if (prop != null)
+                    FailedProperty?.Invoke($"{prop.Name}[{i}]");
+                else
+                    FailedProperty?.Invoke($"[{i}]");
+            }
         }
     }
 }

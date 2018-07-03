@@ -7,11 +7,13 @@ namespace Voltaic.Serialization.Etf
 {
     public class ArrayEtfConverter<T> : ValueConverter<T[]>
     {
+        private readonly EtfSerializer _serializer;
         private readonly ValueConverter<T> _innerConverter;
         private readonly ArrayPool<T> _pool;
 
-        public ArrayEtfConverter(ValueConverter<T> innerConverter, ArrayPool<T> pool = null)
+        public ArrayEtfConverter(EtfSerializer serializer, ValueConverter<T> innerConverter, ArrayPool<T> pool = null)
         {
+            _serializer = serializer;
             _innerConverter = innerConverter;
             _pool = pool;
         }
@@ -27,8 +29,9 @@ namespace Voltaic.Serialization.Etf
                 return true;
             }
 
-            if (!JsonCollectionReader.TryRead(ref remaining, out result, propMap, _innerConverter, _pool))
+            if (!JsonCollectionReader.TryRead(_serializer, ref remaining, out result, propMap, _innerConverter, _pool))
                 return false;
+
             return true;
         }
 
@@ -74,11 +77,13 @@ namespace Voltaic.Serialization.Etf
 
     public class ListEtfConverter<T> : ValueConverter<List<T>>
     {
+        private readonly EtfSerializer _serializer;
         private readonly ValueConverter<T> _innerConverter;
         private readonly ArrayPool<T> _pool;
 
-        public ListEtfConverter(ValueConverter<T> innerConverter, ArrayPool<T> pool = null)
+        public ListEtfConverter(EtfSerializer serializer, ValueConverter<T> innerConverter, ArrayPool<T> pool = null)
         {
+            _serializer = serializer;
             _innerConverter = innerConverter;
             _pool = pool;
         }
@@ -94,7 +99,7 @@ namespace Voltaic.Serialization.Etf
                 return true;
             }
 
-            if (!JsonCollectionReader.TryRead(ref remaining, out var resultArray, propMap, _innerConverter, _pool))
+            if (!JsonCollectionReader.TryRead(_serializer, ref remaining, out var resultArray, propMap, _innerConverter, _pool))
             {
                 result = default;
                 return false;
@@ -151,10 +156,11 @@ namespace Voltaic.Serialization.Etf
             public static readonly T[] Value = new T[0];
         }
 
-        public static bool TryRead<T>(ref ReadOnlySpan<byte> remaining, out T[] result,
+        public static bool TryRead<T>(EtfSerializer serializer, ref ReadOnlySpan<byte> remaining, out T[] result, 
             PropertyMap propMap, ValueConverter<T> innerConverter, ArrayPool<T> pool)
         {
             result = default;
+            int resultCount = 0;
 
             switch (EtfReader.GetTokenType(ref remaining))
             {
@@ -168,13 +174,24 @@ namespace Voltaic.Serialization.Etf
                         remaining = remaining.Slice(2);
 
                         result = new T[count];
-                        for (int i = 0; i < count; i++)
+                        for (int i = 0; i < count; i++, resultCount++)
                         {
-                            if (!innerConverter.TryRead(ref remaining, out var item, propMap))
-                                return false;
-                            result[i] = item;
+                            var restore = remaining;
+                            if (!innerConverter.TryRead(ref remaining, out result[resultCount], propMap))
+                            {
+                                if (propMap?.IgnoreErrors == true)
+                                {
+                                    remaining = restore;
+                                    if (!EtfReader.Skip(ref remaining, out _))
+                                        return false;
+                                    serializer.RaiseFailedProperty(propMap, i);
+                                    resultCount--;
+                                }
+                                else
+                                    return false;
+                            }
                         }
-                        return true;
+                        break;
                     }
                 case EtfTokenType.LargeTuple:
                     {
@@ -189,13 +206,24 @@ namespace Voltaic.Serialization.Etf
                             return false;
 
                         result = new T[count];
-                        for (int i = 0; i < count; i++)
+                        for (int i = 0; i < count; i++, resultCount++)
                         {
-                            if (!innerConverter.TryRead(ref remaining, out var item, propMap))
-                                return false;
-                            result[i] = item;
+                            var restore = remaining;
+                            if (!innerConverter.TryRead(ref remaining, out result[resultCount], propMap))
+                            {
+                                if (propMap?.IgnoreErrors == true)
+                                {
+                                    remaining = restore;
+                                    if (!EtfReader.Skip(ref remaining, out _))
+                                        return false;
+                                    serializer.RaiseFailedProperty(propMap, i);
+                                    resultCount--;
+                                }
+                                else
+                                    return false;
+                            }
                         }
-                        return true;
+                        break;
                     }
 
                 case EtfTokenType.List:
@@ -211,22 +239,38 @@ namespace Voltaic.Serialization.Etf
                             return false;
 
                         result = new T[count];
-                        for (int i = 0; i < count; i++)
+                        for (int i = 0; i < count; i++, resultCount++)
                         {
-                            if (!innerConverter.TryRead(ref remaining, out result[i], propMap))
-                                return false;
+                            var restore = remaining;
+                            if (!innerConverter.TryRead(ref remaining, out result[resultCount], propMap))
+                            {
+                                if (propMap?.IgnoreErrors == true)
+                                {
+                                    remaining = restore;
+                                    if (!EtfReader.Skip(ref remaining, out _))
+                                        return false;
+                                    serializer.RaiseFailedProperty(propMap, i);
+                                    resultCount--;
+                                }
+                                else
+                                    return false;
+                            }
                         }
 
                         // Tail element
                         if (EtfReader.GetTokenType(ref remaining) != EtfTokenType.Nil)
                             return false;
                         remaining = remaining.Slice(1);
-
-                        return true;
+                        break;
                     }
                 default:
                     return false;
             }
+
+            // Resize array if any elements failed
+            if (resultCount != result.Length)
+                Array.Resize(ref result, resultCount);
+            return true;
         }
     }
 }

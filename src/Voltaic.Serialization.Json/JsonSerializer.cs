@@ -216,5 +216,7 @@ namespace Voltaic.Serialization.Json
             => base.RaiseUnknownProperty(model, propName);
         internal new void RaiseFailedProperty(ModelMap model, PropertyMap prop)
             => base.RaiseFailedProperty(model, prop);
+        internal new void RaiseFailedProperty(PropertyMap prop, int i)
+            => base.RaiseFailedProperty(prop, i);
     }
 }
