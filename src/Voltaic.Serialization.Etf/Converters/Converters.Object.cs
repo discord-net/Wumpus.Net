@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers.Binary;
-using System.Reflection;
 
 namespace Voltaic.Serialization.Etf
 {
@@ -10,10 +9,10 @@ namespace Voltaic.Serialization.Etf
         private readonly EtfSerializer _serializer;
         private readonly ModelMap<T> _map;
 
-        public ObjectEtfConverter(EtfSerializer serializer, PropertyInfo propInfo)
+        public ObjectEtfConverter(EtfSerializer serializer)
         {
             _serializer = serializer;
-            _map = serializer.GetMap<T>(propInfo);
+            _map = serializer.GetMap<T>();
         }
 
         public override bool CanWrite(T value, PropertyMap propMap)

@@ -10,19 +10,16 @@ namespace Voltaic.Serialization
         protected int _selectorKeyCount;
 
         public string Path { get; }
-        public bool IgnoreErrors { get; }
 
         internal readonly MemoryDictionary<PropertyMap> _propDict;
         internal readonly List<KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>> _propList;
 
         public IReadOnlyList<KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>> Properties => _propList;
 
-        internal ModelMap(string path, PropertyInfo propInfo)
+        internal ModelMap(string path)
         {
             _propDict = new MemoryDictionary<PropertyMap>();
             _propList = new List<KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>>();
-            if (propInfo != null)
-                IgnoreErrors = propInfo.GetCustomAttribute<IgnoreErrorsAttribute>() != null;
         }
 
         public bool TryGetProperty(ReadOnlySpan<byte> key, out PropertyMap value)
@@ -31,8 +28,8 @@ namespace Voltaic.Serialization
 
     public class ModelMap<T> : ModelMap
     {
-        internal ModelMap(Serializer serializer, string path, PropertyInfo propInfo = null)
-            : base(path, propInfo)
+        internal ModelMap(Serializer serializer, string path)
+            : base(path)
         {
             var type = typeof(T).GetTypeInfo();
             var normalProps = new Dictionary<string, PropertyMap<T>>();

@@ -34,7 +34,7 @@ namespace Voltaic.Serialization
             Key = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(attr.Key));
             ExcludeNull = attr.ExcludeNull;
             ExcludeDefault = attr.ExcludeDefault;
-            IgnoreErrors = modelMap.IgnoreErrors;
+            IgnoreErrors = propInfo.GetCustomAttribute<IgnoreErrorsAttribute>() != null;
         }
     }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 
 namespace Voltaic.Serialization.Json
 {
@@ -9,10 +8,10 @@ namespace Voltaic.Serialization.Json
         private readonly JsonSerializer _serializer;
         private readonly ModelMap<T> _map;
 
-        public ObjectJsonConverter(JsonSerializer serializer, PropertyInfo propInfo)
+        public ObjectJsonConverter(JsonSerializer serializer)
         {
             _serializer = serializer;
-            _map = serializer.GetMap<T>(propInfo);
+            _map = serializer.GetMap<T>();
         }
 
         public override bool CanWrite(T value, PropertyMap propMap)

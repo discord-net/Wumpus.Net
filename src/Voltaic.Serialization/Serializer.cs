@@ -66,16 +66,16 @@ namespace Voltaic.Serialization
                 throw new SerializationException($"Failed to serialize {typeof(T).Name}");
         }
 
-        public ModelMap GetMap(Type modelType, PropertyInfo propInfo = null)
+        public ModelMap GetMap(Type modelType)
         {
             return _modelMaps.GetOrAdd(modelType, _ =>
             {
                 var method = typeof(ModelMap<>).MakeGenericType(modelType).GetTypeInfo().DeclaredConstructors.Single();
-                return method.Invoke(new object[] { this, modelType.Name, propInfo }) as ModelMap;
+                return method.Invoke(new object[] { this, modelType.Name }) as ModelMap;
             });
         }
-        public ModelMap<T> GetMap<T>(PropertyInfo propInfo = null)
-            => _modelMaps.GetOrAdd(typeof(T), _ => new ModelMap<T>(this, typeof(T).Name, propInfo)) as ModelMap<T>;
+        public ModelMap<T> GetMap<T>()
+            => _modelMaps.GetOrAdd(typeof(T), _ => new ModelMap<T>(this, typeof(T).Name)) as ModelMap<T>;
 
         public ValueConverter GetConverter(Type type, PropertyInfo propInfo = null, bool throwOnNotFound = false)
             => _converters.Get(this, type, propInfo, throwOnNotFound);
