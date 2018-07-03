@@ -45,6 +45,10 @@ namespace Wumpus
         private CancellationTokenSource _connectionCts;
         private BlockingCollection<GatewayFrame> _sendQueue;
         private int _lastSeq;
+        private string _lastUrl;
+        private int? _lastShardId;
+        private int? _lastTotalShards;
+        private Utf8String _sessionId;
 
         public AuthenticationHeaderValue Authorization { get; set; }
 
@@ -67,10 +71,34 @@ namespace Wumpus
             {
                 await StopAsync().ConfigureAwait(false);
 
+                _lastUrl = url;
+                _lastShardId = shardId;
+                _lastTotalShards = totalShards;
                 _connectionCts = new CancellationTokenSource();
                 _sendQueue = new BlockingCollection<GatewayFrame>();
                 connectResult = new TaskCompletionSource<bool>();
-                _connectionTask = RunAsync(url, shardId, totalShards, initialPresence, _connectionCts.Token, connectResult);
+                _connectionTask = RunAsync(url, shardId, totalShards, initialPresence, false, _connectionCts.Token, connectResult);
+            }
+            finally
+            {
+                _stateLock.Release();
+            }
+
+            // Must be outside of stateLock to make sure DisconnectAsync can be called mid-connecting
+            await connectResult.Task.ConfigureAwait(false);
+        }
+        public async Task ResumeAsync()
+        {
+            TaskCompletionSource<bool> connectResult;
+            await _stateLock.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                await StopAsync().ConfigureAwait(false);
+
+                _connectionCts = new CancellationTokenSource();
+                _sendQueue = new BlockingCollection<GatewayFrame>();
+                connectResult = new TaskCompletionSource<bool>();
+                _connectionTask = RunAsync(_lastUrl, _lastShardId, _lastTotalShards, null, true, _connectionCts.Token, connectResult);
             }
             finally
             {
@@ -93,7 +121,7 @@ namespace Wumpus
             }
         }
 
-        private async Task RunAsync(string url, int? shardId, int? totalShards, UpdateStatusParams initialPresence, CancellationToken cancelToken, TaskCompletionSource<bool> connectResult)
+        private async Task RunAsync(string url, int? shardId, int? totalShards, UpdateStatusParams initialPresence, bool isResume, CancellationToken cancelToken, TaskCompletionSource<bool> connectResult)
         {
             int heartbeatRate;
             Task[] tasks = null;
@@ -111,26 +139,44 @@ namespace Wumpus
                     throw new Exception("First frame was not a HELLO frame");
                 heartbeatRate = helloEvent.HeartbeatInterval;
 
-                // Send IDENTITY
-                var identityFrame = new GatewayFrame
+                if (!isResume)
                 {
-                    Operation = GatewayOpCode.Identify,
-                    Payload = new IdentifyParams
+                    // Send IDENTITY
+                    _sessionId = (Utf8String)null;
+                    var identityFrame = new GatewayFrame
                     {
-                        Compress = false, // TODO: true
-                        LargeThreshold = 50,
-                        Presence = Optional.FromNullable(initialPresence),
-                        Properties = new IdentityConnectionProperties
+                        Operation = GatewayOpCode.Identify,
+                        Payload = new IdentifyParams
                         {
-                            Os = OsName,
-                            Browser = LibraryName,
-                            Device = LibraryName
-                        },
-                        Shard = shardId != null && totalShards != null ? new int[] { shardId.Value, totalShards.Value } : Optional.Create<int[]>(),
-                        Token = Authorization != null ? new Utf8String(Authorization.Parameter) : null
-                    }
-                };
-                await SendAsync(identityFrame, cancelToken).ConfigureAwait(false);
+                            Compress = false, // TODO: true
+                            LargeThreshold = 50,
+                            Presence = Optional.FromNullable(initialPresence),
+                            Properties = new IdentityConnectionProperties
+                            {
+                                Os = OsName,
+                                Browser = LibraryName,
+                                Device = LibraryName
+                            },
+                            Shard = shardId != null && totalShards != null ? new int[] { shardId.Value, totalShards.Value } : Optional.Create<int[]>(),
+                            Token = Authorization != null ? new Utf8String(Authorization.Parameter) : null
+                        }
+                    };
+                    await SendAsync(identityFrame, cancelToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    // Send RESUME
+                    var resumeFrame = new GatewayFrame
+                    {
+                        Operation = GatewayOpCode.Resume,
+                        Payload = new ResumeParams
+                        {
+                            Sequence = _lastSeq,
+                            SessionId = _sessionId // TODO: Handle READY and get sessionId
+                        }
+                    };
+                    await SendAsync(resumeFrame, cancelToken).ConfigureAwait(false);
+                }
 
                 _lastSeq = 0;
                 _state = ConnectionState.Connected;
