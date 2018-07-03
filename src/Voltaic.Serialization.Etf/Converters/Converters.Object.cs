@@ -51,7 +51,7 @@ namespace Voltaic.Serialization.Etf
                         // Unknown Property
                         if (!_map.TryGetProperty(key, out var innerPropMap))
                         {
-                            _serializer.RaiseUnknownProperty(_map.Path);
+                            _serializer.RaiseUnknownProperty(_map, key);
                             if (!EtfReader.Skip(ref remaining, out _))
                                 return false;
                             continue;
@@ -78,7 +78,7 @@ namespace Voltaic.Serialization.Etf
                                 remaining = restore;
                                 if (!EtfReader.Skip(ref remaining, out var skipped))
                                     return false;
-                                _serializer.RaiseFailedProperty(innerPropMap.Path);
+                                _serializer.RaiseFailedProperty(_map, innerPropMap);
                                 continue;
                             }
                             else
@@ -98,7 +98,7 @@ namespace Voltaic.Serialization.Etf
                         if (!innerPropMap.TryRead(result, ref value, dependencies))
                         {
                             if (innerPropMap.IgnoreErrors)
-                                _serializer.RaiseFailedProperty(innerPropMap.Path);
+                                _serializer.RaiseFailedProperty(_map, innerPropMap);
                             else
                                 return false;
                         }

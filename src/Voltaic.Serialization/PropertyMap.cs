@@ -11,7 +11,6 @@ namespace Voltaic.Serialization
         public Serializer Serializer { get; }
         public ReadOnlyMemory<byte> Key { get; }
         public string Name { get; }
-        public string Path { get; }
         public bool ExcludeDefault { get; }
         public bool ExcludeNull { get; }
         public int? Index { get; internal set; }
@@ -26,7 +25,6 @@ namespace Voltaic.Serialization
         {
             Serializer = serializer;
             Name = propInfo.Name;
-            Path = $"{modelMap.Path}.{propInfo.Name}";
 
             _supportsWrite = propInfo.GetMethod != null;
             _supportsRead = propInfo.SetMethod != null;

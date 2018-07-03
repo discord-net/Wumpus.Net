@@ -125,9 +125,9 @@ namespace Voltaic.Serialization.Etf
             return attr.Format;
         }
 
-        internal new void RaiseUnknownProperty(string path)
-            => base.RaiseUnknownProperty(path);
-        internal new void RaiseFailedProperty(string path)
-            => base.RaiseFailedProperty(path);
+        internal new void RaiseUnknownProperty(ModelMap model, Utf8String propName)
+            => base.RaiseUnknownProperty(model, propName);
+        internal new void RaiseFailedProperty(ModelMap model, PropertyMap prop)
+            => base.RaiseFailedProperty(model, prop);
     }
 }

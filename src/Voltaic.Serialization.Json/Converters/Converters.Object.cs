@@ -76,7 +76,7 @@ namespace Voltaic.Serialization.Json
                 // Unknown Property
                 if (!_map.TryGetProperty(key, out var innerPropMap))
                 {
-                    _serializer.RaiseUnknownProperty(_map.Path);
+                    _serializer.RaiseUnknownProperty(_map, key);
                     if (!JsonReader.Skip(ref remaining, out _))
                         return false;
                     continue;
@@ -104,7 +104,7 @@ namespace Voltaic.Serialization.Json
                         remaining = restore;
                         if (!JsonReader.Skip(ref remaining, out var skipped))
                             return false;
-                        _serializer.RaiseFailedProperty(innerPropMap.Path);
+                        _serializer.RaiseFailedProperty(_map, innerPropMap);
                         continue;
                     }
                     else
@@ -123,7 +123,7 @@ namespace Voltaic.Serialization.Json
                 if (!innerPropMap.TryRead(result, ref value, dependencies))
                 {
                     if (innerPropMap.IgnoreErrors)
-                        _serializer.RaiseFailedProperty(innerPropMap.Path);
+                        _serializer.RaiseFailedProperty(_map, innerPropMap);
                     else
                         return false;
                 }

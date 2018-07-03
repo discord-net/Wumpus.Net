@@ -75,7 +75,7 @@ namespace Voltaic.Serialization
             });
         }
         public ModelMap<T> GetMap<T>()
-            => _modelMaps.GetOrAdd(typeof(T), _ => new ModelMap<T>(this, typeof(T).Name)) as ModelMap<T>;
+            => _modelMaps.GetOrAdd(typeof(T), _ => new ModelMap<T>(this)) as ModelMap<T>;
 
         public ValueConverter GetConverter(Type type, PropertyInfo propInfo = null, bool throwOnNotFound = false)
             => _converters.Get(this, type, propInfo, throwOnNotFound);
@@ -86,9 +86,20 @@ namespace Voltaic.Serialization
         public ValueConverter<T> GetConverter<T>(PropertyInfo propInfo = null, bool throwOnNotFound = false)
             => _converters.Get<T>(this, typeof(T), propInfo, throwOnNotFound);
 
-        protected void RaiseUnknownProperty(string path)
-            => UnknownProperty?.Invoke(path);
-        protected void RaiseFailedProperty(string path)
-            => FailedProperty?.Invoke(path);
+        protected void RaiseUnknownProperty(ModelMap model, Utf8String propName)
+        {
+            if (UnknownProperty != null)
+                UnknownProperty?.Invoke(model.Name + "." + propName.ToString());
+        }
+        protected void RaiseUnknownProperty(ModelMap model, string propName)
+        {
+            if (UnknownProperty != null)
+                UnknownProperty?.Invoke(model.Name + "." + propName);
+        }
+        protected void RaiseFailedProperty(ModelMap model, PropertyMap prop)
+        {
+            if (FailedProperty != null)
+                FailedProperty?.Invoke(model.Name + "." + prop.Name);
+        }
     }
 }
