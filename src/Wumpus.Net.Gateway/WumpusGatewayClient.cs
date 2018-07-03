@@ -23,6 +23,8 @@ namespace Wumpus
 
     public class WumpusGatewayClient : IDisposable
     {
+        public event Action Connected;
+        public event Action<Exception> Disconnected;
         public event Action<GatewayFrame, ReadOnlyMemory<byte>> ReceivedPayload;
         public event Action<GatewayFrame, ReadOnlyMemory<byte>> SentPayload;
 
@@ -95,6 +97,7 @@ namespace Wumpus
         {
             int heartbeatRate;
             Task[] tasks = null;
+            Exception disconnectEx = null;
             try
             {
                 _state = ConnectionState.Connecting;
@@ -131,6 +134,7 @@ namespace Wumpus
 
                 _lastSeq = 0;
                 _state = ConnectionState.Connected;
+                Connected?.Invoke();
                 connectResult.SetResult(true);
 
                 tasks = new Task[]
@@ -144,10 +148,11 @@ namespace Wumpus
             catch (Exception ex)
             {
                 connectResult.TrySetException(ex);
-                throw;
+                disconnectEx = ex;
             }
             finally
-            {
+            { 
+                var oldState = _state;
                 _state = ConnectionState.Disconnecting;
 
                 // Wait for the other task to complete
@@ -159,8 +164,11 @@ namespace Wumpus
                 // receiveTask and sendTask must have completed before we can send/receive from a different thread
                 try { await _client.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None).ConfigureAwait(false); }
                 catch { } // We don't actually care if sending a close msg fails
+                // TODO: Maybe log it?
 
                 _state = ConnectionState.Disconnected;
+                if (oldState == ConnectionState.Connected)
+                    Disconnected?.Invoke(disconnectEx);
             }
         }
         private Task RunReceiveAsync(CancellationToken cancelToken)
@@ -211,10 +219,8 @@ namespace Wumpus
         private async Task StopAsync()
         {
             _connectionCts?.Cancel(); // Cancel any connection attempts or active connections
-            while (_sendQueue.TryTake(out _)) { } // Clear the send queue
 
-            try { await _connectionTask.ConfigureAwait(false); } // Wait for current connection to complete
-            catch (Exception) { } // We don't care about exceptions here, only that the task completed
+            await _connectionTask.ConfigureAwait(false); // Wait for current connection to complete
 
             // Double check that the connection task terminated successfully
             var state = _state;
