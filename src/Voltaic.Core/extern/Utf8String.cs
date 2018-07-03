@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using System.Buffers;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -95,7 +94,7 @@ namespace Voltaic
 
         public override int GetHashCode() => Span.GetHashCode();
 
-        public static bool operator ==(Utf8String left, Utf8String right) 
+        public static bool operator ==(Utf8String left, Utf8String right)
             => (left is null && right is null) || (!(left is null) && left.Equals(right));
         public static bool operator !=(Utf8String left, Utf8String right) => !(left == right);
         public static bool operator ==(Utf8String left, Utf8Span right)
@@ -105,7 +104,7 @@ namespace Voltaic
             => left.Equals(right);
         public static bool operator !=(Utf8Span left, Utf8String right) => !(left == right);
 
-        // TODO: do we like all these O(N) operators? 
+        // TODO: do we like all these O(N) operators?
         public static bool operator ==(Utf8String left, string right)
             => (left is null && right is null) || (!(left is null) && left.Equals(right));
         public static bool operator !=(Utf8String left, string right) => !(left == right);
@@ -130,7 +129,7 @@ namespace Voltaic
         public bool EndsWith(uint codePoint) => Span.EndsWith(codePoint);
 
         #region Slicing
-        // TODO: should Utf8String slicing operations return Utf8Span? 
+        // TODO: should Utf8String slicing operations return Utf8Span?
         // TODO: should we add slicing overloads that take char delimiters?
         // TODO: why do we even have Try versions? If the delimiter is not found, the result should be the original.
         public bool TrySubstringFrom(Utf8String value, out Utf8String result)

@@ -1,5 +1,4 @@
 ﻿using Voltaic.Serialization;
-using System.Collections.Generic;
 
 namespace Wumpus.Events
 {

@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
-using System.Buffers.Text;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -12,7 +11,7 @@ namespace Voltaic
 {
     // https://github.com/dotnet/corefxlab/blob/master/src/System.Text.Utf8String/System/Text/Utf8Span.cs
     // TODO: should we validate that the bytes are valid UTF8 in constructors
-    // TODO: Should we copy the array in Utf8Span ctors? This type is not-immutable. Utf8String is. 
+    // TODO: Should we copy the array in Utf8Span ctors? This type is not-immutable. Utf8String is.
     [DebuggerDisplay("{ToString()}u8")]
     public ref struct Utf8Span
     {
@@ -116,7 +115,7 @@ namespace Voltaic
                 return Equals((string)obj);
             }
 
-            // obj cannot be Utf8Span since it cannot be boxed 
+            // obj cannot be Utf8Span since it cannot be boxed
             return false;
         }
 
@@ -154,7 +153,7 @@ namespace Voltaic
 
         public static bool operator !=(Utf8Span left, Utf8Span right) => !left.Equals(right);
 
-        // TODO: do we like all these O(N) operators? 
+        // TODO: do we like all these O(N) operators?
         public static bool operator ==(Utf8Span left, string right) => left.Equals(right);
 
         public static bool operator !=(Utf8Span left, string right) => !left.Equals(right);
