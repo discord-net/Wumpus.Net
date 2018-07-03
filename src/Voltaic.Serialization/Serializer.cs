@@ -8,6 +8,9 @@ namespace Voltaic.Serialization
 {
     public abstract class Serializer
     {
+        public event Action<string> UnknownProperty;
+        public event Action<string> FailedProperty;
+
         protected readonly ArrayPool<byte> _pool;
         private static readonly MethodInfo _writeMethod
             = typeof(Serializer).GetTypeInfo().GetDeclaredMethods(nameof(WriteInternal))
@@ -83,5 +86,9 @@ namespace Voltaic.Serialization
         public ValueConverter<T> GetConverter<T>(PropertyInfo propInfo = null, bool throwOnNotFound = false)
             => _converters.Get<T>(this, typeof(T), propInfo, throwOnNotFound);
 
+        protected void RaiseUnknownProperty(string path)
+            => UnknownProperty?.Invoke(path);
+        protected void RaiseFailedProperty(string path)
+            => FailedProperty?.Invoke(path);
     }
 }

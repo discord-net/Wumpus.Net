@@ -65,13 +65,13 @@ namespace Voltaic.Serialization.Json
                 (t, p) => new TimeSpanEpochConverter(this, p.GetCustomAttribute<EpochAttribute>().Type));
 
             // Collections
-            _converters.AddGlobalConditional(typeof(ArrayJsonConverter<>), 
-                (t, p) => t.IsArray, 
+            _converters.AddGlobalConditional(typeof(ArrayJsonConverter<>),
+                (t, p) => t.IsArray,
                 (t) => t.GetElementType());
-            _converters.SetGenericDefault(typeof(List<>), typeof(ListJsonConverter<>), 
+            _converters.SetGenericDefault(typeof(List<>), typeof(ListJsonConverter<>),
                 (t) => t.GenericTypeArguments[0]);
-            _converters.AddGenericConditional(typeof(Dictionary<,>), typeof(DictionaryJsonConverter<>), 
-                (t, p) => t.GenericTypeArguments[0] == typeof(string), 
+            _converters.AddGenericConditional(typeof(Dictionary<,>), typeof(DictionaryJsonConverter<>),
+                (t, p) => t.GenericTypeArguments[0] == typeof(string),
                 (t) => t.GenericTypeArguments[1]);
 
             // Strings
@@ -100,7 +100,7 @@ namespace Voltaic.Serialization.Json
                 (t, p) => new BooleanJsonConverter(GetStandardFormat(p)));
             _converters.SetDefault<Guid, GuidJsonConverter>(
                 (t, p) => new GuidJsonConverter(GetStandardFormat(p)));
-            _converters.SetGenericDefault(typeof(Nullable<>), typeof(NullableJsonConverter<>), 
+            _converters.SetGenericDefault(typeof(Nullable<>), typeof(NullableJsonConverter<>),
                 (t) => t.GenericTypeArguments[0]);
             _converters.SetGenericDefault(typeof(Optional<>), typeof(OptionalJsonConverter<>),
                 (t) => t.GenericTypeArguments[0]);
@@ -203,7 +203,7 @@ namespace Voltaic.Serialization.Json
                 _pool.Return(data.Array);
             }
         }
-        
+
         private StandardFormat GetStandardFormat(PropertyInfo propInfo)
         {
             var attr = propInfo?.GetCustomAttribute<StandardFormatAttribute>();
@@ -211,5 +211,10 @@ namespace Voltaic.Serialization.Json
                 return default;
             return attr.Format;
         }
+
+        internal new void RaiseUnknownProperty(string path)
+            => base.RaiseUnknownProperty(path);
+        internal new void RaiseFailedProperty(string path)
+            => base.RaiseFailedProperty(path);
     }
 }

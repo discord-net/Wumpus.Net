@@ -124,5 +124,10 @@ namespace Voltaic.Serialization.Etf
                 return default;
             return attr.Format;
         }
+
+        internal new void RaiseUnknownProperty(string path)
+            => base.RaiseUnknownProperty(path);
+        internal new void RaiseFailedProperty(string path)
+            => base.RaiseFailedProperty(path);
     }
 }
