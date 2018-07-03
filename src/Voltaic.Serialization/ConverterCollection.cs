@@ -200,18 +200,16 @@ namespace Voltaic.Serialization
         }
         internal ValueConverter Get(Serializer serializer, Type type, PropertyInfo propInfo = null, bool throwOnNotFound = true)
         {
-            bool canCache = propInfo == null; // Can't cache top-level due to attribute influences
-            if (canCache && _cache.TryGetValue(type, out var converter))
+            if (_cache.TryGetValue(type, out var converter))
                 return converter;
 
             converter = FindAndBuildConverter(serializer, type.GetTypeInfo(), propInfo, throwOnNotFound);
             if (converter == null && throwOnNotFound)
                 throw new InvalidOperationException($"There is no converter available for {type.Name}");
 
-            if (canCache)
-                _cache.TryAdd(type, converter);
+            _cache.TryAdd(type, converter);
             return converter;
-        }        
+        }
 
         private ValueConverter FindAndBuildConverter(Serializer serializer, TypeInfo valueTypeInfo, PropertyInfo propInfo, bool throwOnNotFound)
         {
