@@ -10,6 +10,7 @@ namespace Voltaic.Serialization
         protected int _selectorKeyCount;
 
         public abstract string Name { get; }
+        public abstract Type ModelType { get; }
 
         internal readonly MemoryDictionary<PropertyMap> _propDict;
         internal readonly List<KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>> _propList;
@@ -29,6 +30,7 @@ namespace Voltaic.Serialization
     public class ModelMap<T> : ModelMap
     {
         public override string Name => typeof(T).Name;
+        public override Type ModelType => typeof(T);
 
         internal ModelMap(Serializer serializer)
         {

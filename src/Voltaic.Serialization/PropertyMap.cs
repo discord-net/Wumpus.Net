@@ -17,7 +17,7 @@ namespace Voltaic.Serialization
         public uint IndexMask { get; internal set; }
         public bool IgnoreErrors { get; }
 
-        public abstract Type Type { get; }
+        public abstract Type ValueType { get; }
 
         protected readonly bool _supportsRead, _supportsWrite;
 
@@ -32,7 +32,7 @@ namespace Voltaic.Serialization
             Key = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(attr.Key));
             ExcludeNull = attr.ExcludeNull;
             ExcludeDefault = attr.ExcludeDefault;
-            IgnoreErrors = propInfo.GetCustomAttribute<IgnoreErrorsAttribute>() != null;
+            IgnoreErrors = propInfo.GetCustomAttribute<IgnoreErrorsAttribute>() != null || modelMap.ModelType.GetTypeInfo().GetCustomAttribute<IgnoreErrorsAttribute>() != null;
         }
     }
 
@@ -56,7 +56,7 @@ namespace Voltaic.Serialization
         public Func<TModel, TValue> GetFunc { get; }
         public Action<TModel, TValue> SetFunc { get; }
 
-        public override Type Type => typeof(TValue);
+        public override Type ValueType => typeof(TValue);
 
         public PropertyMap(
             Serializer serializer,
@@ -96,7 +96,7 @@ namespace Voltaic.Serialization
         public Func<TModel, TValue> GetFunc { get; }
         public Action<TModel, TValue> SetFunc { get; }
 
-        public override Type Type => typeof(TValue);
+        public override Type ValueType => typeof(TValue);
 
         private readonly List<PropertyMap> _dependencies;
 
@@ -120,7 +120,7 @@ namespace Voltaic.Serialization
                 var typeSelectorAttr = typeSelectorAttrs[i];
                 if (!props.TryGetValue(typeSelectorAttr.KeyProperty, out var keyProp))
                     throw new InvalidOperationException($"Unable to find dependency \"{typeSelectorAttr.KeyProperty}\"");
-                var keyType = keyProp.Type;
+                var keyType = keyProp.ValueType;
 
                 // TODO: Does this search subtypes?
                 var mapProp = typeof(TModel).GetTypeInfo().GetDeclaredProperty(typeSelectorAttr.MapProperty);
