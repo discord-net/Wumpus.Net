@@ -5,6 +5,7 @@ using Voltaic.Serialization;
 namespace Wumpus.Entities
 {
     /// <summary> https://discordapp.com/developers/docs/topics/gateway#activity-object </summary>
+    [IgnoreErrors]
     public class Activity
     {
         /// <summary> the activity's name </summary>
@@ -34,6 +35,7 @@ namespace Wumpus.Entities
     }
 
     /// <summary> https://discordapp.com/developers/docs/topics/gateway#activity-object-activity-timestamps </summary>
+    [IgnoreErrors]
     public class ActivityTimestamps
     {
         /// <summary> unix time (in milliseconds) of when the activity started </summary>
@@ -47,6 +49,7 @@ namespace Wumpus.Entities
     }
 
     /// <summary> https://discordapp.com/developers/docs/topics/gateway#activity-object-activity-party </summary>
+    [IgnoreErrors]
     public class ActivityParty
     {
         /// <summary> the id of the party </summary>
@@ -58,6 +61,7 @@ namespace Wumpus.Entities
     }
 
     /// <summary> https://discordapp.com/developers/docs/topics/gateway#activity-object-activity-assets </summary>
+    [IgnoreErrors]
     public class ActivityAssets
     {
         /// <summary> the id for a large asset of the activity, usually a snowflake </summary>
