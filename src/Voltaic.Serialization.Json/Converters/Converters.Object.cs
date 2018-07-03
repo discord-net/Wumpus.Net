@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Voltaic.Serialization.Json
 {
     public class ObjectJsonConverter<T> : ValueConverter<T>
         where T : class, new()
     {
+        private readonly JsonSerializer _serializer;
         private readonly ModelMap<T> _map;
 
-        public ObjectJsonConverter(Serializer serializer)
+        public ObjectJsonConverter(JsonSerializer serializer, PropertyInfo propInfo)
         {
-            _map = serializer.GetMap<T>();
+            _serializer = serializer;
+            _map = serializer.GetMap<T>(propInfo);
         }
 
         public override bool CanWrite(T value, PropertyMap propMap)
@@ -74,6 +77,7 @@ namespace Voltaic.Serialization.Json
                 // Unknown Property
                 if (!_map.TryGetProperty(key, out var innerPropMap))
                 {
+                    _serializer.RaiseUnknownProperty(_map.Path);
                     if (!JsonReader.Skip(ref remaining, out _))
                         return false;
                     continue;
@@ -92,9 +96,22 @@ namespace Voltaic.Serialization.Json
                     continue;
                 }
 
+
+                var restore = remaining;
                 if (!innerPropMap.TryRead(result, ref remaining, dependencies))
-                    return false;
-                
+                {
+                    if (innerPropMap.IgnoreErrors)
+                    {
+                        remaining = restore;
+                        if (!JsonReader.Skip(ref remaining, out var skipped))
+                            return false;
+                        _serializer.RaiseFailedProperty(innerPropMap.Path);
+                        continue;
+                    }
+                    else
+                        return false;
+                }
+
                 dependencies |= innerPropMap.IndexMask;
             }
 
@@ -105,7 +122,12 @@ namespace Voltaic.Serialization.Json
                     return false;
                 var value = deferred.GetValue(i);
                 if (!innerPropMap.TryRead(result, ref value, dependencies))
-                    return false;
+                {
+                    if (innerPropMap.IgnoreErrors)
+                        _serializer.RaiseFailedProperty(innerPropMap.Path);
+                    else
+                        return false;
+                }
             }
             return true;
         }

@@ -16,6 +16,7 @@ namespace Voltaic.Serialization
         public bool ExcludeNull { get; }
         public int? Index { get; internal set; }
         public uint IndexMask { get; internal set; }
+        public bool IgnoreErrors { get; }
 
         public abstract Type Type { get; }
 
@@ -33,6 +34,7 @@ namespace Voltaic.Serialization
             Key = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(attr.Key));
             ExcludeNull = attr.ExcludeNull;
             ExcludeDefault = attr.ExcludeDefault;
+            IgnoreErrors = modelMap.IgnoreErrors;
         }
     }
 
