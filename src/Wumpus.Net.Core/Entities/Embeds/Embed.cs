@@ -19,8 +19,7 @@ namespace Wumpus.Entities
         [ModelProperty("url")]
         public Optional<Utf8String> Url { get; set; }
         /// <summary> xxx </summary>
-        [ModelProperty("timestamp")]
-        [StandardFormat('O')]
+        [ModelProperty("timestamp"), StandardFormat('O')]
         public Optional<DateTimeOffset> Timestamp { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("color")]

@@ -22,8 +22,7 @@ namespace Wumpus.Entities
         [ModelProperty("temporary")]
         public bool Temporary { get; set; }
         /// <summary> xxx </summary>
-        [ModelProperty("created_at")]
-        [StandardFormat('O')]
+        [ModelProperty("created_at"), StandardFormat('O')]
         public DateTimeOffset CreatedAt { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("revoked")]

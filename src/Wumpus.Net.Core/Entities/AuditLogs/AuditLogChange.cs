@@ -9,12 +9,10 @@ namespace Wumpus.Entities
     public class AuditLogChange
     {
         /// <summary> xxx </summary>
-        [ModelProperty("new_value")]
-        [ModelTypeSelector(nameof(Key), nameof(TypeSelector))]
+        [ModelProperty("new_value"), ModelTypeSelector(nameof(Key), nameof(TypeSelector))]
         public object NewValue { get; set; }
         /// <summary> xxx </summary>
-        [ModelProperty("old_value")]
-        [ModelTypeSelector(nameof(Key), nameof(TypeSelector))]
+        [ModelProperty("old_value"), ModelTypeSelector(nameof(Key), nameof(TypeSelector))]
         public object OldValue { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("key")]

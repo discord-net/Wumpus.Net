@@ -1,6 +1,7 @@
 ﻿using System;
 using Voltaic;
 using Voltaic.Serialization;
+using Voltaic.Serialization.Json;
 
 namespace Wumpus.Entities
 {
@@ -39,12 +40,10 @@ namespace Wumpus.Entities
     public class ActivityTimestamps
     {
         /// <summary> unix time (in milliseconds) of when the activity started </summary>
-        [ModelProperty("start")]
-        [Epoch(EpochType.UnixMillis)]
+        [ModelProperty("start"), Epoch(EpochType.UnixMillis)]
         public Optional<DateTimeOffset> Start { get; set; }
         /// <summary> unix time (in milliseconds) of when the activity ends </summary>
-        [ModelProperty("end")]
-        [Epoch(EpochType.UnixMillis)]
+        [ModelProperty("end"), Epoch(EpochType.UnixMillis)]
         public Optional<DateTimeOffset> End { get; set; }
     }
 
@@ -57,7 +56,7 @@ namespace Wumpus.Entities
         public Optional<Utf8String> Id { get; set; }
         /// <summary> used to show the party's current and maximum size </summary>
         [ModelProperty("size")]
-        public Optional<long[]> Size { get; set; }
+        public Optional<byte[]> Size { get; set; }
     }
 
     /// <summary> https://discordapp.com/developers/docs/topics/gateway#activity-object-activity-assets </summary>

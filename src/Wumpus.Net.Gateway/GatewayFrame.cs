@@ -20,9 +20,9 @@ namespace Wumpus.Events
         public int? Sequence { get; set; }
 
         /// <summary> xxx </summary>
-        [ModelProperty("d")]
-        [ModelTypeSelector(nameof(Operation), nameof(OpCodeTypeSelector))]
-        [ModelTypeSelector(nameof(DispatchType), nameof(DispatchTypeSelector))]
+        [ModelProperty("d"),
+            ModelTypeSelector(nameof(Operation), nameof(OpCodeTypeSelector)),
+            ModelTypeSelector(nameof(DispatchType), nameof(DispatchTypeSelector))]
         public object Payload { get; set; }
 
         private static Dictionary<GatewayOpCode, Type> OpCodeTypeSelector => new Dictionary<GatewayOpCode, Type>()
