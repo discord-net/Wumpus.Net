@@ -19,7 +19,10 @@ namespace Voltaic.Serialization.Json
         {
             result = null;
             if (JsonReader.GetTokenType(ref remaining) == JsonTokenType.Null)
+            {
+                remaining = remaining.Slice(4);
                 return true;
+            }
             if (!_innerConverter.TryRead(ref remaining, out var resultValue, propMap))
                 return false;
             result = resultValue;

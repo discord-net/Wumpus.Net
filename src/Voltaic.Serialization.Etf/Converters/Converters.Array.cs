@@ -289,7 +289,7 @@ namespace Voltaic.Serialization.Etf
                         remaining = remaining.Slice(2);
 
                         result = new T[length];
-                        remaining.Slice(2, length).CopyTo((result as byte[]).AsSpan()));
+                        remaining.Slice(2, length).CopyTo((result as byte[]).AsSpan());
                         remaining = remaining.Slice(length);
                         return true;
                     }
@@ -308,7 +308,7 @@ namespace Voltaic.Serialization.Etf
                         remaining = remaining.Slice(4);
 
                         result = new T[length];
-                        remaining.Slice(4, (int)length).CopyTo((result as byte[]).AsSpan()));
+                        remaining.Slice(4, (int)length).CopyTo((result as byte[]).AsSpan());
                         remaining = remaining.Slice((int)length);
                         return true;
                     }

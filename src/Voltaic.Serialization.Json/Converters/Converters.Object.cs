@@ -26,6 +26,7 @@ namespace Voltaic.Serialization.Json
                 case JsonTokenType.StartObject:
                     break;
                 case JsonTokenType.Null:
+                    remaining = remaining.Slice(4);
                     result = null;
                     return true;
                 default:
