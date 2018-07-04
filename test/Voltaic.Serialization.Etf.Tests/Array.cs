@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Linq;
+using Voltaic.Serialization.Utf8.Tests;
 using Xunit;
 
 namespace Voltaic.Serialization.Etf.Tests
@@ -15,7 +17,31 @@ namespace Voltaic.Serialization.Etf.Tests
 
         public static IEnumerable<object[]> GetData()
         {
-            throw new NotImplementedException();
+            yield return FailRead(EtfTokenType.List, new byte[] { });
+            yield return FailRead(EtfTokenType.Binary, new byte[] { });
+            yield return FailRead(EtfTokenType.String, new byte[] { });
+            yield return ReadWrite(EtfTokenType.SmallAtom, new byte[] { 0x03, 0x6E, 0x69, 0x6C }, null); // nil
+            yield return Read(EtfTokenType.SmallAtomUtf8, new byte[] { 0x03, 0x6E, 0x69, 0x6C }, null); // nil
+            yield return Read(EtfTokenType.Atom, new byte[] { 0x00, 0x03, 0x6E, 0x69, 0x6C }, null); // nil
+            yield return Read(EtfTokenType.AtomUtf8, new byte[] { 0x00, 0x03, 0x6E, 0x69, 0x6C }, null); // nil
+            yield return ReadWrite(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x6A }, new int[0]);
+            yield return ReadWrite(EtfTokenType.Binary, new byte[] { 0x00, 0x00, 0x00, 0x00 }, new int[0]);
+            yield return ReadWrite(EtfTokenType.String, new byte[] { 0x00, 0x00 }, new int[0]);
+
+            yield return FailRead(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x77, 0x00 }); // w/ tail element
+            yield return FailRead(EtfTokenType.String, new byte[] { 0x00, 0x00, 0x00, 0x01, 0x77, 0x00 }); // w/ item headers
+            yield return FailRead(EtfTokenType.Binary, new byte[] { 0x00, 0x01, 0x77, 0x00 }); // w/ item headers
+
+            yield return FailRead(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x00 }); // incomplete
+            yield return FailRead(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x01, 0x6A }); // incomplete
+            yield return FailRead(EtfTokenType.Binary, new byte[] { 0x00, 0x00, 0x00, 0x01 }); // incomplete
+            yield return FailRead(EtfTokenType.LargeTuple, new byte[] { 0x00, 0x00, 0x00, 0x01 }); // incomplete
+            yield return FailRead(EtfTokenType.String, new byte[] { 0x00, 0x01 }); // incomplete
+            yield return FailRead(EtfTokenType.SmallTuple, new byte[] {  0x01 }); // incomplete
+
+            foreach (var x in CollectionTests.Reads(new int[0])) yield return x;
+            foreach (var x in CollectionTests.Reads(new int[] { 1 })) yield return x;
+            foreach (var x in CollectionTests.Reads(new int[] { 1, 2, 3 })) yield return x;
         }
 
         public ArrayTests() : base(new Comparer()) { }
@@ -35,7 +61,31 @@ namespace Voltaic.Serialization.Etf.Tests
 
         public static IEnumerable<object[]> GetData()
         {
-            throw new NotImplementedException();
+            yield return FailRead(EtfTokenType.List, new byte[] { });
+            yield return FailRead(EtfTokenType.Binary, new byte[] { });
+            yield return FailRead(EtfTokenType.String, new byte[] { });
+            yield return ReadWrite(EtfTokenType.SmallAtom, new byte[] { 0x03, 0x6E, 0x69, 0x6C }, null); // nil
+            yield return Read(EtfTokenType.SmallAtomUtf8, new byte[] { 0x03, 0x6E, 0x69, 0x6C }, null); // nil
+            yield return Read(EtfTokenType.Atom, new byte[] { 0x00, 0x03, 0x6E, 0x69, 0x6C }, null); // nil
+            yield return Read(EtfTokenType.AtomUtf8, new byte[] { 0x00, 0x03, 0x6E, 0x69, 0x6C }, null); // nil
+            yield return ReadWrite(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x6A }, new List<int>());
+            yield return ReadWrite(EtfTokenType.Binary, new byte[] { 0x00, 0x00, 0x00, 0x00 }, new List<int>());
+            yield return ReadWrite(EtfTokenType.String, new byte[] { 0x00, 0x00 }, new List<int>());
+
+            yield return FailRead(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x77, 0x00 }); // w/ tail element
+            yield return FailRead(EtfTokenType.String, new byte[] { 0x00, 0x00, 0x00, 0x01, 0x77, 0x00 }); // w/ item headers
+            yield return FailRead(EtfTokenType.Binary, new byte[] { 0x00, 0x01, 0x77, 0x00 }); // w/ item headers
+
+            yield return FailRead(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x00 }); // incomplete
+            yield return FailRead(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x01, 0x6A }); // incomplete
+            yield return FailRead(EtfTokenType.Binary, new byte[] { 0x00, 0x00, 0x00, 0x01 }); // incomplete
+            yield return FailRead(EtfTokenType.LargeTuple, new byte[] { 0x00, 0x00, 0x00, 0x01 }); // incomplete
+            yield return FailRead(EtfTokenType.String, new byte[] { 0x00, 0x01 }); // incomplete
+            yield return FailRead(EtfTokenType.SmallTuple, new byte[] { 0x01 }); // incomplete
+
+            foreach (var x in CollectionTests.Reads(new int[0], new List<int>())) yield return x;
+            foreach (var x in CollectionTests.Reads(new int[] { 1 }, new List<int>() { 1 })) yield return x;
+            foreach (var x in CollectionTests.Reads(new int[] { 1, 2, 3 }, new List<int>() { 1, 2, 3 })) yield return x;
         }
 
         public ListTests() : base(new Comparer()) { }
@@ -43,5 +93,38 @@ namespace Voltaic.Serialization.Etf.Tests
         [Theory]
         [MemberData(nameof(GetData))]
         public void Array(BinaryTestData<List<int>> data) => RunTest(data);
+    }
+
+    internal class CollectionTests
+    {
+        public static IEnumerable<object[]> Reads(int[] value)
+            => CreateArrayTests(TestType.Read, value, value);
+        public static IEnumerable<object[]> Reads<TValue>(int[] value, TValue expectedValue)
+            => CreateArrayTests(TestType.Read, value, expectedValue);
+        public static IEnumerable<object[]> CreateArrayTests<TValue>(TestType type, int[] value, TValue expectedValue)
+        {
+            byte[] data = value.Cast<byte>().SelectMany(x => new byte[] { 0x61, x }).ToArray();
+            byte[] stringData = value.Cast<byte>().ToArray();
+
+            if (value.Length <= byte.MaxValue)
+            {
+                var header = new byte[] { (byte)value.Length };
+                yield return new object[] { new BinaryTestData<TValue>(type, EtfTokenType.SmallTuple, header.Concat(data), expectedValue) };
+            }
+            if (value.Length <= ushort.MaxValue)
+            {
+                var header = new byte[2];
+                BinaryPrimitives.WriteUInt16BigEndian(header, (ushort)value.Length);
+                yield return new object[] { new BinaryTestData<TValue>(type, EtfTokenType.String, header.Concat(stringData), expectedValue) };
+            }
+            // if (utf8.Length <= uint.MaxValue)
+            {
+                var header = new byte[4];
+                BinaryPrimitives.WriteUInt32BigEndian(header, (uint)value.Length);
+                yield return new object[] { new BinaryTestData<TValue>(type, EtfTokenType.Binary, header.Concat(stringData), expectedValue) };
+                yield return new object[] { new BinaryTestData<TValue>(type, EtfTokenType.LargeTuple, header.Concat(data), expectedValue) };
+                yield return new object[] { new BinaryTestData<TValue>(type, EtfTokenType.List, header.Concat(data).Concat(new byte[] { 0x6A }), expectedValue) };
+            }
+        }
     }
 }
