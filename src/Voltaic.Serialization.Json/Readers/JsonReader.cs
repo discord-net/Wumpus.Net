@@ -125,6 +125,8 @@ namespace Voltaic.Serialization.Json
                         i += 4; // alse
                         break;
                     case (byte)'"':
+                        i++;
+                        bool incomplete = true;
                         while (i < remaining.Length)
                         {
                             switch (remaining[i])
@@ -133,6 +135,7 @@ namespace Voltaic.Serialization.Json
                                     i += 2; // Skip next char
                                     continue;
                                 case (byte)'"':
+                                    incomplete = false;
                                     break;
                                 default:
                                     i++;
@@ -140,6 +143,8 @@ namespace Voltaic.Serialization.Json
                             }
                             break;
                         }
+                        if (incomplete)
+                            return false;
                         break;
                     case (byte)'-':
                     case (byte)'0':
@@ -182,6 +187,12 @@ namespace Voltaic.Serialization.Json
                         break;
                     default:
                         return false;
+                }
+
+                if (currentToken == JsonTokenType.None)
+                {
+                    i++;
+                    break;
                 }
             }
 
