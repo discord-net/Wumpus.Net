@@ -68,14 +68,10 @@ namespace Voltaic.Serialization.Etf.Tests
           => new object[] { new BinaryTestData<T>(TestType.ReadWrite, tokenType, bytes, value) };
 
         public static IEnumerable<object[]> FailReads(string str)
-            => CreateTests(TestType.FailRead, str, default);
+            => CreateStringTests(TestType.FailRead, str, default);
         public static IEnumerable<object[]> Reads(string str, T value)
-            => CreateTests(TestType.Read, str, value);
-        public static IEnumerable<object[]> Writes(string str, T value)
-            => CreateTests(TestType.Write, str, value);
-        public static IEnumerable<object[]> ReadWrites(string str, T value)
-            => CreateTests(TestType.ReadWrite, str, value);
-        private static IEnumerable<object[]> CreateTests(TestType type, string str, T value)
+            => CreateStringTests(TestType.Read, str, value);
+        private static IEnumerable<object[]> CreateStringTests(TestType type, string str, T value)
         {
             var utf8 = Encoding.UTF8.GetBytes(str);
             if (utf8.Length <= byte.MaxValue)
@@ -99,7 +95,6 @@ namespace Voltaic.Serialization.Etf.Tests
                 yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.Binary, header.Concat(utf8), value) };
             }
         }
-
         protected static IEnumerable<object[]> TextToBinary(IEnumerable<object[]> tests)
         {
             foreach (var test in tests)
@@ -108,13 +103,14 @@ namespace Voltaic.Serialization.Etf.Tests
                 var type = textTest.Type;
                 switch (type)
                 {
+                    case TestType.FailWrite:
                     case TestType.Write:
                         continue;
                     case TestType.ReadWrite:
                         type = TestType.Read;
                         break;
                 }
-                foreach (var x in CreateTests(type, textTest.String, textTest.Value))
+                foreach (var x in CreateStringTests(type, textTest.String, textTest.Value))
                     yield return x;
             }
         }
