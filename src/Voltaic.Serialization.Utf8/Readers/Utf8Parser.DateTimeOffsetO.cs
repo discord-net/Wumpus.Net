@@ -11,7 +11,7 @@ namespace Voltaic.Serialization.Utf8
         // Modifies Utf8Parser to add support for variable-length fractions
         public static bool TryParseDateTimeOffsetO(ReadOnlySpan<byte> source, out DateTimeOffset value, out int bytesConsumed, out DateTimeKind kind)
         {
-            if (source.Length < 27)
+            if (source.Length < 19)
             {
                 value = default;
                 bytesConsumed = 0;
@@ -157,24 +157,28 @@ namespace Voltaic.Serialization.Utf8
                 second = (int)(digit1 * 10 + digit2);
             }
 
-            if (source[19] != '.')
+            // Fraction is both optional and can have a dynamic size but Utf8Parser assumes it's always 7 digits
+            int fractionDigits;
+            int fraction;
+            if (source.Length >= 20 && source[19] == '.')
             {
-                value = default;
-                bytesConsumed = 0;
-                kind = default;
-                return false;
+                source = source.Slice(20);
+                if (!Utf8Parser.TryParse(source, out fraction, out fractionDigits, 'D'))
+                {
+                    value = default;
+                    bytesConsumed = 0;
+                    kind = default;
+                    return false;
+                }
+                source = source.Slice(fractionDigits);
+                fractionDigits++;
             }
-
-            // Fraction has a dynamic size but Utf8Parser assumes it's always 7 digits
-            source = source.Slice(20);
-            if (!Utf8Parser.TryParse(source, out int fraction, out int fractionDigits, 'D'))
+            else
             {
-                value = default;
-                bytesConsumed = 0;
-                kind = default;
-                return false;
+                source = source.Slice(19);
+                fractionDigits = 0;
+                fraction = 0;
             }
-            source = source.Slice(fractionDigits);
 
             byte offsetChar = (source.Length == 0) ? default : source[0]; // 27
             if (offsetChar != 'Z' && offsetChar != '+' && offsetChar != '-')
@@ -186,7 +190,7 @@ namespace Voltaic.Serialization.Utf8
                     kind = default;
                     return false;
                 }
-                bytesConsumed = 20 + fractionDigits;
+                bytesConsumed = 19 + fractionDigits;
                 kind = DateTimeKind.Unspecified;
                 return true;
             }
@@ -202,7 +206,7 @@ namespace Voltaic.Serialization.Utf8
                     return false;
                 }
 
-                bytesConsumed = 21 + fractionDigits;
+                bytesConsumed = 20 + fractionDigits;
                 kind = DateTimeKind.Utc;
                 return true;
             }
@@ -263,7 +267,7 @@ namespace Voltaic.Serialization.Utf8
                 return false;
             }
 
-            bytesConsumed = 26 + fractionDigits;
+            bytesConsumed = 25 + fractionDigits;
             kind = DateTimeKind.Local;
             return true;
         }
