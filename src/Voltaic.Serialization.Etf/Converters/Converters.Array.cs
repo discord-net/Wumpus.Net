@@ -191,8 +191,13 @@ namespace Voltaic.Serialization.Etf
                                     return false;
                             }
                         }
-                        break;
+
+                        // Resize array if any elements failed
+                        if (resultCount != result.Length)
+                            Array.Resize(ref result, resultCount);
+                        return true;
                     }
+
                 case EtfTokenType.LargeTuple:
                     {
                         if (remaining.Length < 5)
@@ -223,7 +228,11 @@ namespace Voltaic.Serialization.Etf
                                     return false;
                             }
                         }
-                        break;
+
+                        // Resize array if any elements failed
+                        if (resultCount != result.Length)
+                            Array.Resize(ref result, resultCount);
+                        return true;
                     }
 
                 case EtfTokenType.List:
@@ -261,16 +270,51 @@ namespace Voltaic.Serialization.Etf
                         if (EtfReader.GetTokenType(ref remaining) != EtfTokenType.Nil)
                             return false;
                         remaining = remaining.Slice(1);
-                        break;
+
+                        // Resize array if any elements failed
+                        if (resultCount != result.Length)
+                            Array.Resize(ref result, resultCount);
+                        return true;
+                    }
+
+                case EtfTokenType.String:
+                    {
+                        if (typeof(T) != typeof(byte))
+                            return false;
+                        if (remaining.Length < 3)
+                            return false;
+
+                        remaining = remaining.Slice(1);
+                        ushort length = BinaryPrimitives.ReadUInt16BigEndian(remaining);
+                        remaining = remaining.Slice(2);
+
+                        result = new T[length];
+                        remaining.Slice(2, length).CopyTo((result as byte[]).AsSpan()));
+                        remaining = remaining.Slice(length);
+                        return true;
+                    }
+
+                case EtfTokenType.Binary:
+                    {
+                        if (typeof(T) != typeof(byte))
+                            return false;
+                        if (remaining.Length < 5)
+                            return false;
+
+                        remaining = remaining.Slice(1);
+                        uint length = BinaryPrimitives.ReadUInt32BigEndian(remaining);
+                        if (length > int.MaxValue || remaining.Length < length + 4U)
+                            return false;
+                        remaining = remaining.Slice(4);
+
+                        result = new T[length];
+                        remaining.Slice(4, (int)length).CopyTo((result as byte[]).AsSpan()));
+                        remaining = remaining.Slice((int)length);
+                        return true;
                     }
                 default:
                     return false;
             }
-
-            // Resize array if any elements failed
-            if (resultCount != result.Length)
-                Array.Resize(ref result, resultCount);
-            return true;
         }
     }
 }
