@@ -25,13 +25,10 @@ namespace Voltaic.Serialization.Etf.Tests
             yield return Read(EtfTokenType.Atom, new byte[] { 0x00, 0x03, 0x6E, 0x69, 0x6C }, null); // nil
             yield return Read(EtfTokenType.AtomUtf8, new byte[] { 0x00, 0x03, 0x6E, 0x69, 0x6C }, null); // nil
             yield return ReadWrite(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x6A }, new int[0]);
-            yield return ReadWrite(EtfTokenType.Binary, new byte[] { 0x00, 0x00, 0x00, 0x00 }, new int[0]);
-            yield return ReadWrite(EtfTokenType.String, new byte[] { 0x00, 0x00 }, new int[0]);
+            yield return Read(EtfTokenType.Binary, new byte[] { 0x00, 0x00, 0x00, 0x00 }, new int[0]);
+            yield return Read(EtfTokenType.String, new byte[] { 0x00, 0x00 }, new int[0]);
 
-            yield return FailRead(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x77, 0x00 }); // w/ tail element
-            yield return FailRead(EtfTokenType.String, new byte[] { 0x00, 0x00, 0x00, 0x01, 0x77, 0x00 }); // w/ item headers
-            yield return FailRead(EtfTokenType.Binary, new byte[] { 0x00, 0x01, 0x77, 0x00 }); // w/ item headers
-
+            yield return FailRead(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x61, 0x00 }); // w/ tail element
             yield return FailRead(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x00 }); // incomplete
             yield return FailRead(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x01, 0x6A }); // incomplete
             yield return FailRead(EtfTokenType.Binary, new byte[] { 0x00, 0x00, 0x00, 0x01 }); // incomplete
@@ -42,6 +39,9 @@ namespace Voltaic.Serialization.Etf.Tests
             foreach (var x in CollectionTests.Reads(new int[0])) yield return x;
             foreach (var x in CollectionTests.Reads(new int[] { 1 })) yield return x;
             foreach (var x in CollectionTests.Reads(new int[] { 1, 2, 3 })) yield return x;
+
+            yield return Write(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x01, 0x61, 0x01, 0x6A }, new int[] { 1 });
+            yield return Write(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x03, 0x61, 0x01, 0x61, 0x02, 0x61, 0x03, 0x6A }, new int[] { 1, 2, 3 });
         }
 
         public ArrayTests() : base(new Comparer()) { }
@@ -69,13 +69,10 @@ namespace Voltaic.Serialization.Etf.Tests
             yield return Read(EtfTokenType.Atom, new byte[] { 0x00, 0x03, 0x6E, 0x69, 0x6C }, null); // nil
             yield return Read(EtfTokenType.AtomUtf8, new byte[] { 0x00, 0x03, 0x6E, 0x69, 0x6C }, null); // nil
             yield return ReadWrite(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x6A }, new List<int>());
-            yield return ReadWrite(EtfTokenType.Binary, new byte[] { 0x00, 0x00, 0x00, 0x00 }, new List<int>());
-            yield return ReadWrite(EtfTokenType.String, new byte[] { 0x00, 0x00 }, new List<int>());
+            yield return Read(EtfTokenType.Binary, new byte[] { 0x00, 0x00, 0x00, 0x00 }, new List<int>());
+            yield return Read(EtfTokenType.String, new byte[] { 0x00, 0x00 }, new List<int>());
 
-            yield return FailRead(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x77, 0x00 }); // w/ tail element
-            yield return FailRead(EtfTokenType.String, new byte[] { 0x00, 0x00, 0x00, 0x01, 0x77, 0x00 }); // w/ item headers
-            yield return FailRead(EtfTokenType.Binary, new byte[] { 0x00, 0x01, 0x77, 0x00 }); // w/ item headers
-
+            yield return FailRead(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x61, 0x00 }); // w/ tail element
             yield return FailRead(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x00 }); // incomplete
             yield return FailRead(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x01, 0x6A }); // incomplete
             yield return FailRead(EtfTokenType.Binary, new byte[] { 0x00, 0x00, 0x00, 0x01 }); // incomplete
@@ -86,6 +83,9 @@ namespace Voltaic.Serialization.Etf.Tests
             foreach (var x in CollectionTests.Reads(new int[0], new List<int>())) yield return x;
             foreach (var x in CollectionTests.Reads(new int[] { 1 }, new List<int>() { 1 })) yield return x;
             foreach (var x in CollectionTests.Reads(new int[] { 1, 2, 3 }, new List<int>() { 1, 2, 3 })) yield return x;
+
+            yield return Write(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x01, 0x61, 0x01, 0x6A }, new List<int>() { 1 });
+            yield return Write(EtfTokenType.List, new byte[] { 0x00, 0x00, 0x00, 0x03, 0x61, 0x01, 0x61, 0x02, 0x61, 0x03, 0x6A }, new List<int>() { 1, 2, 3 });
         }
 
         public ListTests() : base(new Comparer()) { }
