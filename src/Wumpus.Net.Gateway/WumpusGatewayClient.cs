@@ -2,6 +2,7 @@
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Wumpus.Events;
 
 namespace Wumpus
 {
@@ -136,6 +137,22 @@ namespace Wumpus
             }
             catch (OperationCanceledException) { } // Ignore
             catch (Exception) { } // TODO: Log
+        }
+
+        private async Task HandleFrameAsync(GatewayPayload frame)
+        {
+            //switch (frame.Operation)
+            //{
+            //}
+            await Task.CompletedTask;
+        }
+
+        private async Task HandleDispatchEventAsync(GatewayPayload frame)
+        {
+            //switch (frame.DispatchType)
+            //{
+            //}
+            await Task.CompletedTask;
         }
 
         public void Dispose()

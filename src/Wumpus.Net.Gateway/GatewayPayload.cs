@@ -1,26 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using Voltaic;
 using Voltaic.Serialization;
 using Wumpus.Entities;
 using Wumpus.Requests;
 
 namespace Wumpus.Events
 {
-    /// <summary> xxx </summary>
-    public class GatewayFrame
+    /// <summary> https://discordapp.com/developers/docs/topics/gateway#payloads </summary>
+    public class GatewayPayload
     {
-        /// <summary> xxx </summary>
+        /// <summary> Opcode for the <see cref="GatewayPayload"/>. </summary>
         [ModelProperty("op")]
         public GatewayOpCode Operation { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> The event name for this <see cref="GatewayPayload"/>. </summary>
         [ModelProperty("t", ExcludeNull = true)]
-        public Utf8String DispatchType { get; set; }
-        /// <summary> xxx </summary>
+        public GatewayDispatchType? DispatchType { get; set; }
+        /// <summary> Sequence number, used for resuming sessions and heartbeats. </summary>
         [ModelProperty("s", ExcludeNull = true)]
         public int? Sequence { get; set; }
 
-        /// <summary> xxx </summary>
+        /// <summary> Event data. </summary>
         [ModelProperty("d")]
         [ModelTypeSelector(nameof(Operation), nameof(OpCodeTypeSelector))]
         [ModelTypeSelector(nameof(DispatchType), nameof(DispatchTypeSelector))]
@@ -39,7 +38,7 @@ namespace Wumpus.Events
             [GatewayOpCode.StatusUpdate] = typeof(UpdateStatusParams)
         };
 
-        private static Dictionary<GatewayDispatchType, Type> DispatchTypeSelector => new Dictionary<GatewayDispatchType, Type>()
+        private static Dictionary<GatewayDispatchType?, Type> DispatchTypeSelector => new Dictionary<GatewayDispatchType?, Type>()
         {
             [GatewayDispatchType.Ready] = typeof(SocketReadyEvent),
             [GatewayDispatchType.GuildCreate] = typeof(GatewayGuild),
@@ -66,13 +65,14 @@ namespace Wumpus.Events
             [GatewayDispatchType.MessageDelete] = typeof(Message),
             [GatewayDispatchType.MessageDeleteBulk] = typeof(MessageDeleteBulkEvent),
             [GatewayDispatchType.MessageReactionAdd] = typeof(GatewayReaction),
-            [GatewayDispatchType.MessageReactionRemove] = typeof(GatewayReaction),
-            [GatewayDispatchType.MessageReactionRemoveAll] = typeof(RemoveAllReactionsEvent),
+            [GatewayDispatchType.MessageReactionRemove] = typeof(MessageReactionRemoveEvent),
+            [GatewayDispatchType.MessageReactionRemoveAll] = typeof(MessageReactionRemoveAllEvent),
             [GatewayDispatchType.PresenceUpdate] = typeof(Presence),
             [GatewayDispatchType.UserUpdate] = typeof(User),
             [GatewayDispatchType.TypingStart] = typeof(TypingStartEvent),
             [GatewayDispatchType.VoiceStateUpdate] = typeof(VoiceState),
-            [GatewayDispatchType.VoiceServerUpdate] = typeof(VoiceServerUpdateEvent)
+            [GatewayDispatchType.VoiceServerUpdate] = typeof(VoiceServerUpdateEvent),
+            [GatewayDispatchType.WebhooksUpdate] = typeof(WebhookUpdateEvent)
         };
     }
 }

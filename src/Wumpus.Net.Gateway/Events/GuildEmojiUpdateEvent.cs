@@ -3,13 +3,16 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Events
 {
-    /// <summary> xxx </summary>
+    /// <summary> 
+    ///     Sent when a guild's emojis have been updated. 
+    ///     https://discordapp.com/developers/docs/topics/gateway#guild-emojis-update 
+    /// </summary>
     public class GuildEmojiUpdateEvent
     {
-        /// <summary> xxx </summary>
+        /// <summary> Id of the <see cref="Guild"/>. </summary>
         [ModelProperty("guild_id")]
         public Snowflake GuildId { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Array of <see cref="Emoji"/>s. </summary>
         [ModelProperty("emojis")]
         public Emoji[] Emojis { get; set; }
     }

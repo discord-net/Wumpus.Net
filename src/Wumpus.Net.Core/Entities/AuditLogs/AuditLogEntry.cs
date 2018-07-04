@@ -3,28 +3,29 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/audit-log#audit-log-entry-object </summary>
     public class AuditLogEntry
     {
-        /// <summary> xxx </summary>
+        /// <summary> Id of the affected entity. </summary>
+        /// <remarks><see cref="Webhook"/>, <see cref="User"/>, <see cref="Role"/>, etc.</remarks>
         [ModelProperty("target_id")]
         public Utf8String TargetId { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Changes made to the <see cref="TargetId"/>. </summary>
         [ModelProperty("changes")]
         public AuditLogChange[] Changes { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> The <see cref="User"/> who made the changes. </summary>
         [ModelProperty("user_id")]
         public Snowflake UserId { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Id of the <see cref="AuditLogEntry"/>. </summary>
         [ModelProperty("id")]
         public Snowflake Id { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Type of action that occurred. </summary>
         [ModelProperty("action_type")]
         public AuditLogEvent ActionType { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Additional info for certain <see cref="ActionType"/>. </summary>
         [ModelProperty("options")]
         public Optional<OptionalAuditEntryInfo[]> Options { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> The reason for the change. </summary>
         [ModelProperty("reason")]
         public Utf8String Reason { get; set; }
     }

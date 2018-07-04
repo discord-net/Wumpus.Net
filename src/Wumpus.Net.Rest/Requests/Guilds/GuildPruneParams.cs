@@ -2,10 +2,10 @@
 
 namespace Wumpus.Requests
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/guild#get-guild-prune-count-query-string-params </summary>
     public class GuildPruneParams : QueryMap
     {
-        /// <summary> xxx </summary>
+        /// <summary> Number of days to count prune for. </summary>
         public int Days { get; set; }
 
         public GuildPruneParams(int days)

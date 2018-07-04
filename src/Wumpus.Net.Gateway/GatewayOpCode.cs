@@ -1,6 +1,10 @@
 ﻿namespace Wumpus.Events
 {
-    /// <summary> xxx </summary>
+    /// <summary>
+    ///     All gateway events in Discord are tagged with an opcode that denotes the payload type. 
+    ///     Your connection to our gateway may also sometimes close. When it does, you will receive a close code that tells you what happened.
+    ///     https://discordapp.com/developers/docs/topics/opcodes-and-status-codes#gateway-opcodes 
+    /// </summary>
     public enum GatewayOpCode : byte
     {
         /// <summary> C←S - Used to send most events. </summary>
@@ -27,6 +31,7 @@
         Hello = 10,
         /// <summary> C←S - Used to reply to a client's heartbeat. </summary>
         HeartbeatAck = 11,
+        // TODO: Remove, undocumented?
         /// <summary> C→S - Used to request presence updates from particular guilds. </summary>
         GuildSync = 12
     }

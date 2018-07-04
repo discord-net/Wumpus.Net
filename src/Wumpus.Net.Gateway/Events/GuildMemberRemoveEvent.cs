@@ -3,7 +3,10 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Events
 {
-    /// <summary> xxx </summary>
+    /// <summary> 
+    ///     Sent when a <see cref="Entities.User"/> is removed from a <see cref="Guild"/>. (Leave/Kick/Ban)
+    ///     https://discordapp.com/developers/docs/topics/gateway#guild-member-remove 
+    /// </summary>
     public class GuildMemberRemoveEvent
     {
         /// <summary> xxx </summary>

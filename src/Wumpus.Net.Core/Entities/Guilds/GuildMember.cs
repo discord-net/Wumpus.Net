@@ -4,25 +4,25 @@ using Voltaic;
 
 namespace Wumpus.Entities
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/guild#guild-embed-object </summary>
     public class GuildMember
     {
-        /// <summary> xxx </summary>
+        /// <summary> <see cref="User"/> object. </summary>
         [ModelProperty("user")]
         public User User { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> This user's <see cref="Guild"/> nickname. </summary>
         [ModelProperty("nick")]
         public Optional<Utf8String> Nick { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Array of <see cref="Role"/> ids. </summary>
         [ModelProperty("roles")]
         public Optional<Snowflake[]> Roles { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> When the <see cref="GuildMember"/> joined the <see cref="Guild"/>. </summary>
         [ModelProperty("joined_at")]
         public Optional<DateTimeOffset> JoinedAt { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> If the <see cref="GuildMember"/> is deafened. </summary>
         [ModelProperty("deaf")]
         public Optional<bool> Deaf { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> If the <see cref="GuildMember"/> is muted. </summary>
         [ModelProperty("mute")]
         public Optional<bool> Mute { get; set; }
     }

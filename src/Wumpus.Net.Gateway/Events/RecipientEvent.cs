@@ -3,6 +3,7 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Events
 {
+    // TODO: Remove, undocumented?
     /// <summary> xxx </summary>
     public class RecipientEvent
     {

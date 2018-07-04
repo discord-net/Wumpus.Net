@@ -2,7 +2,7 @@
 
 namespace Wumpus.Entities
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/topics/gateway#update-status-status-types </summary>
     [ModelStringEnum]
     public enum UserStatus
     {

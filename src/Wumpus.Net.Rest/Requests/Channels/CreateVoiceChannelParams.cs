@@ -4,13 +4,13 @@ using Voltaic;
 
 namespace Wumpus.Requests
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/guild#create-guild-channel-json-params </summary>
     public class CreateVoiceChannelParams : CreateGuildChannelParams
     {
-        /// <summary> xxx </summary>
+        /// <summary> The bitrate (in bits) of the voice <see cref="Channel"/>. </summary>
         [ModelProperty("bitrate")]
         public Optional<int> Bitrate { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> The <see cref="User"/> limit of the voice <see cref="Channel"/>. </summary>
         [ModelProperty("user_limit")]
         public Optional<int> UserLimit { get; set; }
 
