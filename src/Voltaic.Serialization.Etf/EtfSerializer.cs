@@ -7,6 +7,8 @@ namespace Voltaic.Serialization.Etf
 {
     public class EtfSerializer : Serializer
     {
+        internal ArrayPool<byte> Pool => _pool;
+
         public EtfSerializer(ConverterCollection converters = null, ArrayPool<byte> bytePool = null)
           : base(converters, bytePool)
         {

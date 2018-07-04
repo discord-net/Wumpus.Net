@@ -29,7 +29,7 @@ namespace Voltaic.Serialization.Etf
                 return true;
             }
 
-            if (!JsonCollectionReader.TryRead(_serializer, ref remaining, out result, propMap, _innerConverter, _pool))
+            if (!JsonCollectionReader.TryRead(_serializer, ref remaining, out result, propMap, _innerConverter, _pool, _serializer.Pool))
                 return false;
 
             return true;
@@ -99,7 +99,7 @@ namespace Voltaic.Serialization.Etf
                 return true;
             }
 
-            if (!JsonCollectionReader.TryRead(_serializer, ref remaining, out var resultArray, propMap, _innerConverter, _pool))
+            if (!JsonCollectionReader.TryRead(_serializer, ref remaining, out var resultArray, propMap, _innerConverter, _pool, _serializer.Pool))
             {
                 result = default;
                 return false;
@@ -157,7 +157,7 @@ namespace Voltaic.Serialization.Etf
         }
 
         public static bool TryRead<T>(EtfSerializer serializer, ref ReadOnlySpan<byte> remaining, out T[] result, 
-            PropertyMap propMap, ValueConverter<T> innerConverter, ArrayPool<T> pool)
+            PropertyMap propMap, ValueConverter<T> innerConverter, ArrayPool<T> itemPool, ArrayPool<byte> bytePool)
         {
             result = default;
             int resultCount = 0;
@@ -191,11 +191,7 @@ namespace Voltaic.Serialization.Etf
                                     return false;
                             }
                         }
-
-                        // Resize array if any elements failed
-                        if (resultCount != result.Length)
-                            Array.Resize(ref result, resultCount);
-                        return true;
+                        break;
                     }
 
                 case EtfTokenType.LargeTuple:
@@ -228,11 +224,7 @@ namespace Voltaic.Serialization.Etf
                                     return false;
                             }
                         }
-
-                        // Resize array if any elements failed
-                        if (resultCount != result.Length)
-                            Array.Resize(ref result, resultCount);
-                        return true;
+                        break;
                     }
 
                 case EtfTokenType.List:
@@ -270,51 +262,112 @@ namespace Voltaic.Serialization.Etf
                         if (EtfReader.GetTokenType(ref remaining) != EtfTokenType.Nil)
                             return false;
                         remaining = remaining.Slice(1);
-
-                        // Resize array if any elements failed
-                        if (resultCount != result.Length)
-                            Array.Resize(ref result, resultCount);
-                        return true;
+                        break;
                     }
 
                 case EtfTokenType.String:
                     {
-                        if (typeof(T) != typeof(byte))
-                            return false;
                         if (remaining.Length < 3)
                             return false;
 
                         remaining = remaining.Slice(1);
-                        ushort length = BinaryPrimitives.ReadUInt16BigEndian(remaining);
+                        ushort count = BinaryPrimitives.ReadUInt16BigEndian(remaining);
                         remaining = remaining.Slice(2);
 
-                        result = new T[length];
-                        remaining.Slice(2, length).CopyTo((result as byte[]).AsSpan());
-                        remaining = remaining.Slice(length);
-                        return true;
+                        // String optimizes away the per-item header, but our item readers depend on them.
+                        // Unfortunately this means we need to inject a header
+                        // In the case of reading a byte[] however, we can do a direct copy
+                        if (typeof(T) == typeof(byte))
+                        {
+                            result = new T[count];
+                            remaining.Slice(0, count).CopyTo((result as byte[]).AsSpan());
+                            remaining = remaining.Slice(count);
+                        }
+                        else
+                        {
+                            var tmpArr = bytePool.Rent(2);
+                            try
+                            {
+                                tmpArr[0] = (byte)EtfTokenType.SmallInteger;
+                                result = new T[count];
+                                for (int i = 0; i < count; i++, resultCount++)
+                                {
+                                    tmpArr[1] = remaining[i];
+                                    var span = new ReadOnlySpan<byte>(tmpArr, 0, 2);
+                                    if (!innerConverter.TryRead(ref span, out result[resultCount], propMap))
+                                    {
+                                        if (propMap?.IgnoreErrors == true)
+                                        {
+                                            serializer.RaiseFailedProperty(propMap, i);
+                                            resultCount--;
+                                        }
+                                        else
+                                            return false;
+                                    }
+                                }
+                                remaining = remaining.Slice(count);
+                            }
+                            finally { bytePool.Return(tmpArr); }
+                        }
+                        break;
                     }
 
                 case EtfTokenType.Binary:
                     {
-                        if (typeof(T) != typeof(byte))
-                            return false;
                         if (remaining.Length < 5)
                             return false;
 
                         remaining = remaining.Slice(1);
-                        uint length = BinaryPrimitives.ReadUInt32BigEndian(remaining);
-                        if (length > int.MaxValue || remaining.Length < length + 4U)
+                        uint count = BinaryPrimitives.ReadUInt32BigEndian(remaining);
+                        if (count > int.MaxValue || remaining.Length < count + 4U)
                             return false;
                         remaining = remaining.Slice(4);
 
-                        result = new T[length];
-                        remaining.Slice(4, (int)length).CopyTo((result as byte[]).AsSpan());
-                        remaining = remaining.Slice((int)length);
-                        return true;
+                        // String optimizes away the per-item header, but our item readers depend on them.
+                        // Unfortunately this means we need to inject a header
+                        // In the case of reading a byte[] however, we can do a direct copy
+                        if (typeof(T) == typeof(byte))
+                        {
+                            result = new T[count];
+                            remaining.Slice(0, (int)count).CopyTo((result as byte[]).AsSpan());
+                            remaining = remaining.Slice((int)count);
+                        }
+                        else
+                        {
+                            var tmpArr = bytePool.Rent(2);
+                            try
+                            {
+                                tmpArr[0] = (byte)EtfTokenType.SmallInteger;
+                                result = new T[count];
+                                for (int i = 0; i < count; i++, resultCount++)
+                                {
+                                    tmpArr[1] = remaining[i];
+                                    var span = new ReadOnlySpan<byte>(tmpArr, 0, 2);
+                                    if (!innerConverter.TryRead(ref span, out result[resultCount], propMap))
+                                    {
+                                        if (propMap?.IgnoreErrors == true)
+                                        {
+                                            serializer.RaiseFailedProperty(propMap, i);
+                                            resultCount--;
+                                        }
+                                        else
+                                            return false;
+                                    }
+                                }
+                                remaining = remaining.Slice((int)count);
+                            }
+                            finally { bytePool.Return(tmpArr); }
+                        }
+                        break;
                     }
                 default:
                     return false;
             }
+
+            // Resize array if any elements failed
+            if (resultCount != result.Length)
+                Array.Resize(ref result, resultCount);
+            return true;
         }
     }
 }
