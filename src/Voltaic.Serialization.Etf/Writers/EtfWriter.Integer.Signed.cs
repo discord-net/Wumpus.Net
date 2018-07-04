@@ -13,9 +13,17 @@ namespace Voltaic.Serialization.Etf
                 if (/*value <= byte.MaxValue &&*/ value >= byte.MinValue)
                     return TryWrite(ref writer, (byte)value, standardFormat);
 
-                writer.Push((byte)EtfTokenType.Integer);
-                BinaryPrimitives.WriteInt32BigEndian(writer.GetSpan(4), value);
-                writer.Advance(4);
+                if (value >= 0)
+                {
+                    writer.Push((byte)EtfTokenType.SmallInteger);
+                    writer.Push((byte)value);
+                }
+                else
+                {
+                    writer.Push((byte)EtfTokenType.Integer);
+                    BinaryPrimitives.WriteInt32BigEndian(writer.GetSpan(4), value);
+                    writer.Advance(4);
+                }
             }
             else
             {
@@ -112,7 +120,10 @@ namespace Voltaic.Serialization.Etf
                 else
                 {
                     writer.Push(1);
-                    BinaryPrimitives.WriteUInt64LittleEndian(writer.GetSpan(8), (ulong)value & 0x7FFFFFFFFFFFFFFF);
+                    if (value == long.MinValue)
+                        BinaryPrimitives.WriteUInt64LittleEndian(writer.GetSpan(8), 9223372036854775808);
+                    else
+                        BinaryPrimitives.WriteUInt64LittleEndian(writer.GetSpan(8), (ulong)-value);
                 }
                 writer.Advance(8);
             }

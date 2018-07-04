@@ -103,8 +103,8 @@ namespace Voltaic.Serialization.Etf.Tests
             => CreateTests(TestType.Read, value, expectedValue);
         public static IEnumerable<object[]> CreateTests<T>(TestType type, int[] value, T expectedValue)
         {
-            byte[] data = value.Cast<byte>().SelectMany(x => new byte[] { 0x61, x }).ToArray();
-            byte[] stringData = value.Cast<byte>().ToArray();
+            byte[] data = value.Select(x => (byte)x).SelectMany(x => new byte[] { 0x61, x }).ToArray();
+            byte[] stringData = value.Select(x => (byte)x).ToArray();
 
             if (value.Length <= byte.MaxValue)
             {

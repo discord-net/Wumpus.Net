@@ -1,4 +1,5 @@
-﻿using System.Buffers.Binary;
+﻿using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Linq;
 using Voltaic.Serialization.Utf8.Tests;
@@ -12,9 +13,12 @@ namespace Voltaic.Serialization.Etf.Tests
         {
             FailRead(EtfTokenType.SmallBig, new byte[] { 0x01, 0x01, 0x01 }); // Min - 1
             FailRead(EtfTokenType.LargeBig, new byte[] { 0x00, 0x00, 0x00, 0x01, 0x01, 0x01 }); // Min - 1
-            foreach (var x in UnsignedIntHelpers.ReadWrites<byte>(0, 0)) yield return x;
-            foreach (var x in UnsignedIntHelpers.ReadWrites<byte>(255, 255)) yield return x; // Max
+            foreach (var x in UnsignedIntHelpers.Reads<byte>(0, 0)) yield return x;
+            foreach (var x in UnsignedIntHelpers.Reads<byte>(255, 255)) yield return x; // Max
             foreach (var x in UnsignedIntHelpers.FailReads<byte>(256)) ; // Max + 1
+
+            yield return Write(EtfTokenType.SmallInteger, new byte[] { 0x00 }, 0);
+            yield return Write(EtfTokenType.SmallInteger, new byte[] { 0xFF }, 255);
         }
         public static IEnumerable<object[]> GetDData() => TextToBinary(Utf8.Tests.ByteTests.GetDData());
         public static IEnumerable<object[]> GetNData() => TextToBinary(Utf8.Tests.ByteTests.GetNData());
@@ -40,9 +44,12 @@ namespace Voltaic.Serialization.Etf.Tests
         {
             FailRead(EtfTokenType.SmallBig, new byte[] { 0x01, 0x01, 0x01 }); // Min - 1
             FailRead(EtfTokenType.LargeBig, new byte[] { 0x00, 0x00, 0x00, 0x01, 0x01, 0x01 }); // Min - 1
-            foreach (var x in UnsignedIntHelpers.ReadWrites<ushort>(0, 0)) yield return x;
-            foreach (var x in UnsignedIntHelpers.ReadWrites<ushort>(65535, 65535)) yield return x; // Max
+            foreach (var x in UnsignedIntHelpers.Reads<ushort>(0, 0)) yield return x;
+            foreach (var x in UnsignedIntHelpers.Reads<ushort>(65535, 65535)) yield return x; // Max
             foreach (var x in UnsignedIntHelpers.FailReads<ushort>(65536)) ; // Max + 1
+            
+            yield return Write(EtfTokenType.SmallInteger, new byte[] { 0x00 }, 0);
+            yield return Write(EtfTokenType.Integer, new byte[] { 0x00, 0x00, 0xFF, 0xFF }, 65535);
         }
         public static IEnumerable<object[]> GetDData() => TextToBinary(Utf8.Tests.UInt16Tests.GetDData());
         public static IEnumerable<object[]> GetNData() => TextToBinary(Utf8.Tests.UInt16Tests.GetNData());
@@ -68,9 +75,13 @@ namespace Voltaic.Serialization.Etf.Tests
         {
             FailRead(EtfTokenType.SmallBig, new byte[] { 0x01, 0x01, 0x01 }); // Min - 1
             FailRead(EtfTokenType.LargeBig, new byte[] { 0x00, 0x00, 0x00, 0x01, 0x01, 0x01 }); // Min - 1
-            foreach (var x in UnsignedIntHelpers.ReadWrites<uint>(0, 0)) yield return x;
-            foreach (var x in UnsignedIntHelpers.ReadWrites<uint>(4294967295, 4294967295)) yield return x; // Max
+            foreach (var x in UnsignedIntHelpers.Reads<uint>(0, 0)) yield return x;
+            foreach (var x in UnsignedIntHelpers.Reads<uint>(4294967295, 4294967295)) yield return x; // Max
             foreach (var x in UnsignedIntHelpers.FailReads<uint>(4294967296)) ; // Max + 1
+
+            yield return Write(EtfTokenType.SmallInteger, new byte[] { 0x00 }, 0);
+            yield return Write(EtfTokenType.Integer, new byte[] { 0x7F, 0xFF, 0xFF, 0xFF }, 2147483647);
+            yield return Write(EtfTokenType.SmallBig, new byte[] { 0x04, 0x00, 0xFF, 0xFF, 0xFF, 0xFF }, 4294967295);
         }
         public static IEnumerable<object[]> GetDData() => TextToBinary(Utf8.Tests.UInt32Tests.GetDData());
         public static IEnumerable<object[]> GetNData() => TextToBinary(Utf8.Tests.UInt32Tests.GetNData());
@@ -96,9 +107,12 @@ namespace Voltaic.Serialization.Etf.Tests
         {
             FailRead(EtfTokenType.SmallBig, new byte[] { 0x01, 0x01, 0x01 }); // Min - 1
             FailRead(EtfTokenType.LargeBig, new byte[] { 0x00, 0x00, 0x00, 0x01, 0x01, 0x01 }); // Min - 1
-            foreach (var x in UnsignedIntHelpers.ReadWrites<ulong>(0, 0)) yield return x;
-            foreach (var x in UnsignedIntHelpers.ReadWrites<ulong>(18446744073709551615, 18446744073709551615)) yield return x; // Max
+            foreach (var x in UnsignedIntHelpers.Reads<ulong>(0, 0)) yield return x;
+            foreach (var x in UnsignedIntHelpers.Reads<ulong>(18446744073709551615, 18446744073709551615)) yield return x; // Max
             FailRead(EtfTokenType.LargeBig, new byte[] { 0x00, 0x00, 0x00, 0x09, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }); // Max + 1
+
+            yield return Write(EtfTokenType.SmallInteger, new byte[] { 0x00 }, 0);
+            yield return Write(EtfTokenType.SmallBig, new byte[] { 0x08, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }, 18446744073709551615);
         }
         public static IEnumerable<object[]> GetDData() => TextToBinary(Utf8.Tests.UInt64Tests.GetDData());
         public static IEnumerable<object[]> GetNData() => TextToBinary(Utf8.Tests.UInt64Tests.GetNData());
@@ -121,9 +135,9 @@ namespace Voltaic.Serialization.Etf.Tests
     internal class UnsignedIntHelpers
     {
         public static IEnumerable<object[]> FailReads<T>(ulong value)
-            => CreateTests(TestType.ReadWrite, value, default(T));
-        public static IEnumerable<object[]> ReadWrites<T>(ulong value, T expectedValue)
-            => CreateTests(TestType.ReadWrite, value, expectedValue);
+            => CreateTests(TestType.FailRead, value, default(T));
+        public static IEnumerable<object[]> Reads<T>(ulong value, T expectedValue)
+            => CreateTests(TestType.Read, value, expectedValue);
         public static IEnumerable<object[]> CreateTests<T>(TestType type, ulong value, T expectedValue)
         {
             if (value <= byte.MaxValue)
@@ -133,36 +147,42 @@ namespace Voltaic.Serialization.Etf.Tests
                 yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.SmallBig, new byte[] { 0x01, 0x00 }.Concat(byteValue), expectedValue) };
                 yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.LargeBig, new byte[] { 0x00, 0x00, 0x00, 0x01, 0x00 }.Concat(byteValue), expectedValue) };
             }
-            if (value <= (ushort)short.MaxValue)
-            {
-                var shortValue = new byte[2];
-                BinaryPrimitives.WriteInt16BigEndian(shortValue, (short)value);
-                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.Integer, shortValue, expectedValue) };
-            }
             if (value <= ushort.MaxValue)
             {
-                var ushortValue = new byte[2];
-                BinaryPrimitives.WriteUInt16BigEndian(ushortValue, (ushort)value);
-                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.SmallBig, new byte[] { 0x02, 0x00 }.Concat(ushortValue), expectedValue) };
-                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.LargeBig, new byte[] { 0x00, 0x00, 0x00, 0x02, 0x00 }.Concat(ushortValue), expectedValue) };
+                var ushortValueBe = new byte[2];
+                var ushortValueLe = new byte[2];
+                BinaryPrimitives.WriteUInt16BigEndian(ushortValueBe, (ushort)value);
+                BinaryPrimitives.WriteUInt16LittleEndian(ushortValueLe, (ushort)value);
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.SmallBig, new byte[] { 0x02, 0x00 }.Concat(ushortValueLe), expectedValue) };
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.LargeBig, new byte[] { 0x00, 0x00, 0x00, 0x02, 0x00 }.Concat(ushortValueLe), expectedValue) };
+            }
+            if (value <= int.MaxValue)
+            {
+                var shortValueBe = new byte[4];
+                BinaryPrimitives.WriteInt32BigEndian(shortValueBe, (int)value);
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.Integer, shortValueBe, expectedValue) };
             }
             if (value <= uint.MaxValue)
             {
-                var uintValue = new byte[4];
-                BinaryPrimitives.WriteUInt32BigEndian(uintValue, (uint)value);
-                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.SmallBig, new byte[] { 0x04, 0x00 }.Concat(uintValue), expectedValue) };
-                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.LargeBig, new byte[] { 0x00, 0x00, 0x00, 0x04, 0x00 }.Concat(uintValue), expectedValue) };
+                var uintValueBe = new byte[4];
+                var uintValueLe = new byte[4];
+                BinaryPrimitives.WriteUInt32BigEndian(uintValueBe, (uint)value);
+                BinaryPrimitives.WriteUInt32LittleEndian(uintValueLe, (uint)value);
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.SmallBig, new byte[] { 0x04, 0x00 }.Concat(uintValueLe), expectedValue) };
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.LargeBig, new byte[] { 0x00, 0x00, 0x00, 0x04, 0x00 }.Concat(uintValueLe), expectedValue) };
 
                 // Test non-standard integer sizes
-                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.SmallBig, new byte[] { 0x07, 0x00, 0x00, 0x00, 0x00 }.Concat(uintValue), expectedValue) };
-                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.LargeBig, new byte[] { 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00, 0x00 }.Concat(uintValue), expectedValue) };
+                var uint56ValueLe = new byte[7];
+                BinaryPrimitives.WriteUInt32LittleEndian(uint56ValueLe, (uint)value);
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.SmallBig, new byte[] { 0x07, 0x00 }.Concat(uint56ValueLe), expectedValue) };
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.LargeBig, new byte[] { 0x00, 0x00, 0x00, 0x07, 0x00 }.Concat(uint56ValueLe), expectedValue) };
             }
             // if (value <= ulong.MaxValue)
             {
-                var ulongValue = new byte[8];
-                BinaryPrimitives.WriteUInt64BigEndian(ulongValue, value);
-                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.SmallBig, new byte[] { 0x08, 0x00 }.Concat(ulongValue), expectedValue) };
-                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.LargeBig, new byte[] { 0x00, 0x00, 0x00, 0x08, 0x00 }.Concat(ulongValue), expectedValue) };
+                var ulongValueLe = new byte[8];
+                BinaryPrimitives.WriteUInt64LittleEndian(ulongValueLe, value);
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.SmallBig, new byte[] { 0x08, 0x00 }.Concat(ulongValueLe), expectedValue) };
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.LargeBig, new byte[] { 0x00, 0x00, 0x00, 0x08, 0x00 }.Concat(ulongValueLe), expectedValue) };
             }
         }
     }

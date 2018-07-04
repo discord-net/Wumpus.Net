@@ -70,10 +70,10 @@ namespace Voltaic.Serialization.Etf
                     return TryWrite(ref writer, (int)value, standardFormat);
 
                 writer.Push((byte)EtfTokenType.SmallBig);
-                writer.Push(8);
+                writer.Push(4);
                 writer.Push(0);
-                BinaryPrimitives.WriteUInt64LittleEndian(writer.GetSpan(8), value);
-                writer.Advance(8);
+                BinaryPrimitives.WriteUInt32LittleEndian(writer.GetSpan(8), value);
+                writer.Advance(4);
             }
             else
             {

@@ -111,8 +111,8 @@ namespace Voltaic.Serialization.Etf
                             return false;
                         if (bytes > int.MaxValue)
                             return false; // TODO: Spans dont allow uint accessors
-                        bool isPositive = remaining[2] == 0;
-                        remaining = remaining.Slice(6);
+                        bool isPositive = remaining[4] == 0;
+                        remaining = remaining.Slice(5);
                         return TryReadUnsignedBigNumber((int)bytes, isPositive, ref remaining, out result);
                     }
                 default:
@@ -129,7 +129,7 @@ namespace Voltaic.Serialization.Etf
             {
                 case 1:
                     {
-                        result = remaining[3];
+                        result = remaining[0];
                         remaining = remaining.Slice(1);
                         return true;
                     }

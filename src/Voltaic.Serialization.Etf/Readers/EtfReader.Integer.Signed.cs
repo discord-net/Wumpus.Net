@@ -108,8 +108,8 @@ namespace Voltaic.Serialization.Etf
                             return false;
                         if (bytes > int.MaxValue)
                             return false; // TODO: Spans dont allow uint accessors
-                        bool isPositive = remaining[2] == 0;
-                        remaining = remaining.Slice(6);
+                        bool isPositive = remaining[4] == 0;
+                        remaining = remaining.Slice(5);
                         return TryReadSignedBigNumber((int)bytes, isPositive, ref remaining, out result);
                     }
                 default:
@@ -124,7 +124,7 @@ namespace Voltaic.Serialization.Etf
             {
                 case 1:
                     {
-                        result = remaining[3];
+                        result = remaining[0];
                         if (!isPositive)
                             result = -result;
                         remaining = remaining.Slice(1);
@@ -149,6 +149,8 @@ namespace Voltaic.Serialization.Etf
                 case 8:
                     {
                         ulong unsignedResult = BinaryPrimitives.ReadUInt64LittleEndian(remaining);
+                        remaining = remaining.Slice(8);
+
                         if (isPositive)
                         {
                             if (unsignedResult > long.MaxValue)
@@ -162,9 +164,8 @@ namespace Voltaic.Serialization.Etf
                             else if (unsignedResult == long.MaxValue + 1UL)
                                 result = long.MinValue;
                             else
-                                result = (long)unsignedResult;
+                                result = -(long)unsignedResult;
                         }
-                        remaining = remaining.Slice(8);
                         return true;
                     }
                 default:
@@ -175,6 +176,8 @@ namespace Voltaic.Serialization.Etf
                         ulong multiplier = 1;
                         for (int i = 0; i < bytes; i++, multiplier *= 256)
                             unsignedResult += remaining[i] * multiplier;
+                        remaining = remaining.Slice(bytes);
+
                         if (isPositive)
                         {
                             if (unsignedResult > long.MaxValue)
@@ -188,9 +191,8 @@ namespace Voltaic.Serialization.Etf
                             else if (unsignedResult == long.MaxValue + 1UL)
                                 result = long.MinValue;
                             else
-                                result = (long)unsignedResult;
+                                result = -(long)unsignedResult;
                         }
-                        remaining = remaining.Slice(bytes);
                         return true;
                     }
             }
