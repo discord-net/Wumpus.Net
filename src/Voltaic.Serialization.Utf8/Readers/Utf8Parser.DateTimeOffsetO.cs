@@ -170,6 +170,8 @@ namespace Voltaic.Serialization.Utf8
                     kind = default;
                     return false;
                 }
+                for (int i = fractionDigits; i < 7; i++)
+                    fraction *= 10;
                 source = source.Slice(fractionDigits);
                 fractionDigits++;
             }
