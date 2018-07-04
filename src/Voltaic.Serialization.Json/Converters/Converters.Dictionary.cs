@@ -15,8 +15,8 @@ namespace Voltaic.Serialization.Json
             _pool = pool;
         }
 
-        public override bool CanWrite(Dictionary<string, T> value, PropertyMap propMap)
-            => (!propMap.ExcludeNull && !propMap.ExcludeDefault) || value != null;
+        public override bool CanWrite(Dictionary<string, T> value, PropertyMap propMap = null)
+            => propMap == null || (!propMap.ExcludeNull && !propMap.ExcludeDefault) || value != null;
 
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out Dictionary<string, T> result, PropertyMap propMap = null)
         {

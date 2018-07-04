@@ -11,7 +11,7 @@ namespace Voltaic.Serialization.Etf
             _innerConverter = innerConverter;
         }
 
-        public override bool CanWrite(Optional<T> value, PropertyMap propMap)
+        public override bool CanWrite(Optional<T> value, PropertyMap propMap = null)
             => value.IsSpecified && _innerConverter.CanWrite(value.Value, propMap);
 
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out Optional<T> result, PropertyMap propMap = null)

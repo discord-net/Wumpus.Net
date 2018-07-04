@@ -12,8 +12,8 @@ namespace Voltaic.Serialization.Json
             _innerConverter = innerConverter;
         }
 
-        public override bool CanWrite(T? value, PropertyMap propMap)
-            => (!propMap.ExcludeNull || value != null) && (!value.HasValue || _innerConverter.CanWrite(value.Value, propMap));
+        public override bool CanWrite(T? value, PropertyMap propMap = null)
+            => propMap == null || (!propMap.ExcludeNull || value != null) && (!value.HasValue || _innerConverter.CanWrite(value.Value, propMap));
 
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out T? result, PropertyMap propMap = null)
         {

@@ -18,8 +18,8 @@ namespace Voltaic.Serialization.Etf
             _pool = pool;
         }
 
-        public override bool CanWrite(T[] value, PropertyMap propMap)
-            => (!propMap.ExcludeNull && !propMap.ExcludeDefault) || value != null;
+        public override bool CanWrite(T[] value, PropertyMap propMap = null)
+            => propMap == null || (!propMap.ExcludeNull && !propMap.ExcludeDefault) || value != null;
 
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out T[] result, PropertyMap propMap = null)
         {
@@ -41,16 +41,8 @@ namespace Voltaic.Serialization.Etf
                 return EtfWriter.TryWriteNull(ref writer);
 
             var start = writer.Length;
-            if (value.Length < 256)
-            {
-                writer.Push((byte)EtfTokenType.SmallTuple);
-                writer.Advance(1);
-            }
-            else
-            {
-                writer.Push((byte)EtfTokenType.LargeTuple);
-                writer.Advance(4);
-            }
+            writer.Push((byte)EtfTokenType.List);
+            writer.Advance(4);
 
             uint count = 0;
             for (int i = 0; i < value.Length; i++)
@@ -61,16 +53,13 @@ namespace Voltaic.Serialization.Etf
                     return false;
                 count++;
             }
+            
+            writer.Array[start + 1] = (byte)(count >> 24);
+            writer.Array[start + 2] = (byte)(count >> 16);
+            writer.Array[start + 3] = (byte)(count >> 8);
+            writer.Array[start + 4] = (byte)count;
 
-            if (value.Length < 256)
-                writer.Array[start + 1] = (byte)count;
-            else
-            {
-                writer.Array[start + 1] = (byte)(count >> 24);
-                writer.Array[start + 2] = (byte)(count >> 16);
-                writer.Array[start + 3] = (byte)(count >> 8);
-                writer.Array[start + 4] = (byte)count;
-            }
+            writer.Push((byte)EtfTokenType.Nil); // Tail
             return true;
         }
     }
@@ -88,8 +77,8 @@ namespace Voltaic.Serialization.Etf
             _pool = pool;
         }
 
-        public override bool CanWrite(List<T> value, PropertyMap propMap)
-            => (!propMap.ExcludeNull && !propMap.ExcludeDefault) || value != null;
+        public override bool CanWrite(List<T> value, PropertyMap propMap = null)
+            => propMap == null || (!propMap.ExcludeNull && !propMap.ExcludeDefault) || value != null;
 
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out List<T> result, PropertyMap propMap = null)
         {
@@ -114,16 +103,8 @@ namespace Voltaic.Serialization.Etf
                 return EtfWriter.TryWriteNull(ref writer);
 
             var start = writer.Length;
-            if (value.Count < 256)
-            {
-                writer.Push((byte)EtfTokenType.SmallTuple);
-                writer.Advance(1);
-            }
-            else
-            {
-                writer.Push((byte)EtfTokenType.LargeTuple);
-                writer.Advance(4);
-            }
+            writer.Push((byte)EtfTokenType.List);
+            writer.Advance(4);
 
             uint count = 0;
             for (int i = 0; i < value.Count; i++)
@@ -134,16 +115,13 @@ namespace Voltaic.Serialization.Etf
                     return false;
                 count++;
             }
+            
+            writer.Array[start + 1] = (byte)(count >> 24);
+            writer.Array[start + 2] = (byte)(count >> 16);
+            writer.Array[start + 3] = (byte)(count >> 8);
+            writer.Array[start + 4] = (byte)count;
 
-            if (value.Count < 256)
-                writer.Array[start + 1] = (byte)count;
-            else
-            {
-                writer.Array[start + 1] = (byte)(count >> 24);
-                writer.Array[start + 2] = (byte)(count >> 16);
-                writer.Array[start + 3] = (byte)(count >> 8);
-                writer.Array[start + 4] = (byte)count;
-            }
+            writer.Push((byte)EtfTokenType.Nil); // Tail
             return true;
         }
     }
@@ -274,6 +252,9 @@ namespace Voltaic.Serialization.Etf
                         ushort count = BinaryPrimitives.ReadUInt16BigEndian(remaining);
                         remaining = remaining.Slice(2);
 
+                        if (remaining.Length < count)
+                            return false;
+
                         // String optimizes away the per-item header, but our item readers depend on them.
                         // Unfortunately this means we need to inject a header
                         // In the case of reading a byte[] however, we can do a direct copy
@@ -322,6 +303,9 @@ namespace Voltaic.Serialization.Etf
                         if (count > int.MaxValue || remaining.Length < count + 4U)
                             return false;
                         remaining = remaining.Slice(4);
+
+                        if (remaining.Length < count)
+                            return false;
 
                         // String optimizes away the per-item header, but our item readers depend on them.
                         // Unfortunately this means we need to inject a header

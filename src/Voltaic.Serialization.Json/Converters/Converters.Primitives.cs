@@ -10,8 +10,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = format;
         }
-        public override bool CanWrite(bool value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(bool value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out bool result, PropertyMap propMap = null)
             => JsonReader.TryReadBoolean(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, bool value, PropertyMap propMap = null)
@@ -26,8 +26,8 @@ namespace Voltaic.Serialization.Json
             // Offsets using the default parser has unpredictable behavior with trailing data. Since it's ignored anyway, default to no offsets (G).
             _format = !format.IsDefault ? format : 'G';
         }
-        public override bool CanWrite(DateTime value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(DateTime value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out DateTime result, PropertyMap propMap = null)
             => JsonReader.TryReadDateTime(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, DateTime value, PropertyMap propMap = null)
@@ -41,8 +41,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = format;
         }
-        public override bool CanWrite(DateTimeOffset value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(DateTimeOffset value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out DateTimeOffset result, PropertyMap propMap = null)
             => JsonReader.TryReadDateTimeOffset(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, DateTimeOffset value, PropertyMap propMap = null)
@@ -56,8 +56,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = format;
         }
-        public override bool CanWrite(TimeSpan value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(TimeSpan value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out TimeSpan result, PropertyMap propMap = null)
             => JsonReader.TryReadTimeSpan(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, TimeSpan value, PropertyMap propMap = null)
@@ -71,8 +71,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = format;
         }
-        public override bool CanWrite(float value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(float value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out float result, PropertyMap propMap = null)
             => JsonReader.TryReadSingle(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, float value, PropertyMap propMap = null)
@@ -86,8 +86,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = format;
         }
-        public override bool CanWrite(double value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(double value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out double result, PropertyMap propMap = null)
             => JsonReader.TryReadDouble(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, double value, PropertyMap propMap = null)
@@ -101,8 +101,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = format;
         }
-        public override bool CanWrite(decimal value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(decimal value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out decimal result, PropertyMap propMap = null)
             => JsonReader.TryReadDecimal(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, decimal value, PropertyMap propMap = null)
@@ -116,8 +116,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = format;
         }
-        public override bool CanWrite(Guid value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(Guid value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out Guid result, PropertyMap propMap = null)
             => JsonReader.TryReadGuid(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, Guid value, PropertyMap propMap = null)
@@ -131,8 +131,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = format;
         }
-        public override bool CanWrite(sbyte value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(sbyte value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out sbyte result, PropertyMap propMap = null)
             => JsonReader.TryReadInt8(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, sbyte value, PropertyMap propMap = null)
@@ -146,8 +146,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = format;
         }
-        public override bool CanWrite(short value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(short value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out short result, PropertyMap propMap = null)
             => JsonReader.TryReadInt16(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, short value, PropertyMap propMap = null)
@@ -161,8 +161,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = format;
         }
-        public override bool CanWrite(int value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(int value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out int result, PropertyMap propMap = null)
             => JsonReader.TryReadInt32(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, int value, PropertyMap propMap = null)
@@ -176,8 +176,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = format;
         }
-        public override bool CanWrite(long value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(long value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out long result, PropertyMap propMap = null)
             => JsonReader.TryReadInt64(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, long value, PropertyMap propMap = null)
@@ -191,8 +191,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = !format.IsDefault ? format : JsonSerializer.IntFormat; // Adds quotes
         }
-        public override bool CanWrite(long value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(long value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out long result, PropertyMap propMap = null)
             => JsonReader.TryReadInt64(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, long value, PropertyMap propMap = null)
@@ -206,8 +206,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = format;
         }
-        public override bool CanWrite(byte value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(byte value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out byte result, PropertyMap propMap = null)
             => JsonReader.TryReadUInt8(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, byte value, PropertyMap propMap = null)
@@ -221,8 +221,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = format;
         }
-        public override bool CanWrite(ushort value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(ushort value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out ushort result, PropertyMap propMap = null)
             => JsonReader.TryReadUInt16(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, ushort value, PropertyMap propMap = null)
@@ -236,8 +236,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = format;
         }
-        public override bool CanWrite(uint value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(uint value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out uint result, PropertyMap propMap = null)
             => JsonReader.TryReadUInt32(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, uint value, PropertyMap propMap = null)
@@ -251,8 +251,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = format;
         }
-        public override bool CanWrite(ulong value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(ulong value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out ulong result, PropertyMap propMap = null)
             => JsonReader.TryReadUInt64(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, ulong value, PropertyMap propMap = null)
@@ -266,8 +266,8 @@ namespace Voltaic.Serialization.Json
         {
             _format = !format.IsDefault ? format : JsonSerializer.IntFormat; // Adds quotes
         }
-        public override bool CanWrite(ulong value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(ulong value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out ulong result, PropertyMap propMap = null)
             => JsonReader.TryReadUInt64(ref remaining, out result, _format.Symbol);
         public override bool TryWrite(ref ResizableMemory<byte> writer, ulong value, PropertyMap propMap = null)
@@ -276,8 +276,8 @@ namespace Voltaic.Serialization.Json
 
     public class CharJsonConverter : ValueConverter<char>
     {
-        public override bool CanWrite(char value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || value != default;
+        public override bool CanWrite(char value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || value != default;
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out char result, PropertyMap propMap = null)
             => JsonReader.TryReadChar(ref remaining, out result);
         public override bool TryWrite(ref ResizableMemory<byte> writer, char value, PropertyMap propMap = null)
@@ -286,8 +286,8 @@ namespace Voltaic.Serialization.Json
 
     public class StringJsonConverter : ValueConverter<string>
     {
-        public override bool CanWrite(string value, PropertyMap propMap)
-            => (!propMap.ExcludeDefault && !propMap.ExcludeNull) || !(value is null);
+        public override bool CanWrite(string value, PropertyMap propMa = nullp)
+            => propMap == null || (!propMap.ExcludeDefault && !propMap.ExcludeNull) || !(value is null);
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out string result, PropertyMap propMap = null)
         {
             switch (JsonReader.GetTokenType(ref remaining))
@@ -311,8 +311,8 @@ namespace Voltaic.Serialization.Json
 
     public class Utf8StringJsonConverter : ValueConverter<Utf8String>
     {
-        public override bool CanWrite(Utf8String value, PropertyMap propMap)
-            => (!propMap.ExcludeDefault && !propMap.ExcludeNull) || !(value is null);
+        public override bool CanWrite(Utf8String value, PropertyMap propMap = null)
+            => propMap == null || (!propMap.ExcludeDefault && !propMap.ExcludeNull) || !(value is null);
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out Utf8String result, PropertyMap propMap = null)
         {
             switch (JsonReader.GetTokenType(ref remaining))

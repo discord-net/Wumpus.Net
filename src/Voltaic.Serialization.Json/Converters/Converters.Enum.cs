@@ -20,8 +20,8 @@ namespace Voltaic.Serialization.Json
                 _valueConverter = new Int64JsonConverter();
         }
 
-        public override bool CanWrite(T value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || _map.ToInt64(value) != default;
+        public override bool CanWrite(T value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || _map.ToInt64(value) != default;
 
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out T result, PropertyMap propMap = null)
         {
@@ -69,8 +69,8 @@ namespace Voltaic.Serialization.Json
                 _valueConverter = new UInt64JsonConverter();
         }
 
-        public override bool CanWrite(T value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || _map.ToInt64(value) != default;
+        public override bool CanWrite(T value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || _map.ToInt64(value) != default;
 
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out T result, PropertyMap propMap = null)
         {
