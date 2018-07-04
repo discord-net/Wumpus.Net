@@ -98,10 +98,10 @@ namespace Voltaic.Serialization.Etf.Tests
     internal class CollectionTests
     {
         public static IEnumerable<object[]> Reads(int[] value)
-            => CreateArrayTests(TestType.Read, value, value);
-        public static IEnumerable<object[]> Reads<TValue>(int[] value, TValue expectedValue)
-            => CreateArrayTests(TestType.Read, value, expectedValue);
-        public static IEnumerable<object[]> CreateArrayTests<TValue>(TestType type, int[] value, TValue expectedValue)
+            => CreateTests(TestType.Read, value, value);
+        public static IEnumerable<object[]> Reads<T>(int[] value, T expectedValue)
+            => CreateTests(TestType.Read, value, expectedValue);
+        public static IEnumerable<object[]> CreateTests<T>(TestType type, int[] value, T expectedValue)
         {
             byte[] data = value.Cast<byte>().SelectMany(x => new byte[] { 0x61, x }).ToArray();
             byte[] stringData = value.Cast<byte>().ToArray();
@@ -109,21 +109,21 @@ namespace Voltaic.Serialization.Etf.Tests
             if (value.Length <= byte.MaxValue)
             {
                 var header = new byte[] { (byte)value.Length };
-                yield return new object[] { new BinaryTestData<TValue>(type, EtfTokenType.SmallTuple, header.Concat(data), expectedValue) };
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.SmallTuple, header.Concat(data), expectedValue) };
             }
             if (value.Length <= ushort.MaxValue)
             {
                 var header = new byte[2];
                 BinaryPrimitives.WriteUInt16BigEndian(header, (ushort)value.Length);
-                yield return new object[] { new BinaryTestData<TValue>(type, EtfTokenType.String, header.Concat(stringData), expectedValue) };
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.String, header.Concat(stringData), expectedValue) };
             }
-            // if (utf8.Length <= uint.MaxValue)
+            // if (value.Length <= uint.MaxValue)
             {
                 var header = new byte[4];
                 BinaryPrimitives.WriteUInt32BigEndian(header, (uint)value.Length);
-                yield return new object[] { new BinaryTestData<TValue>(type, EtfTokenType.Binary, header.Concat(stringData), expectedValue) };
-                yield return new object[] { new BinaryTestData<TValue>(type, EtfTokenType.LargeTuple, header.Concat(data), expectedValue) };
-                yield return new object[] { new BinaryTestData<TValue>(type, EtfTokenType.List, header.Concat(data).Concat(new byte[] { 0x6A }), expectedValue) };
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.Binary, header.Concat(stringData), expectedValue) };
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.LargeTuple, header.Concat(data), expectedValue) };
+                yield return new object[] { new BinaryTestData<T>(type, EtfTokenType.List, header.Concat(data).Concat(new byte[] { 0x6A }), expectedValue) };
             }
         }
     }
