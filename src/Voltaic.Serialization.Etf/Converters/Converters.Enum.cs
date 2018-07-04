@@ -12,9 +12,9 @@ namespace Voltaic.Serialization.Etf
 
         public Int64EnumEtfConverter(Serializer serializer, PropertyInfo propInfo)
         {
+            _map = EnumMap.For<T>();
             _keyConverter = serializer.GetConverter<Utf8String>(propInfo, true);
             _valueConverter = serializer.GetConverter<long>(propInfo, true);
-            _map = EnumMap.For<T>();
         }
 
         public override bool CanWrite(T value, PropertyMap propMap)
@@ -58,9 +58,9 @@ namespace Voltaic.Serialization.Etf
 
         public UInt64EnumEtfConverter(Serializer serializer, PropertyInfo propInfo)
         {
+            _map = EnumMap.For<T>();
             _keyConverter = serializer.GetConverter<Utf8String>(propInfo, true);
             _valueConverter = serializer.GetConverter<ulong>(propInfo, true);
-            _map = EnumMap.For<T>();
         }
 
         public override bool CanWrite(T value, PropertyMap propMap)

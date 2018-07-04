@@ -19,6 +19,7 @@ namespace Voltaic.Serialization
 
         public bool IsStringEnum { get; } = typeof(T).GetTypeInfo().GetCustomAttribute<ModelStringEnumAttribute>() != null;
         public bool IsFlagsEnum { get; } = typeof(T).GetTypeInfo().GetCustomAttribute<FlagsAttribute>() != null;
+        public ulong MaxValue { get; }
 
         private readonly Dictionary<string, T> _keyToValue;
         private readonly MemoryDictionary<T> _utf8KeyToValue;
@@ -94,6 +95,8 @@ namespace Voltaic.Serialization
 
                 _intToValue.Add(baseVal, val);
                 _valueToInt.Add(val, baseVal);
+                if (baseVal > 0 && (ulong)baseVal > MaxValue)
+                    MaxValue = (ulong)baseVal;
             }
         }
 
