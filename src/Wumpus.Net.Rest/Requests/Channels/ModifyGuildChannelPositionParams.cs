@@ -2,13 +2,13 @@
 
 namespace Wumpus.Requests
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/guild#modify-guild-channel-positions-json-params </summary>
     public class ModifyGuildChannelPositionParams
     {
-        /// <summary> xxx </summary>
+        /// <summary> <see cref="Entities.Channel"/> id; </summary>
         [ModelProperty("id")]
         public Snowflake Id { get; }
-        /// <summary> xxx </summary>
+        /// <summary> Sorting position of the <see cref="Entities.Channel"/>. </summary>
         [ModelProperty("position")]
         public int Position { get; }
 

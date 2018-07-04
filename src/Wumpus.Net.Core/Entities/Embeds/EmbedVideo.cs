@@ -3,16 +3,16 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/channel#embed-object-embed-video-structure </summary>
     public class EmbedVideo
     {
-        /// <summary> xxx </summary>
+        /// <summary> Source url of <see cref="EmbedVideo"/>. </summary>
         [ModelProperty("url")]
         public Utf8String Url { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Height of <see cref="EmbedVideo"/>. </summary>
         [ModelProperty("height")]
         public Optional<int> Height { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Width of <see cref="EmbedVideo"/>. </summary>
         [ModelProperty("width")]
         public Optional<int> Width { get; set; }
     }

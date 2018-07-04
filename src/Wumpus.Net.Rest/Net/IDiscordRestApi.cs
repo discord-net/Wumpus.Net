@@ -113,6 +113,8 @@ namespace Wumpus.Net
         [Get("guilds/{guildId}/channels")]
         Task<List<Channel>> GetGuildChannelsAsync([Path] Snowflake guildId);
         [Post("guilds/{guildId}/channels")]
+        Task<Channel> CreateCategoryChannelAsync([Path] Snowflake guildId, [Body] CreateGuildChannelParams args);
+        [Post("guilds/{guildId}/channels")]
         Task<Channel> CreateTextChannelAsync([Path] Snowflake guildId, [Body] CreateTextChannelParams args);
         [Post("guilds/{guildId}/channels")]
         Task<Channel> CreateVoiceChannelAsync([Path] Snowflake guildId, [Body] CreateVoiceChannelParams args);
@@ -185,14 +187,15 @@ namespace Wumpus.Net
         [Get("guilds/{guildId}/webhooks")]
         Task<List<Webhook>> GetGuildWebhooksAsync([Path] Snowflake guildId);
 
+        [Get("guilds/{guildId}/vanity-url")]
+        Task<Invite> GetGuildVanityUrlAsync([Path] Snowflake guildId);
+
         // Invite
 
         [Get("invites/{code}")]
         Task<Invite> GetInviteAsync([Path] Utf8String code);
         [Delete("invites/{code}")]
         Task<Invite> DeleteInviteAsync([Path] Utf8String code);
-        [Post("invites/{code}")]
-        Task<Invite> AcceptInviteAsync([Path] Utf8String code);
 
         // User
 
@@ -246,5 +249,10 @@ namespace Wumpus.Net
         [Post("webhooks/{webhookId}/{webhookToken}")]
         [Header("Authorization", null)]
         Task ExecuteWebhookAsync([Path] Snowflake webhookId, [Path] Utf8String webhookToken, [QueryMap] [Body] ExecuteWebhookParams args);
+
+        // OAuth
+
+        [Get("/oauth2/applications/me")]
+        Task<Application> GetCurrentApplicationAsync();
     }
 }

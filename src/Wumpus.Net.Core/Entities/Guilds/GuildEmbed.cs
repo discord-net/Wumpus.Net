@@ -2,13 +2,13 @@
 
 namespace Wumpus.Entities
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/guild#guild-embed-object </summary>
     public class GuildEmbed
     {
-        /// <summary> xxx </summary>
+        /// <summary> If the <see cref="GuildEmbed"/> is enabled. </summary>
         [ModelProperty("enabled")]
         public bool Enabled { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> The embed <see cref="Channel" /> Id. </summary>
         [ModelProperty("channel_id")]
         public Snowflake ChannelId { get; set; }
     }

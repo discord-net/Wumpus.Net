@@ -1,6 +1,6 @@
 ﻿namespace Wumpus.Entities
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/audit-log#audit-log-entry-object-audit-log-events </summary>
     public enum AuditLogEvent : int
     {
         GuildUpdate = 1,
@@ -28,6 +28,6 @@
         EmojiCreate = 60,
         EmojiUpdate = 61,
         EmojiDelete = 62,
-        MEssageDelete = 72
+        MessageDelete = 72
     }
 }

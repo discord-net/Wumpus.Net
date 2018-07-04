@@ -3,13 +3,10 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Responses
 {
-    /// <summary> xxx </summary>
-    public class GetBotGatewayResponse
+    /// <summary> https://discordapp.com/developers/docs/topics/gateway#get-gateway-bot-example-response </summary>
+    public class GetBotGatewayResponse : GetGatewayResponse
     {
-        /// <summary> xxx </summary>
-        [ModelProperty("url")]
-        public Utf8String Url { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Recommended number of shards to connect with. </summary>
         [ModelProperty("shards")]
         public int Shards { get; set; }
     }

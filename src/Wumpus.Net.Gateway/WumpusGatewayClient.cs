@@ -118,7 +118,27 @@ namespace Wumpus
             {
                 while (!cancelToken.IsCancellationRequested)
                 {
-                    await Task.Delay(1000, cancelToken);
+                    _receiveBuffer.Clear();
+
+                    WebSocketReceiveResult result;
+                    do
+                    {
+                        var buffer = _receiveBuffer.GetSegment(10 * 1024); // 10 KB
+                        result = await _client.ReceiveAsync(buffer, cancelToken);
+                        _receiveBuffer.Advance(result.Count);
+
+                        if (result.CloseStatus != null)
+                        {
+                            if (!string.IsNullOrEmpty(result.CloseStatusDescription))
+                                throw new Exception($"WebSocket was closed: {result.CloseStatus.Value} ({result.CloseStatusDescription})"); // TODO: Exception type?
+                            else
+                                throw new Exception($"WebSocket was closed: {result.CloseStatus.Value}"); // TODO: Exception type?
+                        }
+                    }
+                    while (!result.EndOfMessage);
+
+                    var frame = _serializer.Read<GatewayPayload>(_receiveBuffer.AsReadOnlySpan());
+                    await HandleFrameAsync(frame).ConfigureAwait(false);
                 }
             }
             catch (OperationCanceledException) { } // Ignore
@@ -136,6 +156,22 @@ namespace Wumpus
             }
             catch (OperationCanceledException) { } // Ignore
             catch (Exception) { } // TODO: Log
+        }
+
+        private async Task HandleFrameAsync(GatewayPayload frame)
+        {
+            //switch (frame.Operation)
+            //{
+            //}
+            await Task.CompletedTask;
+        }
+
+        private async Task HandleDispatchEventAsync(GatewayPayload frame)
+        {
+            //switch (frame.DispatchType)
+            //{
+            //}
+            await Task.CompletedTask;
         }
 
         public void Dispose()

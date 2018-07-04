@@ -1,18 +1,29 @@
 ﻿using System.Collections.Generic;
 using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Requests
 {
-    /// <summary> xxx </summary>
+    /// <summary> 
+    ///     Returns the <see cref="Entities.Message"/> for a <see cref="Entities.Channel"/>. If operating on a <see cref="Entities.Guild"/> <see cref="Entities.Channel"/>, this endpoint requires the <see cref="Entities.ChannelPermissions.ViewChannel"/> to be present on the current <see cref="Entities.User"/>.
+    ///     If the current <see cref="Entities.User"/> is missing <see cref="Entities.ChannelPermissions.ReadMessageHistory"> in the <see cref="Entities.Channel"/> then this will return no messages (since they cannot read the message history). 
+    ///     Returns an array of <see cref="Entities.Message"/> objects on success.
+    ///     https://discordapp.com/developers/docs/resources/channel#get-channel-messages 
+    /// </summary>
     public class GetChannelMessagesParams : QueryMap
     {
-        /// <summary> xxx </summary>
+        /// <summary> Get <see cref="Entities.Message"/>s before this id. </summary>
+        [ModelProperty("before")]
         public Optional<Snowflake> Before { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Get <see cref="Entities.Message"/>s around this id. </summary>
+        [ModelProperty("around")]
         public Optional<Snowflake> Around { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Get <see cref="Entities.Message"/>s after this id. </summary>
+        [ModelProperty("after")]
         public Optional<Snowflake> After { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Max number of <see cref="Entities.Message"/>s to return. </summary>
+        /// <remarks> Minimum: 1, Default: 50, Maximum: 100 </remarks>
+        [ModelProperty("limit")]
         public Optional<int> Limit { get; set; }
 
         public override IDictionary<string, object> GetQueryMap()
@@ -32,6 +43,7 @@ namespace Wumpus.Requests
         public void Validate()
         {
             Preconditions.NotNegative(Limit, nameof(Limit));
+            // TODO: Before, Around, After are mutually exclusive
         }
     }
 }

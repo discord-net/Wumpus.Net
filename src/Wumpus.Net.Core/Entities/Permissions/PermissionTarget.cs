@@ -2,7 +2,6 @@
 
 namespace Wumpus.Entities
 {
-    /// <summary> xxx </summary>
     [ModelStringEnum]
     public enum PermissionTarget
     {
