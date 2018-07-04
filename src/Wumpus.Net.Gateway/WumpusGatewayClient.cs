@@ -2,6 +2,7 @@
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Wumpus.Events;
 
 namespace Wumpus
 {
@@ -118,27 +119,7 @@ namespace Wumpus
             {
                 while (!cancelToken.IsCancellationRequested)
                 {
-                    _receiveBuffer.Clear();
-
-                    WebSocketReceiveResult result;
-                    do
-                    {
-                        var buffer = _receiveBuffer.GetSegment(10 * 1024); // 10 KB
-                        result = await _client.ReceiveAsync(buffer, cancelToken);
-                        _receiveBuffer.Advance(result.Count);
-
-                        if (result.CloseStatus != null)
-                        {
-                            if (!string.IsNullOrEmpty(result.CloseStatusDescription))
-                                throw new Exception($"WebSocket was closed: {result.CloseStatus.Value} ({result.CloseStatusDescription})"); // TODO: Exception type?
-                            else
-                                throw new Exception($"WebSocket was closed: {result.CloseStatus.Value}"); // TODO: Exception type?
-                        }
-                    }
-                    while (!result.EndOfMessage);
-
-                    var frame = _serializer.Read<GatewayPayload>(_receiveBuffer.AsReadOnlySpan());
-                    await HandleFrameAsync(frame).ConfigureAwait(false);
+                    await Task.Delay(1000, cancelToken);
                 }
             }
             catch (OperationCanceledException) { } // Ignore
