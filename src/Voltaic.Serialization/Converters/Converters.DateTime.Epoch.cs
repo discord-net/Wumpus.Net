@@ -12,16 +12,16 @@ namespace Voltaic.Serialization
             _type = type;
             _innerConverter = serializer.GetConverter<long>();
         }
-        public override bool CanWrite(DateTime value, PropertyMap propMap)
+        public override bool CanWrite(DateTime value, PropertyMap propMap = null)
         { 
             switch (_type)
             {
                 case EpochType.UnixNanos:
-                    return _innerConverter.CanWrite(value.Ticks * 100);
+                    return _innerConverter.CanWrite(value.Ticks * 100, propMap);
                 case EpochType.UnixMillis:
-                    return _innerConverter.CanWrite(value.Ticks / TimeSpan.TicksPerMillisecond);
+                    return _innerConverter.CanWrite(value.Ticks / TimeSpan.TicksPerMillisecond, propMap);
                 case EpochType.UnixSeconds:
-                    return _innerConverter.CanWrite(value.Ticks / TimeSpan.TicksPerSecond);
+                    return _innerConverter.CanWrite(value.Ticks / TimeSpan.TicksPerSecond, propMap);
             }
             return false;
         }
@@ -69,16 +69,16 @@ namespace Voltaic.Serialization
             _type = type;
             _innerConverter = serializer.GetConverter<long>();
         }
-        public override bool CanWrite(DateTimeOffset value, PropertyMap propMap)
+        public override bool CanWrite(DateTimeOffset value, PropertyMap propMap = null)
         {
             switch (_type)
             {
                 case EpochType.UnixNanos:
-                    return _innerConverter.CanWrite(value.Ticks * 100);
+                    return _innerConverter.CanWrite(value.Ticks * 100, propMap);
                 case EpochType.UnixMillis:
-                    return _innerConverter.CanWrite(value.Ticks / TimeSpan.TicksPerMillisecond);
+                    return _innerConverter.CanWrite(value.Ticks / TimeSpan.TicksPerMillisecond, propMap);
                 case EpochType.UnixSeconds:
-                    return _innerConverter.CanWrite(value.Ticks / TimeSpan.TicksPerSecond);
+                    return _innerConverter.CanWrite(value.Ticks / TimeSpan.TicksPerSecond, propMap);
             }
             return false;
         }
@@ -126,16 +126,16 @@ namespace Voltaic.Serialization
             _type = type;
             _innerConverter = serializer.GetConverter<long>();
         }
-        public override bool CanWrite(TimeSpan value, PropertyMap propMap)
+        public override bool CanWrite(TimeSpan value, PropertyMap propMap = null)
         {
             switch (_type)
             {
                 case EpochType.UnixNanos:
-                    return _innerConverter.CanWrite(value.Ticks * 100);
+                    return _innerConverter.CanWrite(value.Ticks * 100, propMap);
                 case EpochType.UnixMillis:
-                    return _innerConverter.CanWrite(value.Ticks / TimeSpan.TicksPerMillisecond);
+                    return _innerConverter.CanWrite(value.Ticks / TimeSpan.TicksPerMillisecond, propMap);
                 case EpochType.UnixSeconds:
-                    return _innerConverter.CanWrite(value.Ticks / TimeSpan.TicksPerSecond);
+                    return _innerConverter.CanWrite(value.Ticks / TimeSpan.TicksPerSecond, propMap);
             }
             return false;
         }
