@@ -19,6 +19,11 @@ namespace Voltaic.Serialization.Etf
 
             switch (GetTokenType(ref remaining))
             {
+                case EtfTokenType.Float:
+                    // TODO: Untested
+                    var bytes = remaining.Slice(1, 31);
+                    remaining.Slice(32);
+                    return Utf8Reader.TryReadSingle(ref bytes, out result, 'g');
                 case EtfTokenType.NewFloat:
                     {
                         // TODO: Untested, does Discord have any endpoints that accept floats?
@@ -60,6 +65,11 @@ namespace Voltaic.Serialization.Etf
 
             switch (GetTokenType(ref remaining))
             {
+                case EtfTokenType.Float:
+                    // TODO: Untested
+                    var bytes = remaining.Slice(1, 31);
+                    remaining.Slice(32);
+                    return Utf8Reader.TryReadDouble(ref bytes, out result, 'g');
                 case EtfTokenType.NewFloat:
                     {
                         // TODO: Untested, does Discord have any endpoints that accept floats?
