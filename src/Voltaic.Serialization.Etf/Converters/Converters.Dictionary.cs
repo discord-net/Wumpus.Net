@@ -30,7 +30,9 @@ namespace Voltaic.Serialization.Etf
 
             remaining = remaining.Slice(1);
             uint length = BinaryPrimitives.ReadUInt32BigEndian(remaining);
+            remaining = remaining.Slice(4);
 
+            result = new Dictionary<string, T>(); // TODO: We need a resizable dictionary w/ pooling
             for (int i = 0; i < length; i++)
             {
                 if (!EtfReader.TryReadString(ref remaining, out var key))
@@ -39,6 +41,7 @@ namespace Voltaic.Serialization.Etf
                     return false;
                 if (result.ContainsKey(key))
                     return false;
+                result[key] = value;
             }
             return true;
         }
