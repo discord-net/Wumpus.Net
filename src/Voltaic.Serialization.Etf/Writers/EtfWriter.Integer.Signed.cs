@@ -32,9 +32,7 @@ namespace Voltaic.Serialization.Etf
                 writer.Advance(4);
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
-                int length = writer.Length - start;
-                if (length > ushort.MaxValue)
-                    return false;
+                int length = writer.Length - start - 5;
                 writer.Array[start + 1] = (byte)(length >> 24);
                 writer.Array[start + 2] = (byte)(length >> 16);
                 writer.Array[start + 3] = (byte)(length >> 8);
@@ -61,9 +59,7 @@ namespace Voltaic.Serialization.Etf
                 writer.Advance(4);
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
-                int length = writer.Length - start;
-                if (length > ushort.MaxValue)
-                    return false;
+                int length = writer.Length - start - 5;
                 writer.Array[start + 1] = (byte)(length >> 24);
                 writer.Array[start + 2] = (byte)(length >> 16);
                 writer.Array[start + 3] = (byte)(length >> 8);
@@ -90,9 +86,7 @@ namespace Voltaic.Serialization.Etf
                 writer.Advance(4);
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
-                int length = writer.Length - start;
-                if (length > ushort.MaxValue)
-                    return false;
+                int length = writer.Length - start - 5;
                 writer.Array[start + 1] = (byte)(length >> 24);
                 writer.Array[start + 2] = (byte)(length >> 16);
                 writer.Array[start + 3] = (byte)(length >> 8);
@@ -134,9 +128,7 @@ namespace Voltaic.Serialization.Etf
                 writer.Advance(4);
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
-                int length = writer.Length - start;
-                if (length > ushort.MaxValue)
-                    return false;
+                int length = writer.Length - start - 5;
                 writer.Array[start + 1] = (byte)(length >> 24);
                 writer.Array[start + 2] = (byte)(length >> 16);
                 writer.Array[start + 3] = (byte)(length >> 8);
