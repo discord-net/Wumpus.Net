@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,12 +46,14 @@ namespace Voltaic.Serialization.Etf.Tests
                     break;
                 case TestType.Read:
                     Assert.Equal(test.Value, _serializer.Read(test.Bytes, converter), _comparer);
+                    Assert.True(TestSkip(test.Bytes));
                     break;
                 case TestType.Write:
                     Assert.True(test.Bytes.Span.SequenceEqual(_serializer.Write(test.Value, converter).AsReadOnlySpan()));
                     break;
                 case TestType.ReadWrite:
                     Assert.Equal(test.Value, _serializer.Read(test.Bytes, converter), _comparer);
+                    Assert.True(TestSkip(test.Bytes));
                     Assert.True(test.Bytes.Span.SequenceEqual(_serializer.Write(test.Value, converter).AsReadOnlySpan()));
                     break;
             }
@@ -113,6 +116,12 @@ namespace Voltaic.Serialization.Etf.Tests
                 foreach (var x in CreateStringTests(type, textTest.String, textTest.Value))
                     yield return x;
             }
+        }
+
+        private static bool TestSkip(ReadOnlyMemory<byte> bytes)
+        {
+            var span = bytes.Span.Slice(1);
+            return EtfReader.Skip(ref span, out _) && span.Length == 0;
         }
     }
 }

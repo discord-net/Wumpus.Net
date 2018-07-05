@@ -1,4 +1,7 @@
+using System;
+using System.Buffers;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Voltaic.Serialization.Utf8.Tests;
 using Xunit;
 
@@ -28,18 +31,27 @@ namespace Voltaic.Serialization.Json.Tests
                     break;
                 case TestType.Read:
                     Assert.Equal(test.Value, _serializer.ReadUtf16<T>(test.String, converter), _comparer);
+                    Assert.True(TestSkip(test.String));
                     Assert.Equal(test.Value, _serializer.ReadUtf16<T>(' ' + test.String, converter), _comparer);
+                    Assert.True(TestSkip(' ' + test.String));
                     Assert.Equal(test.Value, _serializer.ReadUtf16<T>(test.String + ' ', converter), _comparer);
+                    Assert.True(TestSkip(test.String + ' '));
                     Assert.Equal(test.Value, _serializer.ReadUtf16<T>(' ' + test.String + ' ', converter), _comparer);
+                    Assert.True(TestSkip(' ' + test.String + ' '));
                     break;
                 case TestType.Write:
                     Assert.Equal(test.String, _serializer.WriteUtf16String(test.Value, converter));
+                    Assert.True(TestSkip(test.String));
                     break;
                 case TestType.ReadWrite:
                     Assert.Equal(test.Value, _serializer.ReadUtf16<T>(test.String, converter), _comparer);
+                    Assert.True(TestSkip(test.String));
                     Assert.Equal(test.Value, _serializer.ReadUtf16<T>(' ' + test.String, converter), _comparer);
+                    Assert.True(TestSkip(' ' + test.String));
                     Assert.Equal(test.Value, _serializer.ReadUtf16<T>(test.String + ' ', converter), _comparer);
+                    Assert.True(TestSkip(test.String + ' '));
                     Assert.Equal(test.Value, _serializer.ReadUtf16<T>(' ' + test.String + ' ', converter), _comparer);
+                    Assert.True(TestSkip(' ' + test.String + ' '));
                     Assert.Equal(test.String, _serializer.WriteUtf16String(test.Value, converter));
                     break;
             }
@@ -57,13 +69,17 @@ namespace Voltaic.Serialization.Json.Tests
                     break;
                 case TestType.Read:
                     Assert.Equal(test.Value, _serializer.ReadUtf16<T>('"' + test.String + '"', converter), _comparer);
+                    Assert.True(TestSkip('"' + test.String + '"'));
                     Assert.Equal(test.Value, _serializer.ReadUtf16<T>(" \"" + test.String + "\" ", converter), _comparer);
+                    Assert.True(TestSkip(" \"" + test.String + "\" "));
                     Assert.Throws<SerializationException>(() => _serializer.ReadUtf16<T>('"' + test.String, converter)); // Unclosed quote
                     Assert.Throws<SerializationException>(() => _serializer.ReadUtf16<T>(" \"" + test.String + ' ', converter)); // Unclosed quote
                     break;
                 case TestType.ReadWrite:
                     Assert.Equal(test.Value, _serializer.ReadUtf16<T>('"' + test.String + '"', converter), _comparer);
+                    Assert.True(TestSkip('"' + test.String + '"'));
                     Assert.Equal(test.Value, _serializer.ReadUtf16<T>(" \"" + test.String + "\" ", converter), _comparer);
+                    Assert.True(TestSkip(" \"" + test.String + "\" "));
                     Assert.Throws<SerializationException>(() => _serializer.ReadUtf16<T>('"' + test.String, converter)); // Unclosed quote
                     Assert.Throws<SerializationException>(() => _serializer.ReadUtf16<T>(" \"" + test.String + ' ', converter)); // Unclosed quote
                     if (!onlyReads)
@@ -86,5 +102,17 @@ namespace Voltaic.Serialization.Json.Tests
           => new object[] { new TextTestData<T>(TestType.Write, str, value) };
         public static object[] ReadWrite(string str, T value)
           => new object[] { new TextTestData<T>(TestType.ReadWrite, str, value) };
+
+        private static bool TestSkip(string str)
+        {
+            var utf16Bytes = MemoryMarshal.AsBytes(str.AsSpan());
+            if (Encodings.Utf16.ToUtf8Length(utf16Bytes, out int count) != OperationStatus.Done)
+                throw new SerializationException("Failed to convert to UTF8");
+            var utf8 = new byte[count];
+            if (Encodings.Utf16.ToUtf8(utf16Bytes, utf8.AsSpan(), out _, out _) != OperationStatus.Done)
+                throw new SerializationException("Failed to convert to UTF8");
+            var span = new ReadOnlySpan<byte>(utf8);
+            return JsonReader.Skip(ref span, out _) && span.Length == 0;
+        }
     }
 }
