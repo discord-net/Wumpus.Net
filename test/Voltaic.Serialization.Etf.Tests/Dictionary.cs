@@ -31,13 +31,43 @@ namespace Voltaic.Serialization.Etf.Tests
 
         public static IEnumerable<object[]> GetData()
         {
-            throw new NotImplementedException();
+            yield return ReadWrite(EtfTokenType.SmallAtom, new byte[] { 0x03, 0x6E, 0x69, 0x6C }, null); // nil
+            yield return Read(EtfTokenType.SmallAtomUtf8, new byte[] { 0x03, 0x6E, 0x69, 0x6C }, null); // nil
+            yield return Read(EtfTokenType.Atom, new byte[] { 0x00, 0x03, 0x6E, 0x69, 0x6C }, null); // nil
+            yield return Read(EtfTokenType.AtomUtf8, new byte[] { 0x00, 0x03, 0x6E, 0x69, 0x6C }, null); // nil
+
+            yield return ReadWrite(EtfTokenType.Map, new byte[] { 0x00, 0x00, 0x00, 0x00 }, new Dictionary<string, int>());
+            yield return ReadWrite(EtfTokenType.Map, new byte[] 
+            {
+                0x00, 0x00, 0x00, 0x01, // 1 elements
+                0x6D, 0x00, 0x00, 0x00, 0x01, 0x61, // a
+                0x61, 0x01 // = 1
+            }, new Dictionary<string, int> { ["a"] = 1 });
+            yield return ReadWrite(EtfTokenType.Map, new byte[] 
+            {
+                0x00, 0x00, 0x00, 0x03, // 3 elements
+                0x6D, 0x00, 0x00, 0x00, 0x01, 0x61, // a
+                0x61, 0x01, // = 1
+                0x6D, 0x00, 0x00, 0x00, 0x01, 0x62, // b
+                0x61, 0x02, // = 2
+                0x6D, 0x00, 0x00, 0x00, 0x01, 0x63, // c
+                0x61, 0x03 // = 3
+            }, new Dictionary<string, int> { ["a"] = 1, ["b"] = 2, ["c"] = 3 });
+
+            yield return FailRead(EtfTokenType.Map, new byte[]
+            {
+                0x00, 0x00, 0x00, 0x03, // 3 elements
+                0x6D, 0x00, 0x00, 0x00, 0x01, 0x61, // a
+                0x61, 0x01, // = 1
+                0x6D, 0x00, 0x00, 0x00, 0x01, 0x62, // b
+                0x61, 0x01 // = 2
+            }); // Incomplete
         }
 
         public DictionaryTests() : base(new Comparer()) { }
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void Object(BinaryTestData<Dictionary<string, int>> data) => RunTest(data);
+        public void Dictionary(BinaryTestData<Dictionary<string, int>> data) => RunTest(data);
     }
 }
