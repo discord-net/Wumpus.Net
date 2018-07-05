@@ -31,13 +31,13 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetDData))]
-        public void Format_D(TestData<sbyte> data) => RunTest(data);
+        public void Format_D(TextTestData<sbyte> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetNData))]
-        public void Format_N(TestData<sbyte> data) => RunTest(data, new SByteUtf8Converter('N'));
+        public void Format_N(TextTestData<sbyte> data) => RunTest(data, new SByteUtf8Converter('N'));
         [Theory]
         [MemberData(nameof(GetXData))]
-        public void Format_X(TestData<sbyte> data) => RunTest(data, new SByteUtf8Converter('X'));
+        public void Format_X(TextTestData<sbyte> data) => RunTest(data, new SByteUtf8Converter('X'));
     }
 
     public class Int16Tests : BaseTest<short>
@@ -68,13 +68,13 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetDData))]
-        public void Format_D(TestData<short> data) => RunTest(data);
+        public void Format_D(TextTestData<short> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetNData))]
-        public void Format_N(TestData<short> data) => RunTest(data, new Int16Utf8Converter('N'));
+        public void Format_N(TextTestData<short> data) => RunTest(data, new Int16Utf8Converter('N'));
         [Theory]
         [MemberData(nameof(GetXData))]
-        public void Format_X(TestData<short> data) => RunTest(data, new Int16Utf8Converter('X'));
+        public void Format_X(TextTestData<short> data) => RunTest(data, new Int16Utf8Converter('X'));
     }
 
     public class Int32Tests : BaseTest<int>
@@ -105,13 +105,13 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetDData))]
-        public void Format_D(TestData<int> data) => RunTest(data);
+        public void Format_D(TextTestData<int> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetNData))]
-        public void Format_N(TestData<int> data) => RunTest(data, new Int32Utf8Converter('N'));
+        public void Format_N(TextTestData<int> data) => RunTest(data, new Int32Utf8Converter('N'));
         [Theory]
         [MemberData(nameof(GetXData))]
-        public void Format_X(TestData<int> data) => RunTest(data, new Int32Utf8Converter('X'));
+        public void Format_X(TextTestData<int> data) => RunTest(data, new Int32Utf8Converter('X'));
     }
 
     public class Int64Tests : BaseTest<long>
@@ -142,12 +142,12 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetDData))]
-        public void Format_D(TestData<long> data) => RunTest(data);
+        public void Format_D(TextTestData<long> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetNData))]
-        public void Format_N(TestData<long> data) => RunTest(data, new Int64Utf8Converter('N'));
+        public void Format_N(TextTestData<long> data) => RunTest(data, new Int64Utf8Converter('N'));
         [Theory]
         [MemberData(nameof(GetXData))]
-        public void Format_X(TestData<long> data) => RunTest(data, new Int64Utf8Converter('X'));
+        public void Format_X(TextTestData<long> data) => RunTest(data, new Int64Utf8Converter('X'));
     }
 }

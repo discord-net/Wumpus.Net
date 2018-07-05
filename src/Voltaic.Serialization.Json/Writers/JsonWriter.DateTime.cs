@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using System.Buffers.Text;
 using Voltaic.Serialization.Utf8;
 
 namespace Voltaic.Serialization.Json

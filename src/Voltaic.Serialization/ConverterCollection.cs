@@ -11,9 +11,9 @@ namespace Voltaic.Serialization
         private struct Definition
         {
             public readonly Type Type;
-            public readonly Func<Serializer, TypeInfo, PropertyInfo, ValueConverter> Factory;
+            public readonly Func<TypeInfo, PropertyInfo, ValueConverter> Factory;
 
-            public Definition(Type type, Func<Serializer, TypeInfo, PropertyInfo, ValueConverter> factory)
+            public Definition(Type type, Func<TypeInfo, PropertyInfo, ValueConverter> factory)
             {
                 Type = type;
                 Factory = factory;
@@ -22,10 +22,10 @@ namespace Voltaic.Serialization
         private struct GenericDefinition
         {
             public readonly Type Type;
-            public readonly Func<Serializer, TypeInfo, PropertyInfo, ValueConverter> Factory;
+            public readonly Func<TypeInfo, PropertyInfo, ValueConverter> Factory;
             public readonly Func<TypeInfo, Type>[] InnerTypeSelectors;
 
-            public GenericDefinition(Type type, Func<Serializer, TypeInfo, PropertyInfo, ValueConverter> factory)
+            public GenericDefinition(Type type, Func<TypeInfo, PropertyInfo, ValueConverter> factory)
             {
                 Type = type;
                 Factory = factory;
@@ -97,19 +97,19 @@ namespace Voltaic.Serialization
         }
 
         // A -> B
-        public void SetDefault<TType, TConverter>(Func<Serializer, TypeInfo, PropertyInfo, TConverter> factory = null)
+        public void SetDefault<TType, TConverter>(Func<TypeInfo, PropertyInfo, TConverter> factory = null)
             where TConverter : ValueConverter<TType>
             => SetDefault(typeof(TType), typeof(TConverter), factory);
-        public void SetDefault(Type type, Type converterType, Func<Serializer, TypeInfo, PropertyInfo, ValueConverter> factory = null)
+        public void SetDefault(Type type, Type converterType, Func<TypeInfo, PropertyInfo, ValueConverter> factory = null)
         {
             if (!_types.TryGetValue(type, out var converters))
                 _types.Add(type, converters = new ConverterTypeCollection());
             converters.DefaultConverter = new Definition(converterType, factory);
         }
-        public void AddConditional<TType, TConverter>(Func<TypeInfo, PropertyInfo, bool> condition, Func<Serializer, TypeInfo, PropertyInfo, TConverter> factory = null)
+        public void AddConditional<TType, TConverter>(Func<TypeInfo, PropertyInfo, bool> condition, Func<TypeInfo, PropertyInfo, TConverter> factory = null)
             where TConverter : ValueConverter<TType>
             => AddConditional(typeof(TType), typeof(TConverter), condition, factory);
-        public void AddConditional(Type type, Type converterType, Func<TypeInfo, PropertyInfo, bool> condition, Func<Serializer, TypeInfo, PropertyInfo, ValueConverter> factory = null)
+        public void AddConditional(Type type, Type converterType, Func<TypeInfo, PropertyInfo, bool> condition, Func<TypeInfo, PropertyInfo, ValueConverter> factory = null)
         {
             if (!_types.TryGetValue(type, out var converters))
                 _types.Add(type, converters = new ConverterTypeCollection());
@@ -126,7 +126,7 @@ namespace Voltaic.Serialization
 
             _globalGenericTypes.DefaultConverter = new GenericDefinition(openConverterType, innerTypeSelectors);
         }
-        public void SetGlobalDefault(Type openConverterType, Func<Serializer, TypeInfo, PropertyInfo, ValueConverter> factory)
+        public void SetGlobalDefault(Type openConverterType, Func<TypeInfo, PropertyInfo, ValueConverter> factory)
         {
             if (openConverterType.IsConstructedGenericType)
                 throw new InvalidOperationException($"{nameof(openConverterType)} must be an open generic");
@@ -144,7 +144,7 @@ namespace Voltaic.Serialization
 
             _globalGenericTypes.ConditionalConverters.Add(new GenericConditionalDefinition(new GenericDefinition(openConverterType, innerTypeSelectors), condition));
         }
-        public void AddGlobalConditional(Type openConverterType, Func<TypeInfo, PropertyInfo, bool> condition, Func<Serializer, TypeInfo, PropertyInfo, ValueConverter> factory)
+        public void AddGlobalConditional(Type openConverterType, Func<TypeInfo, PropertyInfo, bool> condition, Func<TypeInfo, PropertyInfo, ValueConverter> factory)
         {
             if (openConverterType.IsConstructedGenericType)
                 throw new InvalidOperationException($"{nameof(openConverterType)} must be an open generic");
@@ -186,14 +186,21 @@ namespace Voltaic.Serialization
             => Get(serializer, typeof(T), propInfo, throwOnNotFound) as ValueConverter<T>;
         internal ValueConverter<T> Get<T>(Serializer serializer, Type type, PropertyInfo propInfo = null, bool throwOnNotFound = true)
         {
-            if (!(Get(serializer, type, propInfo, throwOnNotFound) is ValueConverter<T> converter))
-                throw new InvalidOperationException($"Converter for {type.Name} is not assignable to {typeof(ValueConverter<T>).Name}");
-            return converter;
+            var converter = Get(serializer, type, propInfo, throwOnNotFound);
+            if (converter is ValueConverter<T> genericConverter)
+                return genericConverter;
+
+            // Types dont match, build an adapter
+            // TODO: How much of a perf is doing uncached reflection here?
+            if (!typeof(T).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+                throw new InvalidOperationException($"Converter for {type.Name} is not assignable to {typeof(T).Name}");
+            var adapterType = typeof(ValueConverterAdapter<,>).MakeGenericType(typeof(T), type).GetTypeInfo();
+            var constructor = adapterType.DeclaredConstructors.Single();
+            return constructor.Invoke(new object[] { converter }) as ValueConverter<T>;
         }
         internal ValueConverter Get(Serializer serializer, Type type, PropertyInfo propInfo = null, bool throwOnNotFound = true)
         {
             bool canCache = propInfo == null; // Can't cache top-level due to attribute influences
-
             if (canCache && _cache.TryGetValue(type, out var converter))
                 return converter;
 
@@ -204,7 +211,7 @@ namespace Voltaic.Serialization
             if (canCache)
                 _cache.TryAdd(type, converter);
             return converter;
-        }
+        }        
 
         private ValueConverter FindAndBuildConverter(Serializer serializer, TypeInfo valueTypeInfo, PropertyInfo propInfo, bool throwOnNotFound)
         {
@@ -212,7 +219,7 @@ namespace Voltaic.Serialization
             if (converterType != null)
             {
                 if (converterType.Value.Factory != null)
-                    return converterType.Value.Factory(serializer, valueTypeInfo, propInfo);
+                    return converterType.Value.Factory(valueTypeInfo, propInfo);
                 else
                     return BuildConverter(serializer, converterType.Value.Type, propInfo, throwOnNotFound);
             }
@@ -223,7 +230,7 @@ namespace Voltaic.Serialization
                 if (genericType != null)
                 {
                     if (genericType.Value.Factory != null)
-                        return genericType.Value.Factory(serializer, valueTypeInfo, propInfo);
+                        return genericType.Value.Factory(valueTypeInfo, propInfo);
                     else
                         return BuildConverter(serializer, genericType.Value.BuildClosedType(valueTypeInfo), propInfo, throwOnNotFound);
                 }
@@ -233,7 +240,7 @@ namespace Voltaic.Serialization
             if (globalType != null)
             {
                 if (globalType.Value.Factory != null)
-                    return globalType.Value.Factory(serializer, valueTypeInfo, propInfo);
+                    return globalType.Value.Factory(valueTypeInfo, propInfo);
                 else
                     return BuildConverter(serializer, globalType.Value.BuildClosedType(valueTypeInfo), propInfo, throwOnNotFound);
             }

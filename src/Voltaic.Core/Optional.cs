@@ -53,6 +53,12 @@ namespace Voltaic
         public static Optional<T> Create<T>() => Optional<T>.Unspecified;
         public static Optional<T> Create<T>(T value) => new Optional<T>(value);
 
+        public static Optional<T> FromNullable<T>(T? val)
+            where T : struct
+            => val.HasValue ? new Optional<T>(val.Value) : Optional<T>.Unspecified;
+        public static Optional<T> FromNullable<T>(T val)
+            where T : class
+            => val != null ? new Optional<T>(val) : Optional<T>.Unspecified;
         public static T? ToNullable<T>(this Optional<T> val)
             where T : struct
             => val.IsSpecified ? val.Value : (T?)null;

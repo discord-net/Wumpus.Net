@@ -26,7 +26,7 @@ namespace Wumpus.Entities
         [ModelProperty("channels")]
         public Channel[] Channels { get; set; }
         /// <summary> xxx </summary>
-        [ModelProperty("joined_at")]
+        [ModelProperty("joined_at"), StandardFormat('O')]
         public DateTimeOffset JoinedAt { get; set; }
     }
 }

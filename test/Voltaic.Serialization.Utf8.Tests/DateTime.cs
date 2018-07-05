@@ -80,8 +80,12 @@ namespace Voltaic.Serialization.Utf8.Tests
             yield return FailRead("0000-12-31T12:59:59.9990000"); // Min - 1ms
             yield return ReadWrite("0001-01-01T00:00:00.0000000",
                 new DateTime(year: 1, month: 1, day: 1, hour: 0, minute: 0, second: 0, millisecond: 0)); // Min
-            yield return ReadWrite("2017-01-13T03:45:32.0550000",
-                new DateTime(year: 2017, month: 1, day: 13, hour: 3, minute: 45, second: 32, millisecond: 55));
+            yield return ReadWrite("2017-01-13T03:45:32.0500000",
+                new DateTime(year: 2017, month: 1, day: 13, hour: 3, minute: 45, second: 32, millisecond: 50));
+            yield return Read("2017-01-13T03:45:32.050000",
+                new DateTime(year: 2017, month: 1, day: 13, hour: 3, minute: 45, second: 32, millisecond: 50)); // Shorter fraction
+            yield return Read("2017-01-13T03:45:32",
+                new DateTime(year: 2017, month: 1, day: 13, hour: 3, minute: 45, second: 32, millisecond: 0)); // Missing fraction
             yield return ReadWrite("9999-12-31T11:59:59.9990000",
                 new DateTime(year: 9999, month: 12, day: 31, hour: 11, minute: 59, second: 59, millisecond: 999)); // Max
             yield return FailRead("10000-00-00T00:00:00.0000000"); // Max + 1ms
@@ -89,24 +93,25 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetDefaultData))]
-        public void Format_Default(TestData<DateTime> data) => RunTest(data);
+        public void Format_Default(TextTestData<DateTime> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetGData))]
-        public void Format_G(TestData<DateTime> data) => RunTest(data, new DateTimeUtf8Converter('G'));
+        public void Format_G(TextTestData<DateTime> data) => RunTest(data, new DateTimeUtf8Converter('G'));
         [Theory]
         [MemberData(nameof(GetRData))]
-        public void Format_R(TestData<DateTime> data) => RunTest(data, new DateTimeUtf8Converter('R'));
+        public void Format_R(TextTestData<DateTime> data) => RunTest(data, new DateTimeUtf8Converter('R'));
         [Theory]
         [MemberData(nameof(GetLittleLData))]
-        public void Format_LittleL(TestData<DateTime> data) => RunTest(data, new DateTimeUtf8Converter('l'));
+        public void Format_LittleL(TextTestData<DateTime> data) => RunTest(data, new DateTimeUtf8Converter('l'));
         [Theory]
         [MemberData(nameof(GetOData))]
-        public void Format_O(TestData<DateTime> data) => RunTest(data, new DateTimeUtf8Converter('O'));
+        public void Format_O(TextTestData<DateTime> data) => RunTest(data, new DateTimeUtf8Converter('O'));
     }
 
     public class DateTimeOffsetTests : BaseTest<DateTimeOffset>
     {
-        public static IEnumerable<object[]> GetGData()
+        // Corefx's comments say G == default, but G actually redirects to DateTime's G and assumes local time
+        public static IEnumerable<object[]> GetDefaultData()
         {
             yield return FailRead("12/31/0000 12:59:59 +00:00"); // Min - 1ms
             yield return ReadWrite("01/01/0001 00:00:00 +00:00", //Min
@@ -177,11 +182,17 @@ namespace Voltaic.Serialization.Utf8.Tests
             yield return ReadWrite("0001-01-01T00:00:00.0000000+00:00", //Min
                 new DateTimeOffset(year: 1, month: 1, day: 1, hour: 0, minute: 0, second: 0, millisecond: 0, offset:
                 new TimeSpan(hours: 0, minutes: 0, seconds: 0)));
-            yield return ReadWrite("2017-01-13T03:45:32.0550000+08:00",
-                new DateTimeOffset(year: 2017, month: 1, day: 13, hour: 3, minute: 45, second: 32, millisecond: 55, offset:
+            yield return ReadWrite("2017-01-13T03:45:32.0500000+08:00",
+                new DateTimeOffset(year: 2017, month: 1, day: 13, hour: 3, minute: 45, second: 32, millisecond: 50, offset:
                 new TimeSpan(hours: 8, minutes: 0, seconds: 0)));
-            yield return ReadWrite("2017-01-13T03:45:32.0550000-09:00",
-                new DateTimeOffset(year: 2017, month: 1, day: 13, hour: 3, minute: 45, second: 32, millisecond: 55, offset:
+            yield return ReadWrite("2017-01-13T03:45:32.0500000-09:00",
+                new DateTimeOffset(year: 2017, month: 1, day: 13, hour: 3, minute: 45, second: 32, millisecond: 50, offset:
+                new TimeSpan(hours: -9, minutes: 0, seconds: 0)));
+            yield return Read("2017-01-13T03:45:32.050000-09:00", // Shorter fraction
+                new DateTimeOffset(year: 2017, month: 1, day: 13, hour: 3, minute: 45, second: 32, millisecond: 50, offset:
+                new TimeSpan(hours: -9, minutes: 0, seconds: 0)));
+            yield return Read("2017-01-13T03:45:32-09:00", // No fraction
+                new DateTimeOffset(year: 2017, month: 1, day: 13, hour: 3, minute: 45, second: 32, millisecond: 0, offset:
                 new TimeSpan(hours: -9, minutes: 0, seconds: 0)));
             yield return ReadWrite("9999-12-31T11:59:59.9990000+00:00", //Max
                 new DateTimeOffset(year: 9999, month: 12, day: 31, hour: 11, minute: 59, second: 59, millisecond: 999, offset:
@@ -193,17 +204,17 @@ namespace Voltaic.Serialization.Utf8.Tests
         }
 
         [Theory]
-        [MemberData(nameof(GetGData))]
-        public void Format_G(TestData<DateTimeOffset> data) => RunTest(data);
+        [MemberData(nameof(GetDefaultData))]
+        public void Format_G(TextTestData<DateTimeOffset> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetRData))]
-        public void Format_R(TestData<DateTimeOffset> data) => RunTest(data, new DateTimeOffsetUtf8Converter('R'));
+        public void Format_R(TextTestData<DateTimeOffset> data) => RunTest(data, new DateTimeOffsetUtf8Converter('R'));
         [Theory]
         [MemberData(nameof(GetLittleLData))]
-        public void Format_LittleL(TestData<DateTimeOffset> data) => RunTest(data, new DateTimeOffsetUtf8Converter('l'));
+        public void Format_LittleL(TextTestData<DateTimeOffset> data) => RunTest(data, new DateTimeOffsetUtf8Converter('l'));
         [Theory]
         [MemberData(nameof(GetOData))]
-        public void Format_O(TestData<DateTimeOffset> data) => RunTest(data, new DateTimeOffsetUtf8Converter('O'));
+        public void Format_O(TextTestData<DateTimeOffset> data) => RunTest(data, new DateTimeOffsetUtf8Converter('O'));
     }
 
     public class TimeSpanTests : BaseTest<TimeSpan>
@@ -241,12 +252,12 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetLittleCData))]
-        public void Format_LittleC(TestData<TimeSpan> data) => RunTest(data);
+        public void Format_LittleC(TextTestData<TimeSpan> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetGData))]
-        public void Format_G(TestData<TimeSpan> data) => RunTest(data, new TimeSpanUtf8Converter('G'));
+        public void Format_G(TextTestData<TimeSpan> data) => RunTest(data, new TimeSpanUtf8Converter('G'));
         [Theory]
         [MemberData(nameof(GetLittleGData))]
-        public void Format_LittleG(TestData<TimeSpan> data) => RunTest(data, new TimeSpanUtf8Converter('g'));
+        public void Format_LittleG(TextTestData<TimeSpan> data) => RunTest(data, new TimeSpanUtf8Converter('g'));
     }
 }

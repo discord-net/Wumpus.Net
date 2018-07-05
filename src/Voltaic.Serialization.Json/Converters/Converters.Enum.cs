@@ -12,13 +12,16 @@ namespace Voltaic.Serialization.Json
 
         public Int64EnumJsonConverter(Serializer serializer, PropertyInfo propInfo)
         {
-            _keyConverter = serializer.GetConverter<Utf8String>(propInfo, true);
-            _valueConverter = serializer.GetConverter<long>(propInfo, true);
             _map = EnumMap.For<T>();
+            _keyConverter = serializer.GetConverter<Utf8String>(propInfo, true);
+            if (typeof(T).GetTypeInfo().GetCustomAttribute<FlagsAttribute>() != null && _map.MaxValue <= Int53Attribute.MaxValue)
+                _valueConverter = new Int53JsonConverter();
+            else
+                _valueConverter = new Int64JsonConverter();
         }
 
-        public override bool CanWrite(T value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || _map.ToInt64(value) != default;
+        public override bool CanWrite(T value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || _map.ToInt64(value) != default;
 
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out T result, PropertyMap propMap = null)
         {
@@ -58,13 +61,16 @@ namespace Voltaic.Serialization.Json
 
         public UInt64EnumJsonConverter(Serializer serializer, PropertyInfo propInfo)
         {
-            _keyConverter = serializer.GetConverter<Utf8String>(propInfo, true);
-            _valueConverter = serializer.GetConverter<ulong>(propInfo, true);
             _map = EnumMap.For<T>();
+            _keyConverter = serializer.GetConverter<Utf8String>(propInfo, true);
+            if (typeof(T).GetTypeInfo().GetCustomAttribute<FlagsAttribute>() == null && _map.MaxValue <= Int53Attribute.MaxValue)
+                _valueConverter = new UInt53JsonConverter();
+            else
+                _valueConverter = new UInt64JsonConverter();
         }
 
-        public override bool CanWrite(T value, PropertyMap propMap)
-            => !propMap.ExcludeDefault || _map.ToInt64(value) != default;
+        public override bool CanWrite(T value, PropertyMap propMap = null)
+            => propMap == null || !propMap.ExcludeDefault || _map.ToInt64(value) != default;
 
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out T result, PropertyMap propMap = null)
         {

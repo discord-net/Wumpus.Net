@@ -19,7 +19,7 @@ namespace Wumpus.Net
             if (value == null)
                 yield break;
 
-            yield return new KeyValuePair<string, string>(name, _serializer.WriteString(value));
+            yield return new KeyValuePair<string, string>(name, _serializer.WriteUtf16String(value));
         }
 
         public override IEnumerable<KeyValuePair<string, string>> SerializeQueryCollectionParam<T>(string name, IEnumerable<T> values, RequestQueryParamSerializerInfo info)
@@ -30,7 +30,7 @@ namespace Wumpus.Net
             foreach (var value in values)
             {
                 if (value != null)
-                    yield return new KeyValuePair<string, string>(name, _serializer.WriteString(value));
+                    yield return new KeyValuePair<string, string>(name, _serializer.WriteUtf16String(value));
             }
         }
     }

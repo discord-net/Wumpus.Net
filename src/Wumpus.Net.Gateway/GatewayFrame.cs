@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Voltaic;
 using Voltaic.Serialization;
 using Wumpus.Entities;
 using Wumpus.Requests;
@@ -15,15 +14,15 @@ namespace Wumpus.Events
         public GatewayOpCode Operation { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("t", ExcludeNull = true)]
-        public Utf8String DispatchType { get; set; }
+        public GatewayDispatchType? DispatchType { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("s", ExcludeNull = true)]
         public int? Sequence { get; set; }
 
         /// <summary> xxx </summary>
-        [ModelProperty("d")]
-        [ModelTypeSelector(nameof(Operation), nameof(OpCodeTypeSelector))]
-        [ModelTypeSelector(nameof(DispatchType), nameof(DispatchTypeSelector))]
+        [ModelProperty("d"),
+            ModelTypeSelector(nameof(Operation), nameof(OpCodeTypeSelector)),
+            ModelTypeSelector(nameof(DispatchType), nameof(DispatchTypeSelector))]
         public object Payload { get; set; }
 
         private static Dictionary<GatewayOpCode, Type> OpCodeTypeSelector => new Dictionary<GatewayOpCode, Type>()
@@ -33,13 +32,13 @@ namespace Wumpus.Events
 
             [GatewayOpCode.Identify] = typeof(IdentifyParams),
             [GatewayOpCode.Resume] = typeof(ResumeParams),
-            [GatewayOpCode.Heartbeat] = typeof(int),
+            [GatewayOpCode.Heartbeat] = typeof(int?),
             [GatewayOpCode.RequestGuildMembers] = typeof(RequestMembersParams),
             [GatewayOpCode.VoiceStateUpdate] = typeof(UpdateVoiceStateParams),
             [GatewayOpCode.StatusUpdate] = typeof(UpdateStatusParams)
         };
 
-        private static Dictionary<GatewayDispatchType, Type> DispatchTypeSelector => new Dictionary<GatewayDispatchType, Type>()
+        private static Dictionary<GatewayDispatchType?, Type> DispatchTypeSelector => new Dictionary<GatewayDispatchType?, Type>()
         {
             [GatewayDispatchType.Ready] = typeof(SocketReadyEvent),
             [GatewayDispatchType.GuildCreate] = typeof(GatewayGuild),

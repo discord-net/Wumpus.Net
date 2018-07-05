@@ -5,15 +5,17 @@ namespace Voltaic.Serialization.Json
     public class ObjectJsonConverter<T> : ValueConverter<T>
         where T : class, new()
     {
+        private readonly JsonSerializer _serializer;
         private readonly ModelMap<T> _map;
 
-        public ObjectJsonConverter(Serializer serializer)
+        public ObjectJsonConverter(JsonSerializer serializer)
         {
+            _serializer = serializer;
             _map = serializer.GetMap<T>();
         }
 
-        public override bool CanWrite(T value, PropertyMap propMap)
-            => (!propMap.ExcludeNull && !propMap.ExcludeDefault) || value != null;
+        public override bool CanWrite(T value, PropertyMap propMap = null)
+            => propMap == null || (!propMap.ExcludeNull && !propMap.ExcludeDefault) || value != null;
 
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out T result, PropertyMap propMap = null)
         {
@@ -24,6 +26,7 @@ namespace Voltaic.Serialization.Json
                 case JsonTokenType.StartObject:
                     break;
                 case JsonTokenType.Null:
+                    remaining = remaining.Slice(4);
                     result = null;
                     return true;
                 default:
@@ -74,6 +77,7 @@ namespace Voltaic.Serialization.Json
                 // Unknown Property
                 if (!_map.TryGetProperty(key, out var innerPropMap))
                 {
+                    _serializer.RaiseUnknownProperty(_map, key);
                     if (!JsonReader.Skip(ref remaining, out _))
                         return false;
                     continue;
@@ -92,9 +96,22 @@ namespace Voltaic.Serialization.Json
                     continue;
                 }
 
+
+                var restore = remaining;
                 if (!innerPropMap.TryRead(result, ref remaining, dependencies))
-                    return false;
-                
+                {
+                    if (innerPropMap.IgnoreErrors)
+                    {
+                        remaining = restore;
+                        if (!JsonReader.Skip(ref remaining, out var skipped))
+                            return false;
+                        _serializer.RaiseFailedProperty(_map, innerPropMap);
+                        continue;
+                    }
+                    else
+                        return false;
+                }
+
                 dependencies |= innerPropMap.IndexMask;
             }
 
@@ -105,7 +122,12 @@ namespace Voltaic.Serialization.Json
                     return false;
                 var value = deferred.GetValue(i);
                 if (!innerPropMap.TryRead(result, ref value, dependencies))
-                    return false;
+                {
+                    if (innerPropMap.IgnoreErrors)
+                        _serializer.RaiseFailedProperty(_map, innerPropMap);
+                    else
+                        return false;
+                }
             }
             return true;
         }
@@ -132,7 +154,7 @@ namespace Voltaic.Serialization.Json
                     isFirst = false;
 
                 writer.Push((byte)'"');
-                if (!JsonWriter.TryWriteUtf8(ref writer, key.Span))
+                if (!JsonWriter.TryWriteUtf8Bytes(ref writer, key.Span))
                     return false;
                 writer.Push((byte)'"');
 

@@ -15,6 +15,6 @@ namespace Wumpus.Net
         }
 
         public override T Deserialize<T>(string content, HttpResponseMessage response, ResponseDeserializerInfo info)
-            => _serializer.Read<T>(content); // TODO: Why is this not bytes?
+            => _serializer.ReadUtf16<T>(content); // TODO: Why is this not bytes?
     }
 }

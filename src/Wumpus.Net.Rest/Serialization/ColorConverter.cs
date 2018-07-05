@@ -5,11 +5,11 @@ using Wumpus.Entities;
 
 namespace Wumpus.Serialization
 {
-    public class ColorJsonConverter : ValueConverter<Color>
+    public class ColorConverter : ValueConverter<Color>
     {
         private readonly ValueConverter<uint> _valueConverter;
 
-        public ColorJsonConverter(Serializer serializer, PropertyInfo propInfo)
+        public ColorConverter(Serializer serializer, PropertyInfo propInfo)
         {
             _valueConverter = serializer.GetConverter<uint>(propInfo, true);
         }

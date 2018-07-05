@@ -9,14 +9,15 @@ namespace Voltaic.Serialization
     {
         protected int _selectorKeyCount;
 
-        public string Path { get; }
+        public abstract string Name { get; }
+        public abstract Type ModelType { get; }
 
         internal readonly MemoryDictionary<PropertyMap> _propDict;
         internal readonly List<KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>> _propList;
 
         public IReadOnlyList<KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>> Properties => _propList;
 
-        internal ModelMap(string path)
+        internal ModelMap()
         {
             _propDict = new MemoryDictionary<PropertyMap>();
             _propList = new List<KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>>();
@@ -28,8 +29,10 @@ namespace Voltaic.Serialization
 
     public class ModelMap<T> : ModelMap
     {
-        internal ModelMap(Serializer serializer, string path, PropertyInfo propInfo = null)
-            : base(path)
+        public override string Name => typeof(T).Name;
+        public override Type ModelType => typeof(T);
+
+        internal ModelMap(Serializer serializer)
         {
             var type = typeof(T).GetTypeInfo();
             var normalProps = new Dictionary<string, PropertyMap<T>>();

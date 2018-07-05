@@ -40,12 +40,20 @@ namespace Voltaic.Serialization
             if (!mapProperty.GetMethod.IsStatic)
                 throw new InvalidOperationException($"\"{mapProperty.Name}\" is not static");
             if (!(mapProperty.GetValue(null) is IReadOnlyDictionary<TKey, Type> map))
-                throw new InvalidOperationException($"Map must return an IReadOnlyDictionary<TKey,Type>");
+                throw new InvalidOperationException($"Map must return an {typeof(IReadOnlyDictionary<TKey,Type>).Name}");
 
             Converters = map.ToDictionary(x => x.Key, x => serializer.GetConverter<TValue>(x.Value, propInfo, true));
         }
 
         public override bool TryGet(TModel model, out ValueConverter<TValue> converter)
-            => Converters.TryGetValue(KeyProperty.GetFunc(model), out converter);
+        {
+            var key = KeyProperty.GetFunc(model);
+            if (key == null)
+            {
+                converter = default;
+                return false;
+            }
+            return Converters.TryGetValue(key, out converter);
+        }
     }
 }

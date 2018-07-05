@@ -11,13 +11,13 @@ namespace Voltaic.Serialization
         public Serializer Serializer { get; }
         public ReadOnlyMemory<byte> Key { get; }
         public string Name { get; }
-        public string Path { get; }
         public bool ExcludeDefault { get; }
         public bool ExcludeNull { get; }
         public int? Index { get; internal set; }
         public uint IndexMask { get; internal set; }
+        public bool IgnoreErrors { get; }
 
-        public abstract Type Type { get; }
+        public abstract Type ValueType { get; }
 
         protected readonly bool _supportsRead, _supportsWrite;
 
@@ -25,7 +25,6 @@ namespace Voltaic.Serialization
         {
             Serializer = serializer;
             Name = propInfo.Name;
-            Path = $"{modelMap.Path}.{propInfo.Name}";
 
             _supportsWrite = propInfo.GetMethod != null;
             _supportsRead = propInfo.SetMethod != null;
@@ -33,6 +32,7 @@ namespace Voltaic.Serialization
             Key = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(attr.Key));
             ExcludeNull = attr.ExcludeNull;
             ExcludeDefault = attr.ExcludeDefault;
+            IgnoreErrors = propInfo.GetCustomAttribute<IgnoreErrorsAttribute>() != null || modelMap.ModelType.GetTypeInfo().GetCustomAttribute<IgnoreErrorsAttribute>() != null;
         }
     }
 
@@ -56,7 +56,7 @@ namespace Voltaic.Serialization
         public Func<TModel, TValue> GetFunc { get; }
         public Action<TModel, TValue> SetFunc { get; }
 
-        public override Type Type => typeof(TValue);
+        public override Type ValueType => typeof(TValue);
 
         public PropertyMap(
             Serializer serializer,
@@ -96,7 +96,7 @@ namespace Voltaic.Serialization
         public Func<TModel, TValue> GetFunc { get; }
         public Action<TModel, TValue> SetFunc { get; }
 
-        public override Type Type => typeof(TValue);
+        public override Type ValueType => typeof(TValue);
 
         private readonly List<PropertyMap> _dependencies;
 
@@ -120,7 +120,7 @@ namespace Voltaic.Serialization
                 var typeSelectorAttr = typeSelectorAttrs[i];
                 if (!props.TryGetValue(typeSelectorAttr.KeyProperty, out var keyProp))
                     throw new InvalidOperationException($"Unable to find dependency \"{typeSelectorAttr.KeyProperty}\"");
-                var keyType = keyProp.Type;
+                var keyType = keyProp.ValueType;
 
                 // TODO: Does this search subtypes?
                 var mapProp = typeof(TModel).GetTypeInfo().GetDeclaredProperty(typeSelectorAttr.MapProperty);
@@ -129,7 +129,7 @@ namespace Voltaic.Serialization
 
                 var converterProviderType = typeof(ConverterProvider<,,>).MakeGenericType(typeof(TModel), keyType, typeof(TValue)).GetTypeInfo();
                 var converterConstructor = converterProviderType.DeclaredConstructors.Single();
-                var converterProvider = converterConstructor.Invoke(new object[] { serializer, this, keyProp, mapProp }) as ConverterProvider<TModel, TValue>;
+                var converterProvider = converterConstructor.Invoke(new object[] { serializer, propInfo, keyProp, mapProp }) as ConverterProvider<TModel, TValue>;
                 converterProviders.Add(converterProvider);
 
                 if (keyProp.Index == null)
@@ -144,11 +144,13 @@ namespace Voltaic.Serialization
 
         public override bool TryRead(TModel model, ref ReadOnlySpan<byte> data, uint dependencies)
         {
-            if (!TryGetReadConverter(model, out var converter, dependencies))
-                return false;
-            if (!converter.TryRead(ref data, out var result, this))
-                return false;
-            SetFunc(model, result);
+            // Unknown keys are ignored during reads
+            if (TryGetReadConverter(model, out var converter, dependencies))
+            {
+                if (!converter.TryRead(ref data, out var result, this))
+                    return false;
+                SetFunc(model, result);
+            }
             return true;
         }
 

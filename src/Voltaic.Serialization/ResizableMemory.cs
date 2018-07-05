@@ -5,17 +5,10 @@ namespace Voltaic.Serialization
 {
     public struct ResizableMemory<T>
     {
-
         public ResizableMemory(int initalCapacity, ArrayPool<T> pool = null)
         {
             Pool = pool ?? ArrayPool<T>.Shared;
             Array = Pool.Rent(initalCapacity);
-            Length = 0;
-        }
-        public ResizableMemory(T[] array, ArrayPool<T> pool = null)
-        {
-            Pool = pool ?? ArrayPool<T>.Shared;
-            Array = array;
             Length = 0;
         }
 
@@ -33,15 +26,21 @@ namespace Voltaic.Serialization
             return Array[--Length];
         }
 
+        public ArraySegment<T> GetSegment(int minimumLength)
+        {
+            RequestLength(minimumLength);
+            return new ArraySegment<T>(Array, Length, Array.Length - Length);
+        }
+        public Memory<T> GetMemory(int minimumLength)
+        {
+            RequestLength(minimumLength);
+            return new Memory<T>(Array, Length, Array.Length - Length);
+        }
         public Span<T> GetSpan(int minimumLength)
         {
             RequestLength(minimumLength);
             return new Span<T>(Array, Length, Array.Length - Length);
         }
-        //public void Advance(Span<T> span)
-        //{
-        //    Length += span.Length;
-        //}
         public void Advance(int count)
         {
             Length += count;
@@ -52,7 +51,7 @@ namespace Voltaic.Serialization
             Length = 0;
         }
 
-        public ArraySegment<T> AsSegment() => new ArraySegment<T>(Array);
+        public ArraySegment<T> AsSegment() => new ArraySegment<T>(Array, 0, Length);
         public Memory<T> AsMemory() => new Memory<T>(Array, 0, Length);
         public ReadOnlyMemory<T> AsReadOnlyMemory() => new ReadOnlyMemory<T>(Array, 0, Length);
         public Span<T> AsSpan() => new Span<T>(Array, 0, Length);

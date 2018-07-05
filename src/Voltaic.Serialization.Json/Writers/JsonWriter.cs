@@ -8,7 +8,7 @@ namespace Voltaic.Serialization.Json
         {
             var data = writer.GetSpan(4); // null
             const uint nullValue = ('n' << 24) + ('u' << 16) + ('l' << 8) + ('l' << 0);
-            BinaryPrimitives.TryWriteUInt32BigEndian(data, nullValue);
+            BinaryPrimitives.WriteUInt32BigEndian(data, nullValue);
             writer.Advance(4);
             return true;
         }

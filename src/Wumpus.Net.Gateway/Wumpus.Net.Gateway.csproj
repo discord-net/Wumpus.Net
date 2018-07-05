@@ -14,7 +14,7 @@
     <PackageReference Include="System.Net.WebSockets.Client" Version="4.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Voltaic.Serialization.Etf\Voltaic.Serialization.Etf.csproj" />
-    <ProjectReference Include="..\Wumpus.Net.Rest\Wumpus.Net.Rest.csproj" />
+    <ProjectReference Include="../Voltaic.Serialization.Etf/Voltaic.Serialization.Etf.csproj" />
+    <ProjectReference Include="../Wumpus.Net.Rest/Wumpus.Net.Rest.csproj" />
   </ItemGroup>
 </Project>

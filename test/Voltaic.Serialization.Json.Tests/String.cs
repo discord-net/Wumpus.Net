@@ -18,7 +18,7 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void String(TestData<char> data) => RunQuoteTest(data);
+        public void String(TextTestData<char> data) => RunQuoteTest(data);
     }
 
     public class StringTests : BaseTest<string>
@@ -56,6 +56,6 @@ namespace Voltaic.Serialization.Json.Tests
 
         [Theory]
         [MemberData(nameof(GetData))]
-        public void String(TestData<string> data) => RunQuoteTest(data);
+        public void String(TextTestData<string> data) => RunQuoteTest(data);
     }
 }

@@ -22,9 +22,9 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetGData))]
-        public void Format_G(TestData<bool> data) => RunTest(data);
+        public void Format_G(TextTestData<bool> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetLittleLData))]
-        public void Format_LittleL(TestData<bool> data) => RunTest(data, new BooleanUtf8Converter('l'));
+        public void Format_LittleL(TextTestData<bool> data) => RunTest(data, new BooleanUtf8Converter('l'));
     }
 }

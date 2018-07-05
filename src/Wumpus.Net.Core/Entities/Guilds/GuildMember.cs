@@ -17,7 +17,7 @@ namespace Wumpus.Entities
         [ModelProperty("roles")]
         public Optional<Snowflake[]> Roles { get; set; }
         /// <summary> xxx </summary>
-        [ModelProperty("joined_at")]
+        [ModelProperty("joined_at"), StandardFormat('O')]
         public Optional<DateTimeOffset> JoinedAt { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("deaf")]

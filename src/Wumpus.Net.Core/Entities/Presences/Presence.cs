@@ -4,6 +4,7 @@ using Voltaic.Serialization;
 namespace Wumpus.Entities
 {
     /// <summary> xxx </summary>
+    [IgnoreErrors]
     public class Presence
     {
         /// <summary> xxx </summary>

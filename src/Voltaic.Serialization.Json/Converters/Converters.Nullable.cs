@@ -12,14 +12,17 @@ namespace Voltaic.Serialization.Json
             _innerConverter = innerConverter;
         }
 
-        public override bool CanWrite(T? value, PropertyMap propMap)
-            => (!propMap.ExcludeNull || value != null) && _innerConverter.CanWrite(value.Value, propMap);
+        public override bool CanWrite(T? value, PropertyMap propMap = null)
+            => propMap == null || (!propMap.ExcludeNull || value != null) && (!value.HasValue || _innerConverter.CanWrite(value.Value, propMap));
 
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out T? result, PropertyMap propMap = null)
         {
             result = null;
             if (JsonReader.GetTokenType(ref remaining) == JsonTokenType.Null)
+            {
+                remaining = remaining.Slice(4);
                 return true;
+            }
             if (!_innerConverter.TryRead(ref remaining, out var resultValue, propMap))
                 return false;
             result = resultValue;

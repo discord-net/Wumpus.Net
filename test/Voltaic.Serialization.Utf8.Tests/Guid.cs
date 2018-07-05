@@ -51,15 +51,15 @@ namespace Voltaic.Serialization.Utf8.Tests
 
         [Theory]
         [MemberData(nameof(GetDData))]
-        public void Format_D(TestData<Guid> data) => RunTest(data);
+        public void Format_D(TextTestData<Guid> data) => RunTest(data);
         [Theory]
         [MemberData(nameof(GetBData))]
-        public void Format_B(TestData<Guid> data) => RunTest(data, new GuidUtf8Converter('B'));
+        public void Format_B(TextTestData<Guid> data) => RunTest(data, new GuidUtf8Converter('B'));
         [Theory]
         [MemberData(nameof(GetPData))]
-        public void Format_P(TestData<Guid> data) => RunTest(data, new GuidUtf8Converter('P'));
+        public void Format_P(TextTestData<Guid> data) => RunTest(data, new GuidUtf8Converter('P'));
         [Theory]
         [MemberData(nameof(GetNData))]
-        public void Format_N(TestData<Guid> data) => RunTest(data, new GuidUtf8Converter('N'));
+        public void Format_N(TextTestData<Guid> data) => RunTest(data, new GuidUtf8Converter('N'));
     }
 }

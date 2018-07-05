@@ -5,12 +5,12 @@ using Voltaic.Serialization.Json;
 
 namespace Wumpus.Serialization
 {
-    public class EntityOrIdJsonConverter<T> : ValueConverter<EntityOrId<T>>
+    public class EntityOrIdConverter<T> : ValueConverter<EntityOrId<T>>
     {
         private readonly ValueConverter<Snowflake> _idConverter;
         private readonly ValueConverter<T> _entityConverter;
 
-        public EntityOrIdJsonConverter(Serializer serializer, PropertyInfo propInfo)
+        public EntityOrIdConverter(Serializer serializer, PropertyInfo propInfo)
         {
             _idConverter = serializer.GetConverter<Snowflake>(propInfo, true);
             _entityConverter = serializer.GetConverter<T>(propInfo, true);

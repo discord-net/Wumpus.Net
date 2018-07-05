@@ -5,19 +5,19 @@ namespace Voltaic.Serialization.Json
 {
     public static partial class JsonWriter
     {
-        public static bool TryWrite(ref ResizableMemory<byte> writer, bool value, StandardFormat standardFormat)
+        public static bool TryWrite(ref ResizableMemory<byte> writer, bool value, StandardFormat standardFormat = default)
         {
-            if (standardFormat.Symbol != JsonSerializer.BooleanFormat.Symbol)
+            if (standardFormat.IsDefault)
             {
-                writer.Push((byte)'"');
-                if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
+                if (!Utf8Writer.TryWrite(ref writer, value, JsonSerializer.BooleanFormat.Symbol))
                     return false;
-                writer.Push((byte)'"');
             }
             else
             {
+                writer.Push((byte)'"');
                 if (!Utf8Writer.TryWrite(ref writer, value, standardFormat))
                     return false;
+                writer.Push((byte)'"');
             }
             return true;
         }

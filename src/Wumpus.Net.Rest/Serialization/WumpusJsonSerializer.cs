@@ -10,11 +10,11 @@ namespace Wumpus.Serialization
         public WumpusJsonSerializer(ConverterCollection converters = null, ArrayPool<byte> bytePool = null)
           : base(converters, bytePool)
         {
-            _converters.SetGenericDefault(typeof(EntityOrId<>), typeof(EntityOrIdJsonConverter<>),
+            _converters.SetGenericDefault(typeof(EntityOrId<>), typeof(EntityOrIdConverter<>),
                 (t) => t.GenericTypeArguments[0]);
-            _converters.SetDefault<Color, ColorJsonConverter>();
-            _converters.SetDefault<Image, ImageJsonConverter>();
-            _converters.SetDefault<Snowflake, SnowflakeJsonConverter>();
+            _converters.SetDefault<Color, ColorConverter>();
+            _converters.SetDefault<Image, ImageConverter>();
+            _converters.SetDefault<Snowflake, SnowflakeConverter>();
         }
     }
 }

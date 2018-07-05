@@ -1,9 +1,11 @@
-﻿using Voltaic;
+﻿using System;
+using Voltaic;
 using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
     /// <summary> https://discordapp.com/developers/docs/topics/gateway#activity-object </summary>
+    [IgnoreErrors]
     public class Activity
     {
         /// <summary> the activity's name </summary>
@@ -33,17 +35,19 @@ namespace Wumpus.Entities
     }
 
     /// <summary> https://discordapp.com/developers/docs/topics/gateway#activity-object-activity-timestamps </summary>
+    [IgnoreErrors]
     public class ActivityTimestamps
     {
         /// <summary> unix time (in milliseconds) of when the activity started </summary>
-        [ModelProperty("start")]
-        public Optional<int> Start { get; set; }
+        [ModelProperty("start"), Epoch(EpochType.UnixMillis)]
+        public Optional<DateTimeOffset> Start { get; set; }
         /// <summary> unix time (in milliseconds) of when the activity ends </summary>
-        [ModelProperty("end")]
-        public Optional<int> End { get; set; }
+        [ModelProperty("end"), Epoch(EpochType.UnixMillis)]
+        public Optional<DateTimeOffset> End { get; set; }
     }
 
     /// <summary> https://discordapp.com/developers/docs/topics/gateway#activity-object-activity-party </summary>
+    [IgnoreErrors]
     public class ActivityParty
     {
         /// <summary> the id of the party </summary>
@@ -51,10 +55,11 @@ namespace Wumpus.Entities
         public Optional<Utf8String> Id { get; set; }
         /// <summary> used to show the party's current and maximum size </summary>
         [ModelProperty("size")]
-        public Optional<int[]> Size { get; set; }
+        public Optional<long[]> Size { get; set; }
     }
 
     /// <summary> https://discordapp.com/developers/docs/topics/gateway#activity-object-activity-assets </summary>
+    [IgnoreErrors]
     public class ActivityAssets
     {
         /// <summary> the id for a large asset of the activity, usually a snowflake </summary>

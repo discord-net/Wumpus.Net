@@ -1,6 +1,7 @@
 ﻿using Voltaic.Serialization;
 using System;
 using Voltaic;
+using Voltaic.Serialization.Json;
 
 namespace Wumpus.Entities
 {
@@ -14,7 +15,7 @@ namespace Wumpus.Entities
         [ModelProperty("channel_id")]
         public Snowflake ChannelId { get; set; }
         /// <summary> xxx </summary>
-        [ModelProperty("type")]
+        [ModelProperty("type"), Int53]
         public MessageType Type { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("author")]
@@ -23,10 +24,10 @@ namespace Wumpus.Entities
         [ModelProperty("content")]
         public Optional<Utf8String> Content { get; set; }
         /// <summary> xxx </summary>
-        [ModelProperty("timestamp")]
+        [ModelProperty("timestamp"), StandardFormat('O')]
         public Optional<DateTimeOffset> Timestamp { get; set; }
         /// <summary> xxx </summary>
-        [ModelProperty("edited_timestamp")]
+        [ModelProperty("edited_timestamp"), StandardFormat('O')]
         public Optional<DateTimeOffset?> EditedTimestamp { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("tts")]

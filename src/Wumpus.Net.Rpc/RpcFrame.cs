@@ -22,8 +22,7 @@ namespace Wumpus.Events
         public Optional<ReadOnlyMemory<byte>> Data { get; set; }
 
         /// <summary> xxx </summary>
-        [ModelProperty("args")]
-        [ModelTypeSelector(nameof(Event), nameof(EventTypeSelector))]
+        [ModelProperty("args"), ModelTypeSelector(nameof(Event), nameof(EventTypeSelector))]
         public object Args { get; set; }
         
         private static Dictionary<RpcEventType, Type> EventTypeSelector => new Dictionary<RpcEventType, Type>()

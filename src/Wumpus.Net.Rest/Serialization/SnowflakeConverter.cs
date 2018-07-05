@@ -4,11 +4,11 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Serialization
 {
-    public class SnowflakeJsonConverter : ValueConverter<Snowflake>
+    public class SnowflakeConverter : ValueConverter<Snowflake>
     {
         private readonly ValueConverter<ulong> _valueConverter;
 
-        public SnowflakeJsonConverter(Serializer serializer, PropertyInfo propInfo)
+        public SnowflakeConverter(Serializer serializer, PropertyInfo propInfo)
         {
             _valueConverter = serializer.GetConverter<ulong>(propInfo, true);
         }

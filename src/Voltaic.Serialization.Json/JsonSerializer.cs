@@ -8,61 +8,70 @@ namespace Voltaic.Serialization.Json
 {
     public class JsonSerializer : Serializer
     {
-        public static StandardFormat BooleanFormat { get; } = new StandardFormat('l'); // true/false
-        public static StandardFormat FloatFormat { get; } = new StandardFormat('g'); // 1.245000e+1
-        public static StandardFormat IntFormat { get; } = new StandardFormat('d'); // 32767
+        internal static StandardFormat BooleanFormat { get; } = new StandardFormat('l'); // true/false
+        internal static StandardFormat FloatFormat { get; } = new StandardFormat('g'); // 1.245000e+1
+        internal static StandardFormat IntFormat { get; } = new StandardFormat('d'); // 32767
 
         public JsonSerializer(ConverterCollection converters = null, ArrayPool<byte> bytePool = null)
           : base(converters, bytePool)
         {
             // Integers
             _converters.SetDefault<sbyte, SByteJsonConverter>(
-                (s, t, p) => new SByteJsonConverter(GetStandardFormat(p)));
+                (t, p) => new SByteJsonConverter(GetStandardFormat(p)));
             _converters.SetDefault<byte, ByteJsonConverter>(
-                (s, t, p) => new ByteJsonConverter(GetStandardFormat(p)));
+                (t, p) => new ByteJsonConverter(GetStandardFormat(p)));
             _converters.SetDefault<short, Int16JsonConverter>(
-                (s, t, p) => new Int16JsonConverter(GetStandardFormat(p)));
+                (t, p) => new Int16JsonConverter(GetStandardFormat(p)));
             _converters.SetDefault<ushort, UInt16JsonConverter>(
-                (s, t, p) => new UInt16JsonConverter(GetStandardFormat(p)));
+                (t, p) => new UInt16JsonConverter(GetStandardFormat(p)));
             _converters.SetDefault<int, Int32JsonConverter>(
-                (s, t, p) => new Int32JsonConverter(GetStandardFormat(p)));
+                (t, p) => new Int32JsonConverter(GetStandardFormat(p)));
             _converters.SetDefault<uint, UInt32JsonConverter>(
-                (s, t, p) => new UInt32JsonConverter(GetStandardFormat(p)));
+                (t, p) => new UInt32JsonConverter(GetStandardFormat(p)));
             _converters.AddConditional<long, Int53JsonConverter>(
                 (t, p) => p?.GetCustomAttribute<Int53Attribute>() != null,
-                (s, t, p) => new Int53JsonConverter(GetStandardFormat(p)));
+                (t, p) => new Int53JsonConverter(GetStandardFormat(p)));
             _converters.AddConditional<ulong, UInt53JsonConverter>(
                 (t, p) => p?.GetCustomAttribute<Int53Attribute>() != null,
-                (s, t, p) => new UInt53JsonConverter(GetStandardFormat(p)));
+                (t, p) => new UInt53JsonConverter(GetStandardFormat(p)));
             _converters.SetDefault<long, Int64JsonConverter>(
-                (s, t, p) => new Int64JsonConverter(GetStandardFormat(p)));
+                (t, p) => new Int64JsonConverter(GetStandardFormat(p)));
             _converters.SetDefault<ulong, UInt64JsonConverter>(
-                (s, t, p) => new UInt64JsonConverter(GetStandardFormat(p)));
+                (t, p) => new UInt64JsonConverter(GetStandardFormat(p)));
 
             // Floats
             _converters.SetDefault<float, SingleJsonConverter>(
-                (s, t, p) => new SingleJsonConverter(GetStandardFormat(p)));
+                (t, p) => new SingleJsonConverter(GetStandardFormat(p)));
             _converters.SetDefault<double, DoubleJsonConverter>(
-                (s, t, p) => new DoubleJsonConverter(GetStandardFormat(p)));
+                (t, p) => new DoubleJsonConverter(GetStandardFormat(p)));
             _converters.SetDefault<decimal, DecimalJsonConverter>(
-                (s, t, p) => new DecimalJsonConverter(GetStandardFormat(p)));
+                (t, p) => new DecimalJsonConverter(GetStandardFormat(p)));
 
             // Dates/TimeSpans
             _converters.SetDefault<DateTime, DateTimeJsonConverter>(
-                (s, t, p) => new DateTimeJsonConverter(GetStandardFormat(p)));
+                (t, p) => new DateTimeJsonConverter(GetStandardFormat(p)));
             _converters.SetDefault<DateTimeOffset, DateTimeOffsetJsonConverter>(
-                (s, t, p) => new DateTimeOffsetJsonConverter(GetStandardFormat(p)));
+                (t, p) => new DateTimeOffsetJsonConverter(GetStandardFormat(p)));
             _converters.SetDefault<TimeSpan, TimeSpanJsonConverter>(
-                (s, t, p) => new TimeSpanJsonConverter(GetStandardFormat(p)));
+                (t, p) => new TimeSpanJsonConverter(GetStandardFormat(p)));
+            _converters.AddConditional<DateTime, DateTimeEpochConverter>(
+                (t, p) => p?.GetCustomAttribute<EpochAttribute>() != null,
+                (t, p) => new DateTimeEpochConverter(this, p.GetCustomAttribute<EpochAttribute>().Type));
+            _converters.AddConditional<DateTimeOffset, DateTimeOffsetEpochConverter>(
+                (t, p) => p?.GetCustomAttribute<EpochAttribute>() != null,
+                (t, p) => new DateTimeOffsetEpochConverter(this, p.GetCustomAttribute<EpochAttribute>().Type));
+            _converters.AddConditional<TimeSpan, TimeSpanEpochConverter>(
+                (t, p) => p?.GetCustomAttribute<EpochAttribute>() != null,
+                (t, p) => new TimeSpanEpochConverter(this, p.GetCustomAttribute<EpochAttribute>().Type));
 
             // Collections
-            _converters.AddGlobalConditional(typeof(ArrayJsonConverter<>), 
-                (t, p) => t.IsArray, 
+            _converters.AddGlobalConditional(typeof(ArrayJsonConverter<>),
+                (t, p) => t.IsArray,
                 (t) => t.GetElementType());
-            _converters.SetGenericDefault(typeof(List<>), typeof(ListJsonConverter<>), 
+            _converters.SetGenericDefault(typeof(List<>), typeof(ListJsonConverter<>),
                 (t) => t.GenericTypeArguments[0]);
-            _converters.AddGenericConditional(typeof(Dictionary<,>), typeof(DictionaryJsonConverter<>), 
-                (t, p) => t.GenericTypeArguments[0] == typeof(string), 
+            _converters.AddGenericConditional(typeof(Dictionary<,>), typeof(DictionaryJsonConverter<>),
+                (t, p) => t.GenericTypeArguments[0] == typeof(string),
                 (t) => t.GenericTypeArguments[1]);
 
             // Strings
@@ -88,10 +97,10 @@ namespace Voltaic.Serialization.Json
 
             // Others
             _converters.SetDefault<bool, BooleanJsonConverter>(
-                (s, t, p) => new BooleanJsonConverter(GetStandardFormat(p)));
+                (t, p) => new BooleanJsonConverter(GetStandardFormat(p)));
             _converters.SetDefault<Guid, GuidJsonConverter>(
-                (s, t, p) => new GuidJsonConverter(GetStandardFormat(p)));
-            _converters.SetGenericDefault(typeof(Nullable<>), typeof(NullableJsonConverter<>), 
+                (t, p) => new GuidJsonConverter(GetStandardFormat(p)));
+            _converters.SetGenericDefault(typeof(Nullable<>), typeof(NullableJsonConverter<>),
                 (t) => t.GenericTypeArguments[0]);
             _converters.SetGenericDefault(typeof(Optional<>), typeof(OptionalJsonConverter<>),
                 (t) => t.GenericTypeArguments[0]);
@@ -100,15 +109,24 @@ namespace Voltaic.Serialization.Json
                 (t) => t.AsType());
         }
 
-        public T Read<T>(ReadOnlyMemory<byte> utf8, ValueConverter<T> converter = null)
-            => base.Read<T>(utf8.Span, converter);
-        public new T Read<T>(ReadOnlySpan<byte> utf8, ValueConverter<T> converter = null)
-            => base.Read<T>(utf8, converter);
-        public T Read<T>(ReadOnlyMemory<char> utf16, ValueConverter<T> converter = null)
-            => Read<T>(utf16.Span, converter);
-        public T Read<T>(ReadOnlySpan<char> utf16, ValueConverter<T> converter = null)
+        public T ReadUtf8<T>(ResizableMemory<byte> data, ValueConverter<T> converter = null)
+            => Read(data.AsReadOnlySpan(), converter);
+        public T ReadUtf8<T>(ReadOnlyMemory<byte> data, ValueConverter<T> converter = null)
+            => Read(data.Span, converter);
+        public T ReadUtf8<T>(ReadOnlySpan<byte> data, ValueConverter<T> converter = null)
+            => Read(data, converter);
+        public T ReadUtf8<T>(Utf8String data, ValueConverter<T> converter = null)
+            => Read(data.Bytes, converter);
+        public T ReadUtf8<T>(Utf8Span data, ValueConverter<T> converter = null)
+            => Read(data.Bytes, converter);
+
+        public T ReadUtf16<T>(ResizableMemory<char> data, ValueConverter<T> converter = null)
+            => ReadUtf16(data.AsReadOnlySpan(), converter);
+        public T ReadUtf16<T>(ReadOnlyMemory<char> data, ValueConverter<T> converter = null)
+            => ReadUtf16(data.Span, converter);
+        public T ReadUtf16<T>(ReadOnlySpan<char> data, ValueConverter<T> converter = null)
         {
-            var utf16Bytes = MemoryMarshal.AsBytes(utf16);
+            var utf16Bytes = MemoryMarshal.AsBytes(data);
             if (Encodings.Utf16.ToUtf8Length(utf16Bytes, out int bytes) != OperationStatus.Done)
                 throw new SerializationException("Failed to convert to UTF8");
             var utf8 = _pool.Rent(bytes);
@@ -116,31 +134,29 @@ namespace Voltaic.Serialization.Json
             {
                 if (Encodings.Utf16.ToUtf8(utf16Bytes, MemoryMarshal.AsBytes(utf8.AsSpan()), out _, out _) != OperationStatus.Done)
                     throw new SerializationException("Failed to convert to UTF8");
-                return base.Read<T>(utf8.AsSpan(0, bytes), converter);
+                return Read(utf8.AsSpan(0, bytes), converter);
             }
             finally
             {
                 _pool.Return(utf8);
             }
         }
-        public T Read<T>(string utf16, ValueConverter<T> converter = null)
-            => Read<T>(utf16.AsSpan(), converter);
+        public T ReadUtf16<T>(string data, ValueConverter<T> converter = null)
+            => ReadUtf16(data.AsSpan(), converter);
 
         public ReadOnlyMemory<byte> WriteUtf8<T>(T value, ValueConverter<T> converter = null)
-            => base.Write<T>(value, converter).AsMemory();
-        public ReadOnlyMemory<byte> WriteUtf8(object value, object converter = null)
-            => base.Write(value, converter).AsMemory();
+            => Write(value, converter).AsReadOnlyMemory();
+        public ReadOnlyMemory<byte> WriteUtf8(object value, ValueConverter converter = null)
+            => Write(value, converter).AsReadOnlyMemory();
+        public Utf8String WriteUtf8String<T>(T value, ValueConverter<T> converter = null)
+            => new Utf8String(Write(value, converter).AsReadOnlySpan());
+        public Utf8String WriteUtf8String(object value, ValueConverter converter = null)
+            => new Utf8String(Write(value, converter).AsReadOnlySpan());
 
         public ReadOnlyMemory<char> WriteUtf16<T>(T value, ValueConverter<T> converter = null)
-        {
-            var data = base.Write<T>(value, converter);
-            return FinishWriteUtf16(data);
-        }
-        public ReadOnlyMemory<char> WriteUtf16(object value, object converter = null)
-        {
-            var data = base.Write(value, converter);
-            return FinishWriteUtf16(data);
-        }
+            => FinishWriteUtf16(Write(value, converter));
+        public ReadOnlyMemory<char> WriteUtf16(object value, ValueConverter converter = null)
+            => FinishWriteUtf16(Write(value, converter));
         private ReadOnlyMemory<char> FinishWriteUtf16(ResizableMemory<byte> data)
         {
             try
@@ -158,18 +174,11 @@ namespace Voltaic.Serialization.Json
                 _pool.Return(data.Array);
             }
         }
-
-        public string WriteString<T>(T value, ValueConverter<T> converter = null)
-        {
-            var data = base.Write(value, converter);
-            return FinishWriteString(data);
-        }
-        public string WriteString(object value, object converter = null)
-        {
-            var data = base.Write(value, converter);
-            return FinishWriteString(data);
-        }
-        private string FinishWriteString(ResizableMemory<byte> data)
+        public string WriteUtf16String<T>(T value, ValueConverter<T> converter = null)
+            => FinishWriteUtf16String(Write(value, converter));
+        public string WriteUtf16String(object value, ValueConverter converter = null)
+            => FinishWriteUtf16String(Write(value, converter));
+        private string FinishWriteUtf16String(ResizableMemory<byte> data)
         {
             try
             {
@@ -202,5 +211,12 @@ namespace Voltaic.Serialization.Json
                 return default;
             return attr.Format;
         }
+
+        internal new void RaiseUnknownProperty(ModelMap model, Utf8String propName)
+            => base.RaiseUnknownProperty(model, propName);
+        internal new void RaiseFailedProperty(ModelMap model, PropertyMap prop)
+            => base.RaiseFailedProperty(model, prop);
+        internal new void RaiseFailedProperty(PropertyMap prop, int i)
+            => base.RaiseFailedProperty(prop, i);
     }
 }

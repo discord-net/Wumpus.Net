@@ -62,7 +62,7 @@ namespace Wumpus.Entities
         [ModelProperty("last_message_id")]
         public Optional<Snowflake?> LastMessageId { get; set; }
         /// <summary> xxx </summary>
-        [ModelProperty("last_pin_timestamp")]
+        [ModelProperty("last_pin_timestamp"), StandardFormat('O')]
         public Optional<DateTimeOffset?> LastPinTimestamp { get; set; }
     }
 }

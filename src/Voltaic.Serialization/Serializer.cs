@@ -8,24 +8,29 @@ namespace Voltaic.Serialization
 {
     public abstract class Serializer
     {
+        public event Action<string> UnknownProperty;
+        public event Action<string> FailedProperty;
+
         protected readonly ArrayPool<byte> _pool;
         private static readonly MethodInfo _writeMethod
             = typeof(Serializer).GetTypeInfo().GetDeclaredMethods(nameof(WriteInternal))
             .Single(x => x.IsGenericMethodDefinition);
 
         protected readonly ConcurrentDictionary<Type, ModelMap> _modelMaps;
-        protected readonly ConcurrentDictionary<Type, Func<object, object, ResizableMemory<byte>>> _writeMethods;
+        protected readonly ConcurrentDictionary<Type, Func<object, ValueConverter, ResizableMemory<byte>>> _writeMethods;
         protected readonly ConverterCollection _converters;
 
         protected Serializer(ConverterCollection converters = null, ArrayPool<byte> pool = null)
         {
             _pool = pool ?? ArrayPool<byte>.Shared;
             _modelMaps = new ConcurrentDictionary<Type, ModelMap>();
-            _writeMethods = new ConcurrentDictionary<Type, Func<object, object, ResizableMemory<byte>>>();
+            _writeMethods = new ConcurrentDictionary<Type, Func<object, ValueConverter, ResizableMemory<byte>>>();
             _converters = converters ?? new ConverterCollection();
         }
 
-        public T Read<T>(ReadOnlySpan<byte> data, ValueConverter<T> converter = null)
+        public T Read<T>(ReadOnlyMemory<byte> data, ValueConverter<T> converter = null)
+            => Read<T>(data.Span, converter);
+        public virtual T Read<T>(ReadOnlySpan<byte> data, ValueConverter<T> converter = null)
         {
             if (converter == null)
                 converter = _converters.Get<T>(this);
@@ -34,39 +39,43 @@ namespace Voltaic.Serialization
             return result;
         }
 
-        public ResizableMemory<byte> Write(object value, object converter = null)
+        public ResizableMemory<byte> Write(object value, ValueConverter converter = null)
         {
             var type = value.GetType();
             var method = _writeMethods.GetOrAdd(type, t =>
             {
                 return _writeMethod.MakeGenericMethod(t)
-                    .CreateDelegate(typeof(Func<object, object, ResizableMemory<byte>>), this)
-                    as Func<object, object, ResizableMemory<byte>>;
+                    .CreateDelegate(typeof(Func<object, ValueConverter, ResizableMemory<byte>>), this)
+                    as Func<object, ValueConverter, ResizableMemory<byte>>;
             });
             return method.Invoke(value, converter);
         }
-        private ResizableMemory<byte> WriteInternal<T>(object value, object converter = null)
+        private ResizableMemory<byte> WriteInternal<T>(object value, ValueConverter converter = null)
             => Write((T)value, (ValueConverter<T>)converter);
         public ResizableMemory<byte> Write<T>(T value, ValueConverter<T> converter = null)
         {
             var writer = new ResizableMemory<byte>(1024, pool: _pool);
+            Write(value, ref writer, converter);
+            return writer;
+        }
+        public virtual void Write<T>(T value, ref ResizableMemory<byte> writer, ValueConverter<T> converter = null)
+        {
             if (converter == null)
                 converter = _converters.Get<T>(this);
             if (!converter.TryWrite(ref writer, value))
                 throw new SerializationException($"Failed to serialize {typeof(T).Name}");
-            return writer;
         }
 
-        public ModelMap GetMap(Type modelType, PropertyInfo propInfo = null)
+        public ModelMap GetMap(Type modelType)
         {
             return _modelMaps.GetOrAdd(modelType, _ =>
             {
                 var method = typeof(ModelMap<>).MakeGenericType(modelType).GetTypeInfo().DeclaredConstructors.Single();
-                return method.Invoke(new object[] { this, modelType.Name, propInfo }) as ModelMap;
+                return method.Invoke(new object[] { this, modelType.Name }) as ModelMap;
             });
         }
-        public ModelMap<T> GetMap<T>(PropertyInfo propInfo = null)
-            => _modelMaps.GetOrAdd(typeof(T), _ => new ModelMap<T>(this, typeof(T).Name, propInfo)) as ModelMap<T>;
+        public ModelMap<T> GetMap<T>()
+            => _modelMaps.GetOrAdd(typeof(T), _ => new ModelMap<T>(this)) as ModelMap<T>;
 
         public ValueConverter GetConverter(Type type, PropertyInfo propInfo = null, bool throwOnNotFound = false)
             => _converters.Get(this, type, propInfo, throwOnNotFound);
@@ -77,5 +86,30 @@ namespace Voltaic.Serialization
         public ValueConverter<T> GetConverter<T>(PropertyInfo propInfo = null, bool throwOnNotFound = false)
             => _converters.Get<T>(this, typeof(T), propInfo, throwOnNotFound);
 
+        protected void RaiseUnknownProperty(ModelMap model, Utf8String propName)
+        {
+            if (UnknownProperty != null)
+                UnknownProperty?.Invoke($"{model.Name}.{propName.ToString()}");
+        }
+        protected void RaiseUnknownProperty(ModelMap model, string propName)
+        {
+            if (UnknownProperty != null)
+                UnknownProperty?.Invoke($"{model.Name}.{propName}");
+        }
+        protected void RaiseFailedProperty(ModelMap model, PropertyMap prop)
+        {
+            if (FailedProperty != null)
+                FailedProperty?.Invoke($"{model.Name}.{prop.Name}");
+        }
+        protected void RaiseFailedProperty(PropertyMap prop, int i)
+        {
+            if (FailedProperty != null)
+            {
+                if (prop != null)
+                    FailedProperty?.Invoke($"{prop.Name}[{i}]");
+                else
+                    FailedProperty?.Invoke($"[{i}]");
+            }
+        }
     }
 }
