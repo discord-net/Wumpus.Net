@@ -8,7 +8,13 @@ namespace Voltaic.Serialization.Etf.Tests
     {
         public static IEnumerable<object[]> GetNumberData()
         {
-            throw new NotImplementedException();
+            yield return ReadWrite(EtfTokenType.NewFloat, new byte[] { 0xC7, 0xEF, 0xFF, 0xFF, 0xA0, 0x00, 0x00, 0x00 }, -3.402823e38f); // Min
+            yield return ReadWrite(EtfTokenType.NewFloat, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 0);
+            yield return ReadWrite(EtfTokenType.NewFloat, new byte[] { 0x47, 0xEF, 0xFF, 0xFF, 0xA0, 0x00, 0x00, 0x00 }, 3.402823e38f); // Max
+
+            yield return ReadWrite(EtfTokenType.NewFloat, new byte[] { 0x7F, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, float.PositiveInfinity);
+            yield return ReadWrite(EtfTokenType.NewFloat, new byte[] { 0xFF, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, float.NegativeInfinity);
+            yield return ReadWrite(EtfTokenType.NewFloat, new byte[] { 0xFF, 0xF8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, float.NaN);
         }
         public static IEnumerable<object[]> GetGData() => TextToBinary(Utf8.Tests.SingleTests.GetGData());
         public static IEnumerable<object[]> GetLittleGData() => TextToBinary(Utf8.Tests.SingleTests.GetLittleGData());
@@ -40,7 +46,13 @@ namespace Voltaic.Serialization.Etf.Tests
     {
         public static IEnumerable<object[]> GetNumberData()
         {
-            throw new NotImplementedException();
+            yield return ReadWrite(EtfTokenType.NewFloat, new byte[] { 0xFF, 0xEF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }, -1.7976931348623157e308d); // Min
+            yield return ReadWrite(EtfTokenType.NewFloat, new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 0d);
+            yield return ReadWrite(EtfTokenType.NewFloat, new byte[] { 0x7F, 0xEF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }, 1.7976931348623157e308d); // Max
+
+            yield return ReadWrite(EtfTokenType.NewFloat, new byte[] { 0x7F, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, double.PositiveInfinity);
+            yield return ReadWrite(EtfTokenType.NewFloat, new byte[] { 0xFF, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, double.NegativeInfinity);
+            yield return ReadWrite(EtfTokenType.NewFloat, new byte[] { 0xFF, 0xF8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, double.NaN);
         }
         public static IEnumerable<object[]> GetGData() => TextToBinary(Utf8.Tests.DoubleTests.GetGData());
         public static IEnumerable<object[]> GetLittleGData() => TextToBinary(Utf8.Tests.DoubleTests.GetLittleGData());

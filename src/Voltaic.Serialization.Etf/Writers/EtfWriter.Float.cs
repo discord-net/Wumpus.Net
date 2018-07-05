@@ -9,11 +9,24 @@ namespace Voltaic.Serialization.Etf
     {
         public static bool TryWrite(ref ResizableMemory<byte> writer, float value, StandardFormat standardFormat)
         {
+            // TODO: Untested, does Discord have any endpoints that accept floats?
             if (standardFormat.IsDefault)
             {
-                Span<float> arr = stackalloc float[] { value };
                 writer.Push((byte)EtfTokenType.NewFloat);
-                MemoryMarshal.AsBytes(arr).CopyTo(writer.GetSpan(8));
+
+                // Swap endian
+                Span<double> src = stackalloc double[] { value };
+                var srcBytes = MemoryMarshal.AsBytes(src);
+                var dst = writer.GetSpan(8);
+                
+                dst[0] = srcBytes[7];
+                dst[1] = srcBytes[6];
+                dst[2] = srcBytes[5];
+                dst[3] = srcBytes[4];
+                dst[4] = srcBytes[3];
+                dst[5] = srcBytes[2];
+                dst[6] = srcBytes[1];
+                dst[7] = srcBytes[0];
                 writer.Advance(8);
             }
             else
@@ -34,11 +47,24 @@ namespace Voltaic.Serialization.Etf
 
         public static bool TryWrite(ref ResizableMemory<byte> writer, double value, StandardFormat standardFormat)
         {
+            // TODO: Untested, does Discord have any endpoints that accept floats?
             if (standardFormat.IsDefault)
             {
-                Span<float> arr = stackalloc float[] { (float)value };
                 writer.Push((byte)EtfTokenType.NewFloat);
-                MemoryMarshal.AsBytes(arr).CopyTo(writer.GetSpan(8));
+
+                // Swap endian
+                Span<double> src = stackalloc double[] { value };
+                var srcBytes = MemoryMarshal.AsBytes(src);
+                var dst = writer.GetSpan(8);
+
+                dst[0] = srcBytes[7];
+                dst[1] = srcBytes[6];
+                dst[2] = srcBytes[5];
+                dst[3] = srcBytes[4];
+                dst[4] = srcBytes[3];
+                dst[5] = srcBytes[2];
+                dst[6] = srcBytes[1];
+                dst[7] = srcBytes[0];
                 writer.Advance(8);
             }
             else
