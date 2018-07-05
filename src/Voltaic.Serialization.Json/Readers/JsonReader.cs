@@ -79,7 +79,7 @@ namespace Voltaic.Serialization.Json
             var currentToken = JsonTokenType.None;
 
             int i = 0;
-            for (; i < remaining.Length; i++)
+            for (; i < remaining.Length || currentToken != JsonTokenType.None;)
             {
                 byte c = remaining[i];
                 switch (c)
@@ -88,41 +88,48 @@ namespace Voltaic.Serialization.Json
                     case (byte)'\n':
                     case (byte)'\r':
                     case (byte)'\t':
+                        i++;
                         continue;
                     case (byte)'{':
+                        i++;
                         stack.Push((byte)currentToken);
                         currentToken = JsonTokenType.StartObject;
                         break;
                     case (byte)'}':
                         if (currentToken != JsonTokenType.StartObject)
                             return false;
+                        i++;
                         currentToken = (JsonTokenType)stack.Pop();
                         break;
                     case (byte)'[':
+                        i++;
                         stack.Push((byte)currentToken);
                         currentToken = JsonTokenType.StartArray;
                         break;
                     case (byte)']':
                         if (currentToken != JsonTokenType.StartArray)
                             return false;
+                        i++;
                         currentToken = (JsonTokenType)stack.Pop();
                         break;
                     case (byte)',':
                         if (currentToken != JsonTokenType.StartObject && currentToken != JsonTokenType.StartArray)
                             return false;
+                        i++;
                         break;
                     case (byte)':':
                         if (currentToken != JsonTokenType.StartObject)
                             return false;
+                        i++;
                         break;
                     case (byte)'n':
-                        i += 3; // ull
+                        i += 4; // ull
                         break;
                     case (byte)'t':
-                        i += 3; // rue
+                        i += 4; // rue
                         break;
                     case (byte)'f':
-                        i += 4; // alse
+                        i += 5; // alse
                         break;
                     case (byte)'"':
                         i++;
@@ -135,6 +142,7 @@ namespace Voltaic.Serialization.Json
                                     i += 2; // Skip next char
                                     continue;
                                 case (byte)'"':
+                                    i++;
                                     incomplete = false;
                                     break;
                                 default:
@@ -157,6 +165,7 @@ namespace Voltaic.Serialization.Json
                     case (byte)'7':
                     case (byte)'8':
                     case (byte)'9':
+                        i++;
                         while (i < remaining.Length)
                         {
                             switch (remaining[i])
@@ -178,8 +187,7 @@ namespace Voltaic.Serialization.Json
                                 case (byte)'E':
                                     i++;
                                     continue;
-                                default:
-                                    i--; // Crossed into next token
+                                default: // Crossed into next token
                                     break;
                             }
                             break;
@@ -187,12 +195,6 @@ namespace Voltaic.Serialization.Json
                         break;
                     default:
                         return false;
-                }
-
-                if (currentToken == JsonTokenType.None)
-                {
-                    i++;
-                    break;
                 }
             }
 

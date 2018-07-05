@@ -108,11 +108,34 @@ namespace Voltaic.Serialization.Json.Tests
             var utf16Bytes = MemoryMarshal.AsBytes(str.AsSpan());
             if (Encodings.Utf16.ToUtf8Length(utf16Bytes, out int count) != OperationStatus.Done)
                 throw new SerializationException("Failed to convert to UTF8");
-            var utf8 = new byte[count];
-            if (Encodings.Utf16.ToUtf8(utf16Bytes, utf8.AsSpan(), out _, out _) != OperationStatus.Done)
+            var utf8Bytes = new byte[count];
+            if (Encodings.Utf16.ToUtf8(utf16Bytes, utf8Bytes.AsSpan(), out _, out _) != OperationStatus.Done)
                 throw new SerializationException("Failed to convert to UTF8");
-            var span = new ReadOnlySpan<byte>(utf8);
-            return JsonReader.Skip(ref span, out _) && span.Length == 0;
+            var span = new ReadOnlySpan<byte>(utf8Bytes);
+            if (!JsonReader.Skip(ref span, out var skipped))
+                return false;
+
+            int whitespace = 0;
+            if (span.Length != 0)
+            {
+                for (int i = 0; i < span.Length; i++)
+                {
+                    switch (span[i])
+                    {
+                        case (byte)' ': // Whitespace
+                        case (byte)'\n':
+                        case (byte)'\r':
+                        case (byte)'\t':
+                            whitespace++;
+                            break;
+                        default:
+                            return false;
+                    }
+                }
+            }
+            if (skipped.Length != utf8Bytes.Length - whitespace)
+                return false;
+            return true;
         }
     }
 }

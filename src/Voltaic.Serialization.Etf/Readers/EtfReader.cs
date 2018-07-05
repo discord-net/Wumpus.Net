@@ -106,8 +106,8 @@ namespace Voltaic.Serialization.Etf
                         if (remaining.Length < len + 1)
                             return false;
 
-                        skipped = remaining.Slice(0, len + 1);
-                        remaining = remaining.Slice(len + 1);
+                        skipped = remaining.Slice(0, len + 2);
+                        remaining = remaining.Slice(len + 2);
                         return true;
                     }
 

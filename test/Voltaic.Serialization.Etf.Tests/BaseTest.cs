@@ -121,7 +121,13 @@ namespace Voltaic.Serialization.Etf.Tests
         private static bool TestSkip(ReadOnlyMemory<byte> bytes)
         {
             var span = bytes.Span.Slice(1);
-            return EtfReader.Skip(ref span, out _) && span.Length == 0;
+            if (!EtfReader.Skip(ref span, out var skipped))
+                return false;
+            if (span.Length != 0)
+                return false;
+            if (skipped.Length != bytes.Length - 1)
+                return false;
+            return true;
         }
     }
 }
