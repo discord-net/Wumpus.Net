@@ -286,7 +286,7 @@ namespace Voltaic.Serialization.Json
 
     public class StringJsonConverter : ValueConverter<string>
     {
-        public override bool CanWrite(string value, PropertyMap propMa = nullp)
+        public override bool CanWrite(string value, PropertyMap propMap = null)
             => propMap == null || (!propMap.ExcludeDefault && !propMap.ExcludeNull) || !(value is null);
         public override bool TryRead(ref ReadOnlySpan<byte> remaining, out string result, PropertyMap propMap = null)
         {
