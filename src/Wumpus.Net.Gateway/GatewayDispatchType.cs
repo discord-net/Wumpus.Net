@@ -16,8 +16,6 @@ namespace Wumpus.Events
         [ModelEnumValue("GUILD_DELETE")] GuildDelete,
         /// <summary> <see cref="Entities.Guild"/> <see cref="Entities.Emoji"/>s were updated. </summary>
         [ModelEnumValue("GUILD_EMOJIS_UPDATE")] GuildEmojisUpdate,
-        // TODO: Remove, undocumented?
-        [ModelEnumValue("GUILD_SYNC")] GuildSync,
         /// <summary> New <see cref="Entities.Channel"/> created. </summary>
         [ModelEnumValue("CHANNEL_CREATE")] ChannelCreate,
         /// <summary> <see cref="Entities.Channel"/> was updated. </summary>
@@ -32,10 +30,6 @@ namespace Wumpus.Events
         [ModelEnumValue("GUILD_MEMBER_REMOVE")] GuildMemberRemove,
         /// <summary> Response to <see cref="GatewayOpCode.RequestGuildMembers"/>. </summary>
         [ModelEnumValue("GUILD_MEMBERS_CHUNK")] GuildMembersChunk,
-        // TODO: Remove, undocumented?
-        [ModelEnumValue("CHANNEL_RECIPIENT_ADD")] ChannelRecipientAdd,
-        // TODO: Remove, undocumented?
-        [ModelEnumValue("CHANNEL_RECIPIENT_REMOVE")] ChannelRecipientRemove,
         /// <summary> <see cref="Entities.Guild"/> <see cref="Entities.Role"/> was created. </summary>
         [ModelEnumValue("GUILD_ROLE_CREATE")] GuildRoleCreate,
         /// <summary> <see cref="Entities.Guild"/> <see cref="Entities.Role"/> was updated. </summary>
