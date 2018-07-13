@@ -9,7 +9,7 @@ namespace Wumpus.Events
     ///     The ready event can be the largest and most complex event the gateway will send, as it contains all the state required for a client to begin interacting with the rest of the platform.
     ///     https://discordapp.com/developers/docs/topics/gateway#ready
     /// </summary>
-    public class SocketReadyEvent
+    public class GatewayReadyEvent
     {
         /// <summary> xxx </summary>
         public class ReadState

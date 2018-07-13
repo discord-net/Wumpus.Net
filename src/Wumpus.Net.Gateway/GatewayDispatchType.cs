@@ -28,7 +28,7 @@ namespace Wumpus.Events
         [ModelEnumValue("GUILD_MEMBER_UPDATE")] GuildMemberUpdate,
         /// <summary> <see cref="Entities.User"/> was removed from a <see cref="Entities.Guild"/>. </summary>
         [ModelEnumValue("GUILD_MEMBER_REMOVE")] GuildMemberRemove,
-        /// <summary> Response to <see cref="GatewayOpCode.RequestGuildMembers"/>. </summary>
+        /// <summary> Response to <see cref="GatewayOperation.RequestGuildMembers"/>. </summary>
         [ModelEnumValue("GUILD_MEMBERS_CHUNK")] GuildMembersChunk,
         /// <summary> <see cref="Entities.Guild"/> <see cref="Entities.Role"/> was created. </summary>
         [ModelEnumValue("GUILD_ROLE_CREATE")] GuildRoleCreate,

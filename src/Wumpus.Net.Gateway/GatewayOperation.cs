@@ -5,7 +5,7 @@
     ///     Your connection to our gateway may also sometimes close. When it does, you will receive a close code that tells you what happened.
     ///     https://discordapp.com/developers/docs/topics/opcodes-and-status-codes#gateway-opcodes 
     /// </summary>
-    public enum GatewayOpCode : byte
+    public enum GatewayOperation : byte
     {
         /// <summary> C←S - Used to send most events. </summary>
         Dispatch = 0,

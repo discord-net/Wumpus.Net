@@ -4,7 +4,7 @@ using Voltaic.Serialization;
 namespace Wumpus.Events
 {
     /// <summary> 
-    ///     The resumed event is dispatched when a client has sent a <see cref="GatewayOpCode.Resume"/> to the gateway (for resuming existing sessions).
+    ///     The resumed event is dispatched when a client has sent a <see cref="GatewayOperation.Resume"/> to the gateway (for resuming existing sessions).
     ///     https://discordapp.com/developers/docs/topics/gateway#resumed
     /// </summary>
     public class ResumedEvent

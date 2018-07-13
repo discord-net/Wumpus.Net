@@ -11,7 +11,7 @@ namespace Wumpus.Events
     {
         /// <summary> Opcode for the <see cref="GatewayPayload"/>. </summary>
         [ModelProperty("op")]
-        public GatewayOpCode Operation { get; set; }
+        public GatewayOperation Operation { get; set; }
         /// <summary> The event name for this <see cref="GatewayPayload"/>. </summary>
         [ModelProperty("t", ExcludeNull = true)]
         public GatewayDispatchType? DispatchType { get; set; }
@@ -25,27 +25,26 @@ namespace Wumpus.Events
             ModelTypeSelector(nameof(DispatchType), nameof(DispatchTypeSelector))]
         public object Payload { get; set; }
 
-        private static Dictionary<GatewayOpCode, Type> OpCodeTypeSelector => new Dictionary<GatewayOpCode, Type>()
+        private static Dictionary<GatewayOperation, Type> OpCodeTypeSelector => new Dictionary<GatewayOperation, Type>()
         {
-            [GatewayOpCode.Hello] = typeof(HelloEvent),
-            [GatewayOpCode.InvalidSession] = typeof(bool),
+            [GatewayOperation.Hello] = typeof(HelloEvent),
+            [GatewayOperation.InvalidSession] = typeof(bool),
 
-            [GatewayOpCode.Identify] = typeof(IdentifyParams),
-            [GatewayOpCode.Resume] = typeof(ResumeParams),
-            [GatewayOpCode.Heartbeat] = typeof(int?),
-            [GatewayOpCode.RequestGuildMembers] = typeof(RequestMembersParams),
-            [GatewayOpCode.VoiceStateUpdate] = typeof(UpdateVoiceStateParams),
-            [GatewayOpCode.StatusUpdate] = typeof(UpdateStatusParams)
+            [GatewayOperation.Identify] = typeof(IdentifyParams),
+            [GatewayOperation.Resume] = typeof(ResumeParams),
+            [GatewayOperation.Heartbeat] = typeof(int?),
+            [GatewayOperation.RequestGuildMembers] = typeof(RequestMembersParams),
+            [GatewayOperation.VoiceStateUpdate] = typeof(UpdateVoiceStateParams),
+            [GatewayOperation.StatusUpdate] = typeof(UpdateStatusParams)
         };
 
         private static Dictionary<GatewayDispatchType?, Type> DispatchTypeSelector => new Dictionary<GatewayDispatchType?, Type>()
         {
-            [GatewayDispatchType.Ready] = typeof(SocketReadyEvent),
+            [GatewayDispatchType.Ready] = typeof(GatewayReadyEvent),
             [GatewayDispatchType.GuildCreate] = typeof(GatewayGuild),
             [GatewayDispatchType.GuildUpdate] = typeof(Guild),
             [GatewayDispatchType.GuildDelete] = typeof(GatewayGuild),
             [GatewayDispatchType.GuildEmojisUpdate] = typeof(GuildEmojiUpdateEvent),
-            [GatewayDispatchType.GuildSync] = typeof(GuildSyncEvent),
             [GatewayDispatchType.ChannelCreate] = typeof(Channel),
             [GatewayDispatchType.ChannelUpdate] = typeof(Channel),
             [GatewayDispatchType.ChannelDelete] = typeof(Channel),
@@ -53,8 +52,6 @@ namespace Wumpus.Events
             [GatewayDispatchType.GuildMemberUpdate] = typeof(GuildMemberUpdateEvent),
             [GatewayDispatchType.GuildMemberRemove] = typeof(GuildMemberRemoveEvent),
             [GatewayDispatchType.GuildMembersChunk] = typeof(GuildMembersChunkEvent),
-            [GatewayDispatchType.ChannelRecipientAdd] = typeof(RecipientEvent),
-            [GatewayDispatchType.ChannelRecipientRemove] = typeof(RecipientEvent),
             [GatewayDispatchType.GuildRoleCreate] = typeof(GuildRoleCreateEvent),
             [GatewayDispatchType.GuildRoleUpdate] = typeof(GuildRoleUpdateEvent),
             [GatewayDispatchType.GuildRoleDelete] = typeof(GuildRoleDeleteEvent),

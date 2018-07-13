@@ -4,7 +4,7 @@ using Voltaic.Serialization;
 namespace Wumpus.Events
 {
     /// <summary> 
-    ///     Sent in response to <see cref="GatewayOpCode.RequestGuildMembers"/>.
+    ///     Sent in response to <see cref="GatewayOperation.RequestGuildMembers"/>.
     ///     https://discordapp.com/developers/docs/topics/gateway#guild-members-chunk
     /// </summary>
     public class GuildMembersChunkEvent

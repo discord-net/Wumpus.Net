@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Net.WebSockets;
 using System.Runtime.InteropServices;
@@ -25,8 +26,8 @@ namespace Wumpus
     {
         public event Action Connected;
         public event Action<Exception> Disconnected;
-        public event Action<GatewayFrame, ReadOnlyMemory<byte>> ReceivedPayload;
-        public event Action<GatewayFrame, ReadOnlyMemory<byte>> SentPayload;
+        public event Action<GatewayPayload, ReadOnlyMemory<byte>> ReceivedPayload;
+        public event Action<GatewayPayload, ReadOnlyMemory<byte>> SentPayload;
 
         private static Utf8String LibraryName { get; } = new Utf8String("Wumpus.Net");
         private static Utf8String OsName { get; } =
@@ -43,7 +44,7 @@ namespace Wumpus
         private ConnectionState _state;
         private Task _connectionTask;
         private CancellationTokenSource _connectionCts;
-        private BlockingCollection<GatewayFrame> _sendQueue;
+        private BlockingCollection<GatewayPayload> _sendQueue;
         private int _lastSeq;
         private string _lastUrl;
         private int? _lastShardId;
@@ -60,7 +61,7 @@ namespace Wumpus
             _stateLock = new SemaphoreSlim(1, 1);
             _connectionTask = Task.CompletedTask;
             _connectionCts = new CancellationTokenSource();
-            _sendQueue = new BlockingCollection<GatewayFrame>();
+            _sendQueue = new BlockingCollection<GatewayPayload>();
         }
 
         public async Task ConnectAsync(string url, int? shardId = null, int? totalShards = null, UpdateStatusParams initialPresence = null)
@@ -75,7 +76,7 @@ namespace Wumpus
                 _lastShardId = shardId;
                 _lastTotalShards = totalShards;
                 _connectionCts = new CancellationTokenSource();
-                _sendQueue = new BlockingCollection<GatewayFrame>();
+                _sendQueue = new BlockingCollection<GatewayPayload>();
                 connectResult = new TaskCompletionSource<bool>();
                 _connectionTask = RunAsync(url, shardId, totalShards, initialPresence, false, _connectionCts.Token, connectResult);
             }
@@ -96,7 +97,7 @@ namespace Wumpus
                 await StopAsync().ConfigureAwait(false);
 
                 _connectionCts = new CancellationTokenSource();
-                _sendQueue = new BlockingCollection<GatewayFrame>();
+                _sendQueue = new BlockingCollection<GatewayPayload>();
                 connectResult = new TaskCompletionSource<bool>();
                 _connectionTask = RunAsync(_lastUrl, _lastShardId, _lastTotalShards, null, true, _connectionCts.Token, connectResult);
             }
@@ -125,8 +126,8 @@ namespace Wumpus
         {
             // TODO: Add timeout
             int heartbeatRate;
-            Task[] tasks = null;
             Exception disconnectEx = null;
+            List<Task> tasks = new List<Task>();
             try
             {
                 _state = ConnectionState.Connecting;
@@ -140,13 +141,16 @@ namespace Wumpus
                     throw new Exception("First frame was not a HELLO frame");
                 heartbeatRate = helloEvent.HeartbeatInterval;
 
+                tasks.Add(RunSendAsync(cancelToken)); // Start send loop
+                tasks.Add(RunHeartbeatAsync(heartbeatRate, cancelToken)); // Start heartbeat loop
+
                 if (!isResume)
                 {
                     // Send IDENTITY
                     _sessionId = (Utf8String)null;
-                    var identityFrame = new GatewayFrame
+                    var identityFrame = new GatewayPayload
                     {
-                        Operation = GatewayOpCode.Identify,
+                        Operation = GatewayOperation.Identify,
                         Payload = new IdentifyParams
                         {
                             Compress = false, // TODO: true
@@ -162,34 +166,31 @@ namespace Wumpus
                             Token = Authorization != null ? new Utf8String(Authorization.Parameter) : null
                         }
                     };
-                    await SendAsync(identityFrame, cancelToken).ConfigureAwait(false);
+                    Send(identityFrame);
                 }
                 else
                 {
                     // Send RESUME
-                    var resumeFrame = new GatewayFrame
+                    var resumeFrame = new GatewayPayload
                     {
-                        Operation = GatewayOpCode.Resume,
+                        Operation = GatewayOperation.Resume,
                         Payload = new ResumeParams
                         {
                             Sequence = _lastSeq,
                             SessionId = _sessionId // TODO: Handle READY and get sessionId
                         }
                     };
-                    await SendAsync(resumeFrame, cancelToken).ConfigureAwait(false);
+                    Send(resumeFrame);
                 }
+                
+                // Manual receive logic is done, it's safe to push this to another thread
+                tasks.Add(RunReceiveAsync(cancelToken)); 
 
                 _lastSeq = 0;
                 _state = ConnectionState.Connected;
                 Connected?.Invoke();
                 connectResult.SetResult(true);
 
-                tasks = new Task[]
-                {
-                    RunReceiveAsync(cancelToken),
-                    RunSendAsync(cancelToken),
-                    RunHeartbeatAsync(heartbeatRate, cancelToken)
-                };
                 await Task.WhenAny(tasks).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -241,7 +242,9 @@ namespace Wumpus
                     while (!cancelToken.IsCancellationRequested)
                     {
                         var payload = _sendQueue.Take(cancelToken);
-                        await SendAsync(payload, cancelToken).ConfigureAwait(false);
+                        var writer = _serializer.Write(payload);
+                        await _client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
+                        SentPayload?.Invoke(payload, writer.AsReadOnlyMemory());
                     }
                 }
                 catch (OperationCanceledException) { } // Ignore
@@ -281,23 +284,13 @@ namespace Wumpus
             _client.Dispose();
         }
 
-        public void Send(GatewayFrame payload)
+        public void Send(GatewayPayload payload)
         {
             if (!_connectionCts.IsCancellationRequested)
                 _sendQueue.Add(payload);
         }
 
-        private async Task SendAsync(GatewayFrame payload, CancellationToken cancelToken)
-        {
-            if (!_connectionCts.IsCancellationRequested)
-            {
-                var writer = _serializer.Write(payload);
-                await _client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
-                SentPayload?.Invoke(payload, writer.AsReadOnlyMemory());
-            }
-        }
-
-        private async Task<GatewayFrame> ReceiveAsync(CancellationToken cancelToken)
+        private async Task<GatewayPayload> ReceiveAsync(CancellationToken cancelToken)
         {
             _receiveBuffer.Clear();
 
@@ -318,7 +311,7 @@ namespace Wumpus
             }
             while (!result.EndOfMessage);
 
-            var payload = _serializer.Read<GatewayFrame>(_receiveBuffer.AsReadOnlySpan());
+            var payload = _serializer.Read<GatewayPayload>(_receiveBuffer.AsReadOnlySpan());
 
             if (payload.Sequence.HasValue)
                 _lastSeq = payload.Sequence.Value;
@@ -332,7 +325,8 @@ namespace Wumpus
             switch (frame.Operation)
             {
                 case GatewayOperation.Dispatch:
-                    await HandleDispatchEventAsync(frame);
+                    HandleDispatchEvent(frame);
+                    break;
             }
         }
 
@@ -340,12 +334,17 @@ namespace Wumpus
         {
             switch (frame.DispatchType)
             {
+                case GatewayDispatchType.Ready:
+                    if (!(frame.Payload is GatewayReadyEvent readyEvent))
+                        throw new Exception("Failed to deserialize READY event"); // TODO: Exception type?
+                    _sessionId = readyEvent.SessionId;
+                    break;
             }
         }
 
-        public void SendHeartbeat() => Send(new GatewayFrame
+        public void SendHeartbeat() => Send(new GatewayPayload
         {
-            Operation = GatewayOpCode.Heartbeat,
+            Operation = GatewayOperation.Heartbeat,
             Payload = _lastSeq == 0 ? (int?)null : _lastSeq
         });
     }
