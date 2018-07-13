@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Wumpus.Events
 {
     /// <summary> xxx </summary>
-    public class RpcFrame
+    public class RpcPayload
     {
         /// <summary> xxx </summary>
         [ModelProperty("cmd")]

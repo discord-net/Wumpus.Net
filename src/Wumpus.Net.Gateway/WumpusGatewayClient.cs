@@ -136,9 +136,9 @@ namespace Wumpus
                 await _client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);
 
                 // Receive HELLO
-                var helloFrame = await ReceiveAsync(cancelToken);
-                if (!(helloFrame.Payload is HelloEvent helloEvent))
-                    throw new Exception("First frame was not a HELLO frame");
+                var evnt = await ReceiveAsync(cancelToken);
+                if (!(evnt.Data is HelloEvent helloEvent))
+                    throw new Exception("First event was not a HELLO event");
                 heartbeatRate = helloEvent.HeartbeatInterval;
 
                 tasks.Add(RunSendAsync(cancelToken)); // Start send loop
@@ -148,10 +148,10 @@ namespace Wumpus
                 {
                     // Send IDENTITY
                     _sessionId = (Utf8String)null;
-                    var identityFrame = new GatewayPayload
+                    var identityEvent = new GatewayPayload
                     {
                         Operation = GatewayOperation.Identify,
-                        Payload = new IdentifyParams
+                        Data = new IdentifyParams
                         {
                             Compress = false, // TODO: true
                             LargeThreshold = 50,
@@ -166,21 +166,21 @@ namespace Wumpus
                             Token = Authorization != null ? new Utf8String(Authorization.Parameter) : null
                         }
                     };
-                    Send(identityFrame);
+                    Send(identityEvent);
                 }
                 else
                 {
                     // Send RESUME
-                    var resumeFrame = new GatewayPayload
+                    var resumeEvent = new GatewayPayload
                     {
                         Operation = GatewayOperation.Resume,
-                        Payload = new ResumeParams
+                        Data = new ResumeParams
                         {
                             Sequence = _lastSeq,
                             SessionId = _sessionId // TODO: Handle READY and get sessionId
                         }
                     };
-                    Send(resumeFrame);
+                    Send(resumeEvent);
                 }
                 
                 // Manual receive logic is done, it's safe to push this to another thread
@@ -320,22 +320,22 @@ namespace Wumpus
             return payload;
         }
 
-        private void HandleFrame(GatewayPayload frame)
+        private void HandleEvent(GatewayPayload evnt)
         {
-            switch (frame.Operation)
+            switch (evnt.Operation)
             {
                 case GatewayOperation.Dispatch:
-                    HandleDispatchEvent(frame);
+                    HandleDispatchEvent(evnt);
                     break;
             }
         }
 
-        private void HandleDispatchEvent(GatewayPayload frame)
+        private void HandleDispatchEvent(GatewayPayload evnt)
         {
-            switch (frame.DispatchType)
+            switch (evnt.DispatchType)
             {
                 case GatewayDispatchType.Ready:
-                    if (!(frame.Payload is GatewayReadyEvent readyEvent))
+                    if (!(evnt.Data is GatewayReadyEvent readyEvent))
                         throw new Exception("Failed to deserialize READY event"); // TODO: Exception type?
                     _sessionId = readyEvent.SessionId;
                     break;
@@ -345,7 +345,7 @@ namespace Wumpus
         public void SendHeartbeat() => Send(new GatewayPayload
         {
             Operation = GatewayOperation.Heartbeat,
-            Payload = _lastSeq == 0 ? (int?)null : _lastSeq
+            Data = _lastSeq == 0 ? (int?)null : _lastSeq
         });
     }
 }
