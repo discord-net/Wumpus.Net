@@ -3,7 +3,10 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Events
 {
-    /// <summary> xxx </summary>
+    /// <summary> 
+    ///     Sent when a <see cref="GuildMember"/> is updated.
+    ///     https://discordapp.com/developers/docs/topics/gateway#guild-member-update
+    /// </summary>
     public class GuildMemberUpdateEvent : GuildMember
     {
         /// <summary> xxx </summary>

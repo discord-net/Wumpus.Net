@@ -1,32 +1,35 @@
 ﻿using Voltaic.Serialization;
 using System;
+using Voltaic;
 
 namespace Wumpus.Entities
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/guild#guild-object </summary>
     public class GatewayGuild : Guild
     {
-        /// <summary> xxx </summary>
+        /// <summary> Without the <see cref="GatewayGuild"/> Id. </summary>
+        [ModelProperty("voice_states")]
+        public Optional<VoiceState[]> VoiceStates { get; set; }
+        /// <summary> Is this <see cref="GatewayGuild"/> unavailable? </summary>
         [ModelProperty("unavailable")]
-        public bool? Unavailable { get; set; }
-        /// <summary> xxx </summary>
+        public Optional<bool> Unavailable { get; set; }
+        /// <summary> Total number of <see cref="GuildMember"/> entities in this <see cref="GatewayGuild"/>. </summary>
         [ModelProperty("member_count")]
-        public int MemberCount { get; set; }
-        /// <summary> xxx </summary>
+        public Optional<int> MemberCount { get; set; }
+        /// <summary> Whether this is considered a large <see cref="GatewayGuild"/>. </summary>
         [ModelProperty("large")]
-        public bool Large { get; set; }
-
-        /// <summary> xxx </summary>
+        public Optional<bool> Large { get; set; }
+        /// <summary> <see cref="Presence"/> entities of the <see cref="GuildMember"/> entites in the <see cref="GatewayGuild"/>. </summary>
         [ModelProperty("presences")]
-        public Presence[] Presences { get; set; }
-        /// <summary> xxx </summary>
+        public Optional<Presence[]> Presences { get; set; }
+        /// <summary> <see cref="GuildMember"/> entities in the <see cref="GatewayGuild"/>. </summary>
         [ModelProperty("members")]
-        public GuildMember[] Members { get; set; }
-        /// <summary> xxx </summary>
+        public Optional<GuildMember[]> Members { get; set; }
+        /// <summary> <see cref="Channel"/> entities in the <see cref="GatewayGuild"/>. </summary>
         [ModelProperty("channels")]
-        public Channel[] Channels { get; set; }
-        /// <summary> xxx </summary>
+        public Optional<Channel[]> Channels { get; set; }
+        /// <summary> When this <see cref="GatewayGuild"/> was joined at. </summary>
         [ModelProperty("joined_at"), StandardFormat('O')]
-        public DateTimeOffset JoinedAt { get; set; }
+        public Optional<DateTimeOffset> JoinedAt { get; set; }
     }
 }

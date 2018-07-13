@@ -5,32 +5,29 @@ using Voltaic;
 
 namespace Wumpus.Requests
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/webhook#execute-webhook-jsonform-params </summary>
     public class ExecuteWebhookParams : QueryMap, IFormData
     {
-        /// <summary> xxx </summary>
+        /// <summary> The <see cref="Message"/> contents. </summary>
         [ModelProperty("content")]
         public Optional<Utf8String> Content { get; set; }
-        /// <summary> xxx </summary>
-        [ModelProperty("nonce")]
-        public Optional<Utf8String> Nonce { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> True if this is a TTS <see cref="Message"/>. </summary>
         [ModelProperty("tts")]
         public Optional<bool> IsTTS { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Embedded rich content. </summary>
         [ModelProperty("embeds")]
         public Optional<Embed[]> Embeds { get; set; }
 
-        /// <summary> xxx </summary>
+        /// <summary> Override the default username of the <see cref="Webhook"/>. </summary>
         [ModelProperty("username")]
         public Optional<Utf8String> Username { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Override the default avatar of the <see cref="Webhook"/>. </summary>
         [ModelProperty("avatar_url")]
         public Optional<Utf8String> AvatarUrl { get; set; }
 
-        /// <summary> xxx </summary>
+        /// <summary> Waits for server confirmation of <see cref="Message"/> send before response, and returns the created <see cref="Message"/> body. </summary>
         public Optional<bool> Wait { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> The contents of the file being sent. </summary>
         public Optional<MultipartFile> File { get; set; }
 
         public override IDictionary<string, object> GetQueryMap()
@@ -52,14 +49,12 @@ namespace Wumpus.Requests
 
         public void Validate()
         {
-            Preconditions.NotNull(Nonce, nameof(Nonce));
-
             if (!Content.IsSpecified || Content.Value == (Utf8String)null)
                 Content = (Utf8String)"";
             if (Embeds.IsSpecified && Embeds.Value != null)
                 Preconditions.NotNullOrWhitespace(Content, nameof(Content));
             // else //TODO: Validate embed length
-            Preconditions.LengthAtMost(Content, DiscordRestConstants.MaxMessageSize, nameof(Content));
+            Preconditions.LengthAtMost(Content, Message.MaxContentLength, nameof(Content));
         }
     }
 }

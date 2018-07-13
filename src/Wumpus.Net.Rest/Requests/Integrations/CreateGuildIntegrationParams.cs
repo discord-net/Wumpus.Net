@@ -3,13 +3,13 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Requests
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/guild#create-guild-integration-json-params </summary>
     public class CreateGuildIntegrationParams
     {
-        /// <summary> xxx </summary>
+        /// <summary> The <see cref="Entities.Integration"/> id. </summary>
         [ModelProperty("id")]
         public Snowflake Id { get; }
-        /// <summary> xxx </summary>
+        /// <summary> The <see cref="Entities.Integration"/> type. </summary>
         [ModelProperty("type")]
         public Utf8String Type { get; }
 

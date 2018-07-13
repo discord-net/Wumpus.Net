@@ -302,6 +302,13 @@ namespace Wumpus
             args.Validate();
             return _api.CreateVoiceChannelAsync(guildId, args);
         }
+        public Task<Channel> CreateCategoryChannelAsync(Snowflake guildId, CreateGuildChannelParams args)
+        {
+            Preconditions.NotZero(guildId, nameof(guildId));
+            Preconditions.NotNull(args, nameof(args));
+            args.Validate();
+            return _api.CreateCategoryChannelAsync(guildId, args);
+        }
         public Task<Channel> ReorderGuildChannelsAsync(Snowflake guildId, ModifyGuildChannelPositionParams[] args)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
@@ -499,6 +506,11 @@ namespace Wumpus
             Preconditions.NotZero(guildId, nameof(guildId));
             return _api.GetGuildWebhooksAsync(guildId);
         }
+        public Task<Invite> GetGuildVanityUrlAsync(Snowflake guildId)
+        {
+            Preconditions.NotZero(guildId, nameof(guildId));
+            return _api.GetGuildVanityUrlAsync(guildId);
+        }
 
         // Invite
 
@@ -511,11 +523,6 @@ namespace Wumpus
         {
             Preconditions.NotNullOrWhitespace(code, nameof(code));
             return _api.DeleteInviteAsync(code);
-        }
-        public Task<Invite> AcceptInviteAsync(Utf8String code)
-        {
-            Preconditions.NotNullOrWhitespace(code, nameof(code));
-            return _api.AcceptInviteAsync(code);
         }
 
         // User
@@ -626,6 +633,12 @@ namespace Wumpus
             Preconditions.NotNull(args, nameof(args));
             args.Validate();
             return _api.ExecuteWebhookAsync(webhookId, webhookToken, args);
+        }
+
+        // OAuth2
+        public Task<Application> GetCurrentApplicationAsync()
+        {
+            return _api.GetCurrentApplicationAsync();
         }
     }
 }

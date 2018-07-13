@@ -123,6 +123,7 @@ namespace Wumpus
 
         private async Task RunAsync(string url, int? shardId, int? totalShards, UpdateStatusParams initialPresence, bool isResume, CancellationToken cancelToken, TaskCompletionSource<bool> connectResult)
         {
+            // TODO: Add timeout
             int heartbeatRate;
             Task[] tasks = null;
             Exception disconnectEx = null;
@@ -324,6 +325,22 @@ namespace Wumpus
 
             ReceivedPayload?.Invoke(payload, _receiveBuffer.AsReadOnlyMemory());
             return payload;
+        }
+
+        private void HandleFrame(GatewayPayload frame)
+        {
+            switch (frame.Operation)
+            {
+                case GatewayOperation.Dispatch:
+                    await HandleDispatchEventAsync(frame);
+            }
+        }
+
+        private void HandleDispatchEvent(GatewayPayload frame)
+        {
+            switch (frame.DispatchType)
+            {
+            }
         }
 
         public void SendHeartbeat() => Send(new GatewayFrame

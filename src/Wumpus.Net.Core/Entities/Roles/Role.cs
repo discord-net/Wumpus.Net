@@ -4,31 +4,31 @@ using Voltaic.Serialization.Json;
 
 namespace Wumpus.Entities
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/topics/permissions#role-object </summary>
     public class Role
     {
-        /// <summary> xxx </summary>
+        /// <summary> <see cref="Role"/> id. </summary>
         [ModelProperty("id")]
         public Snowflake Id { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> <see cref="Role"/> name. </summary>
         [ModelProperty("name")]
         public Utf8String Name { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Integer representation of hexadecimal color code. </summary>
         [ModelProperty("color")]
         public uint Color { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> If this <see cref="Role"/> is pinned in the <see cref="User"/> listing. </summary>
         [ModelProperty("hoist")]
         public bool Hoist { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Whether this <see cref="Role"/> is mentionable. </summary>
         [ModelProperty("mentionable")]
         public bool Mentionable { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Position of this <see cref="Role"/>. </summary>
         [ModelProperty("position")]
         public int Position { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Permission bit set. </summary>
         [ModelProperty("permissions"), Int53]
         public GuildPermissions Permissions { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Whether this <see cref="Role"/> is managed by an <see cref="Integration"/>. </summary>
         [ModelProperty("managed")]
         public bool Managed { get; set; }
     }

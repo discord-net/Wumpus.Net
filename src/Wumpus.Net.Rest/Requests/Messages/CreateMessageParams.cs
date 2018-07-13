@@ -5,10 +5,16 @@ using Voltaic;
 
 namespace Wumpus.Requests
 {
-    /// <summary> xxx </summary>
+    /// <summary> 
+    /// Post a message to a <see cref="Guild"/> text or DM <see cref="Channel"/>. If operating on a <see cref="Guild"/> <see cref="Channel"/>, this endpoint requires <see cref="ChannelPermissions.SendMessages"/> to be present on the current <see cref="User"/>.
+    /// If the tts field is set to true, <see cref="ChannelPermissions.SendTTSMessages"/> is required for the message to be spoken. 
+    /// Returns a <see cref="Message"/> object. 
+    /// Fires a Message Create Gateway event. 
+    /// </summary>
     public class CreateMessageParams : IFormData
     {
-        /// <summary> xxx </summary>
+        /// <summary> The <see cref="Message"/> contents. </summary>
+        /// <remarks> Up to 2000 characters. </remarks>
         [ModelProperty("content")]
         public Optional<Utf8String> Content { get; set; }
         /// <summary> xxx </summary>
@@ -41,7 +47,7 @@ namespace Wumpus.Requests
             if (Embed.IsSpecified && Embed.Value != null)
                 Preconditions.NotNullOrWhitespace(Content, nameof(Content));
             // else //TODO: Validate embed length
-            Preconditions.LengthAtMost(Content, DiscordRestConstants.MaxMessageSize, nameof(Content));
+            Preconditions.LengthAtMost(Content, Message.MaxContentLength, nameof(Content));
         }
     }
 }

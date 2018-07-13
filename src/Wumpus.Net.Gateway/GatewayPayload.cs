@@ -6,20 +6,20 @@ using Wumpus.Requests;
 
 namespace Wumpus.Events
 {
-    /// <summary> xxx </summary>
-    public class GatewayFrame
+    /// <summary> https://discordapp.com/developers/docs/topics/gateway#payloads </summary>
+    public class GatewayPayload
     {
-        /// <summary> xxx </summary>
+        /// <summary> Opcode for the <see cref="GatewayPayload"/>. </summary>
         [ModelProperty("op")]
         public GatewayOpCode Operation { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> The event name for this <see cref="GatewayPayload"/>. </summary>
         [ModelProperty("t", ExcludeNull = true)]
         public GatewayDispatchType? DispatchType { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Sequence number, used for resuming sessions and heartbeats. </summary>
         [ModelProperty("s", ExcludeNull = true)]
         public int? Sequence { get; set; }
 
-        /// <summary> xxx </summary>
+        /// <summary> Event data. </summary>
         [ModelProperty("d"),
             ModelTypeSelector(nameof(Operation), nameof(OpCodeTypeSelector)),
             ModelTypeSelector(nameof(DispatchType), nameof(DispatchTypeSelector))]
@@ -65,13 +65,14 @@ namespace Wumpus.Events
             [GatewayDispatchType.MessageDelete] = typeof(Message),
             [GatewayDispatchType.MessageDeleteBulk] = typeof(MessageDeleteBulkEvent),
             [GatewayDispatchType.MessageReactionAdd] = typeof(GatewayReaction),
-            [GatewayDispatchType.MessageReactionRemove] = typeof(GatewayReaction),
-            [GatewayDispatchType.MessageReactionRemoveAll] = typeof(RemoveAllReactionsEvent),
+            [GatewayDispatchType.MessageReactionRemove] = typeof(MessageReactionRemoveEvent),
+            [GatewayDispatchType.MessageReactionRemoveAll] = typeof(MessageReactionRemoveAllEvent),
             [GatewayDispatchType.PresenceUpdate] = typeof(Presence),
             [GatewayDispatchType.UserUpdate] = typeof(User),
             [GatewayDispatchType.TypingStart] = typeof(TypingStartEvent),
             [GatewayDispatchType.VoiceStateUpdate] = typeof(VoiceState),
-            [GatewayDispatchType.VoiceServerUpdate] = typeof(VoiceServerUpdateEvent)
+            [GatewayDispatchType.VoiceServerUpdate] = typeof(VoiceServerUpdateEvent),
+            [GatewayDispatchType.WebhooksUpdate] = typeof(WebhookUpdateEvent)
         };
     }
 }

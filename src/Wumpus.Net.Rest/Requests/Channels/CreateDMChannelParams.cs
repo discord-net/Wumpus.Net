@@ -2,10 +2,10 @@
 
 namespace Wumpus.Requests
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/user#create-dm-json-params </summary>
     public class CreateDMChannelParams
     {
-        /// <summary> xxx </summary>
+        /// <summary> The recipient to open a DM <see cref="Entities.Channel"/> with. </summary>
         [ModelProperty("recipient_id")]
         public Snowflake RecipientId { get; }
 

@@ -3,19 +3,19 @@ using Voltaic.Serialization.Json;
 
 namespace Wumpus.Entities
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/channel#overwrite-object </summary>
     public class Overwrite
     {
-        /// <summary> xxx </summary>
+        /// <summary> <see cref="Role"/> or <see cref="User"/> id. </summary>
         [ModelProperty("id")]
         public Snowflake TargetId { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Type of the target for this <see cref="Overwrite"/>. </summary>
         [ModelProperty("type")]
         public PermissionTarget TargetType { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Permission bit set. </summary>
         [ModelProperty("allow"), Int53]
         public ChannelPermissions Allow { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Permission bit set. </summary>
         [ModelProperty("deny"), Int53]
         public ChannelPermissions Deny { get; set; }
     }

@@ -3,13 +3,16 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Events
 {
-    /// <summary> xxx </summary>
+    /// <summary> 
+    ///     Sent when a <see cref="Guild"/> <see cref="Entities.Role"/> is updated.
+    ///     https://discordapp.com/developers/docs/topics/gateway#guild-role-update
+    /// </summary>
     public class GuildRoleUpdateEvent
     {
-        /// <summary> xxx </summary>
+        /// <summary> The id of the <see cref="Guild"/>. </summary>
 		[ModelProperty("guild_id")]
         public Snowflake GuildId { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> The <see cref="Entities.Role"/> updated. </summary>
         [ModelProperty("role")]
         public Role Role { get; set; }
     }

@@ -2,10 +2,10 @@
 
 namespace Wumpus.Responses
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/guild#get-guild-prune-count </summary>
     public class GuildPruneCountResponse
     {
-        /// <summary> xxx </summary>
+        /// <summary> Number of <see cref="Entities.GuildMember"/>s removed by the prune. </summary>
         [ModelProperty("pruned")]
         public int Pruned { get; set; }
     }

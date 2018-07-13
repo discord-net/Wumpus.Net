@@ -3,16 +3,16 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Requests
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/guild#modify-guild-integration-json-params </summary>
     public class ModifyGuildIntegrationParams
     {
-        /// <summary> xxx </summary>
+        /// <summary> The behavior when an <see cref="Entities.Integration"/> subscription lapses. </summary>
         [ModelProperty("expire_behavior")]
         public Optional<int> ExpireBehavior { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Period (in seconds) where the <see cref="Entities.Integration"/> will ignore lapsed subscriptions. </summary>
         [ModelProperty("expire_grace_period")]
         public Optional<int> ExpireGracePeriod { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Whether emoticons should be synced for this <see cref="Entities.Integration"/>. </summary>
         [ModelProperty("enable_emoticons")]
         public Optional<bool> EnableEmoticons { get; set; }
 

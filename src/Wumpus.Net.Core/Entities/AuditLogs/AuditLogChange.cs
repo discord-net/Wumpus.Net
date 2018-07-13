@@ -5,16 +5,16 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
-    /// <summary> xxx </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/audit-log#audit-log-change-object </summary>
     public class AuditLogChange
     {
-        /// <summary> xxx </summary>
-        [ModelProperty("new_value"), ModelTypeSelector(nameof(Key), nameof(TypeSelector))]
+        /// <summary> New value of the key. </summary>
+        [ModelProperty("new_value"), [ModelTypeSelector(nameof(Key), nameof(TypeSelector))]
         public object NewValue { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Old value of the key. </summary>
         [ModelProperty("old_value"), ModelTypeSelector(nameof(Key), nameof(TypeSelector))]
         public object OldValue { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Type of <see cref="AuditLogChangeKey"/>. </summary>
         [ModelProperty("key")]
         public AuditLogChangeKey Key { get; set; }
 
