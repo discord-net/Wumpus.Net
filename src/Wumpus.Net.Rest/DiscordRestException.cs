@@ -19,6 +19,6 @@ namespace Wumpus.Net
         }
 
         private static string CreateMessage(HttpStatusCode httpCode, int? discordCode = null, Utf8String reason = null)
-            => $"The server responded with error {discordCode ?? (int)httpCode}: {reason.ToString() ?? httpCode.ToString()}";
+            => $"The server responded with error {discordCode ?? (int)httpCode}: {reason?.ToString() ?? httpCode.ToString()}";
     }
 }
