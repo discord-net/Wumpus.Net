@@ -43,6 +43,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wumpus.Net.Gateway.Tests", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wumpus.Net.Rpc.Tests", "test\Wumpus.Net.Rpc.Tests\Wumpus.Net.Rpc.Tests.csproj", "{0967FF88-E435-4132-9524-B252A3D9BCD6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wumpus.Net.Server", "src\Wumpus.Net.Server\Wumpus.Net.Server.csproj", "{745F9D4C-C664-4702-A547-05E97372AAF4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -233,6 +235,18 @@ Global
 		{0967FF88-E435-4132-9524-B252A3D9BCD6}.Release|x64.Build.0 = Release|Any CPU
 		{0967FF88-E435-4132-9524-B252A3D9BCD6}.Release|x86.ActiveCfg = Release|Any CPU
 		{0967FF88-E435-4132-9524-B252A3D9BCD6}.Release|x86.Build.0 = Release|Any CPU
+		{745F9D4C-C664-4702-A547-05E97372AAF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{745F9D4C-C664-4702-A547-05E97372AAF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{745F9D4C-C664-4702-A547-05E97372AAF4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{745F9D4C-C664-4702-A547-05E97372AAF4}.Debug|x64.Build.0 = Debug|Any CPU
+		{745F9D4C-C664-4702-A547-05E97372AAF4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{745F9D4C-C664-4702-A547-05E97372AAF4}.Debug|x86.Build.0 = Debug|Any CPU
+		{745F9D4C-C664-4702-A547-05E97372AAF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{745F9D4C-C664-4702-A547-05E97372AAF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{745F9D4C-C664-4702-A547-05E97372AAF4}.Release|x64.ActiveCfg = Release|Any CPU
+		{745F9D4C-C664-4702-A547-05E97372AAF4}.Release|x64.Build.0 = Release|Any CPU
+		{745F9D4C-C664-4702-A547-05E97372AAF4}.Release|x86.ActiveCfg = Release|Any CPU
+		{745F9D4C-C664-4702-A547-05E97372AAF4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -253,6 +267,7 @@ Global
 		{57D5C6C1-6BBC-41E1-8DD2-D7F866628994} = {9806905E-1B09-4AC2-BF4F-731C9E473F94}
 		{475DB8E7-623B-4F6F-877F-D0C818C17F34} = {9806905E-1B09-4AC2-BF4F-731C9E473F94}
 		{0967FF88-E435-4132-9524-B252A3D9BCD6} = {9806905E-1B09-4AC2-BF4F-731C9E473F94}
+		{745F9D4C-C664-4702-A547-05E97372AAF4} = {F7B9BFB1-C836-4432-BE64-719A38E0BBEF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B5B02039-F4C2-44C6-91B8-340E44472AED}

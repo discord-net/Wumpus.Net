@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Wumpus.Net.Server;
 using Wumpus.Serialization;
 using Xunit;
 
@@ -32,43 +34,30 @@ namespace Wumpus.Net.Tests
     public abstract class BaseTest
     {
         private readonly WumpusJsonSerializer _serializer;
-        private readonly HttpListener _server;
-        private readonly WumpusRestClient _client;
 
         public BaseTest()
         {
             _serializer = new WumpusJsonSerializer();
-
-            const string url = "http://localhost:34560/";
-            _server = new HttpListener();
-            _server.Prefixes.Add(url);
-            _client = new WumpusRestClient(url, _serializer);
         }
 
         protected void RunTest(TestData test)
         {
-            _server.Start();
-            try
-            {
-                var serverTask = _server.GetContextAsync().ContinueWith(c =>
-                {
-                    var serverResponse = c.Result.Response;
-                    serverResponse.StatusCode = (int)HttpStatusCode.NoContent;
-                    serverResponse.Close();
-                });
+            const string url = "http://localhost:34560/";
 
-                var requestTask = test.Action(_client);
-                var timeoutTask = Task.Delay(3000);
-                var task = Task.WhenAny(requestTask, timeoutTask).Result;
-                if (task == timeoutTask)
-                {
-                    if (serverTask.IsFaulted)
-                        throw serverTask.Exception.InnerException;
-                    else
-                        throw new TimeoutException();
-                }
-            }
-            finally { _server.Stop(); }
+            var client = new WumpusRestClient(url, _serializer);
+            var server = WebHost.CreateDefaultBuilder()
+                .UseStartup<Startup>()
+                .UseUrls(url)
+                .Build();
+            server.Start();
+
+            var requestTask = test.Action(client);
+            var timeoutTask = Task.Delay(3000);
+            var task = Task.WhenAny(requestTask, timeoutTask).Result;
+            if (task == timeoutTask)
+                throw new TimeoutException();
+            if (requestTask.IsFaulted)
+                throw requestTask.Exception;
         }
 
         public static object[] Test(Func<WumpusRestClient, Task> action)
@@ -78,47 +67,32 @@ namespace Wumpus.Net.Tests
     public abstract class BaseTest<TResponse>
     {
         private readonly WumpusJsonSerializer _serializer;
-        private readonly HttpListener _server;
-        private readonly WumpusRestClient _client;
         private readonly IEqualityComparer<TResponse> _comparer;
 
         public BaseTest(IEqualityComparer<TResponse> comparer = null)
         {
             _serializer = new WumpusJsonSerializer();
-
-            const string url = "http://localhost:34560/";
-            _server = new HttpListener();
-            _server.Prefixes.Add(url);
-            _client = new WumpusRestClient(url, _serializer);
             _comparer = comparer ?? EqualityComparer<TResponse>.Default;
         }
 
         protected void RunTest(TestData<TResponse> test)
         {
-            _server.Start();
-            try
-            {
-                var serverTask = _server.GetContextAsync().ContinueWith(c =>
-                {
-                    var serverResponse = c.Result.Response;
-                    serverResponse.StatusCode = (int)HttpStatusCode.OK;
-                    serverResponse.OutputStream.Write(_serializer.WriteUtf8(test.Response).Span);
-                    serverResponse.Close();
-                });
+            const string url = "http://localhost:34560/";
 
-                var requestTask = test.Action(_client);
-                var timeoutTask = Task.Delay(5000);
-                var task = Task.WhenAny(requestTask, timeoutTask).Result;
-                if (task == timeoutTask)
-                {
-                    if (serverTask.IsFaulted)
-                        throw serverTask.Exception.InnerException;
-                    else
-                        throw new TimeoutException();
-                }
-                Assert.Equal(requestTask.Result, test.Response, _comparer);
-            }
-            finally { _server.Stop(); }
+            var client = new WumpusRestClient(url, _serializer);
+            var server = WebHost.CreateDefaultBuilder()
+                .UseStartup<Startup>()
+                .UseUrls(url)
+                .Build();
+            server.Start();
+
+            var requestTask = test.Action(client);
+            var timeoutTask = Task.Delay(3000);
+            var task = Task.WhenAny(requestTask, timeoutTask).Result;
+            if (task == timeoutTask)
+                throw new TimeoutException();
+            var response = requestTask.GetAwaiter().GetResult();
+            Assert.Equal(requestTask.Result, response, _comparer);
         }
 
         public static object[] Test(Func<WumpusRestClient, Task<TResponse>> action, TResponse response)
