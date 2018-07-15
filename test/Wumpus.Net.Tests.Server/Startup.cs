@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Wumpus.Serialization;
 using Wumpus.Server.Formatters;
 
 namespace Wumpus.Server
@@ -19,13 +20,14 @@ namespace Wumpus.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvcCore()
-                .AddVoltaicJsonSerializerFormatters();
+                .AddVoltaicJsonSerializerFormatters(new WumpusJsonSerializer());
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseMiddleware<ExceptionHandlerMiddleware>();
             app.UseMvc();
         }
     }
