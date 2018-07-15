@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Wumpus.Serialization;
+using Wumpus.Server.Binders;
 using Wumpus.Server.Formatters;
 
 namespace Wumpus.Server
@@ -21,7 +22,10 @@ namespace Wumpus.Server
         {
             services.AddMvcCore()
                 .AddVoltaicJsonSerializerFormatters(new WumpusJsonSerializer());
-            services.AddMvc()
+            services.AddMvc(x =>
+                {
+                    x.ModelBinderProviders.Insert(0, new VoltaicModelBinderProvider());
+                })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
