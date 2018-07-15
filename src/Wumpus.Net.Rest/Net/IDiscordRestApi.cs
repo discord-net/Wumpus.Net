@@ -19,9 +19,9 @@ namespace Wumpus.Net
 
         // Audit Log
 
-        /// <summary> 
+        /// <summary>
         ///     Returns an <see cref="AuditLog"/> object for the <see cref="Guild"/>. Requires <see cref="GuildPermissions.ViewAuditLog"/>.
-        ///     https://discordapp.com/developers/docs/resources/audit-log#get-guild-audit-log 
+        ///     https://discordapp.com/developers/docs/resources/audit-log#get-guild-audit-log
         /// </summary>
         [Get("guilds/{guildId}/audit-logs")]
         Task<AuditLog> GetGuildAuditLogAsync([Path] Snowflake guildId, [QueryMap] GetAuditLogParams args);
@@ -30,37 +30,37 @@ namespace Wumpus.Net
 
         [Get("channels/{channelId}")]
         Task<Channel> GetChannelAsync([Path] Snowflake channelId);
-        /// <summary> 
-        ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>. 
-        ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event. 
+        /// <summary>
+        ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>.
+        ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event.
         ///     If modifying a category, individual Channel Update events will fire for each child channel that also changes.
         /// </summary>
         [Put("channels/{channelId}")]
         Task<Channel> ReplaceTextChannelAsync([Path] Snowflake channelId, [Body] ModifyTextChannelParams args);
-        /// <summary> 
-        ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>. 
-        ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event. 
+        /// <summary>
+        ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>.
+        ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event.
         ///     If modifying a category, individual Channel Update events will fire for each child channel that also changes.
         /// </summary>
         [Put("channels/{channelId}")]
         Task<Channel> ReplaceVoiceChannelAsync([Path] Snowflake channelId, [Body] ModifyVoiceChannelParams args);
-        /// <summary> 
-        ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>. 
-        ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event. 
+        /// <summary>
+        ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>.
+        ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event.
         ///     If modifying a category, individual Channel Update events will fire for each child channel that also changes.
         /// </summary>
         [Patch("channels/{channelId}")]
         Task<Channel> ModifyGuildChannelAsync([Path] Snowflake channelId, [Body] ModifyGuildChannelParams args);
-        /// <summary> 
-        ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>. 
-        ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event. 
+        /// <summary>
+        ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>.
+        ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event.
         ///     If modifying a category, individual Channel Update events will fire for each child channel that also changes.
         /// </summary>
         [Patch("channels/{channelId}")]
         Task<Channel> ModifyTextChannelAsync([Path] Snowflake channelId, [Body] ModifyTextChannelParams args);
-        /// <summary> 
-        ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>. 
-        ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event. 
+        /// <summary>
+        ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>.
+        ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event.
         ///     If modifying a category, individual Channel Update events will fire for each child channel that also changes.
         /// </summary>
         [Patch("channels/{channelId}")]
@@ -68,21 +68,21 @@ namespace Wumpus.Net
         [Delete("channels/{channelId}")]
         Task<Channel> DeleteChannelAsync([Path] Snowflake channelId);
 
-        /// <summary> 
+        /// <summary>
         ///     Returns the <see cref="Entities.Message"/> for a <see cref="Entities.Channel"/>. If operating on a <see cref="Entities.Guild"/> <see cref="Entities.Channel"/>, this endpoint requires the <see cref="Entities.ChannelPermissions.ViewChannel"/> to be present on the current <see cref="Entities.User"/>.
-        ///     If the current <see cref="Entities.User"/> is missing <see cref="Entities.ChannelPermissions.ReadMessageHistory"> in the <see cref="Entities.Channel"/> then this will return no messages (since they cannot read the message history). 
+        ///     If the current <see cref="Entities.User"/> is missing <see cref="Entities.ChannelPermissions.ReadMessageHistory"> in the <see cref="Entities.Channel"/> then this will return no messages (since they cannot read the message history).
         ///     Returns an array of <see cref="Entities.Message"/> objects on success.
-        ///     https://discordapp.com/developers/docs/resources/channel#get-channel-messages 
+        ///     https://discordapp.com/developers/docs/resources/channel#get-channel-messages
         /// </summary>
         [Get("channels/{channelId}/messages")]
         Task<IReadOnlyList<Message>> GetChannelMessagesAsync([Path] Snowflake channelId, [QueryMap] GetChannelMessagesParams args);
         [Get("channels/{channelId}/messages/{messageId}")]
         Task<Message> GetChannelMessageAsync([Path] Snowflake channelId, [Path] Snowflake messageId);
-        /// <summary> 
+        /// <summary>
         ///     Post a message to a <see cref="Guild"/> text or DM <see cref="Channel"/>. If operating on a <see cref="Guild"/> <see cref="Channel"/>, this endpoint requires <see cref="ChannelPermissions.SendMessages"/> to be present on the current <see cref="User"/>.
-        ///     If the tts field is set to true, <see cref="ChannelPermissions.SendTTSMessages"/> is required for the message to be spoken. 
-        ///     Returns a <see cref="Message"/> object. 
-        ///     Fires a Message Create Gateway event. 
+        ///     If the tts field is set to true, <see cref="ChannelPermissions.SendTTSMessages"/> is required for the message to be spoken.
+        ///     Returns a <see cref="Message"/> object.
+        ///     Fires a Message Create Gateway event.
         /// </summary>
         [Post("channels/{channelId}/messages")]
         Task<Message> CreateMessageAsync([Path] Snowflake channelId, [Body] [QueryMap] CreateMessageParams args);
@@ -138,7 +138,7 @@ namespace Wumpus.Net
         [Post("guilds/{guildId}/emojis")]
         Task<Emoji> CreateGuildEmojiAsync([Path] Snowflake guildId, [Body] CreateGuildEmojiParams args);
         [Patch("guilds/{guildId}/emoji/{emojiId}")]
-        Task<Emoji> ModifyGuildEmojiAsync([Path] Snowflake guildId, [Body] ModifyGuildEmojiParams args);
+        Task<Emoji> ModifyGuildEmojiAsync([Path] Snowflake guildId, [Path] Snowflake emojiId, [Body] ModifyGuildEmojiParams args);
         [Patch("guilds/{guildId}/emoji/{emojiId}")]
         Task DeleteGuildEmojiAsync([Path] Snowflake guildId, [Path] Snowflake emojiId);
 

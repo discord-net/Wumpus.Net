@@ -25,7 +25,7 @@ namespace Wumpus.Server.Controllers
             return BadRequest();
         }
         [HttpPatch("guilds/{guildId}/emoji/{emojiId}")]
-        public async Task<IActionResult> ModifyGuildEmojiAsync(Snowflake guildId, [FromBody] ModifyGuildEmojiParams args)
+        public async Task<IActionResult> ModifyGuildEmojiAsync(Snowflake guildId, Snowflake emojiId, [FromBody] ModifyGuildEmojiParams args)
         {
             return BadRequest();
         }

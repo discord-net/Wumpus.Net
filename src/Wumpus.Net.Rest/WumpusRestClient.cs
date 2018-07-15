@@ -254,11 +254,12 @@ namespace Wumpus
             Preconditions.NotNull(args, nameof(args));
             return _api.CreateGuildEmojiAsync(guildId, args);
         }
-        public Task<Emoji> ModifyGuildEmojiAsync(Snowflake guildId, ModifyGuildEmojiParams args)
+        public Task<Emoji> ModifyGuildEmojiAsync(Snowflake guildId, Snowflake emojiId, ModifyGuildEmojiParams args)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
+            Preconditions.NotZero(emojiId, nameof(emojiId));
             Preconditions.NotNull(args, nameof(args));
-            return _api.ModifyGuildEmojiAsync(guildId, args);
+            return _api.ModifyGuildEmojiAsync(guildId, emojiId, args);
         }
         public Task DeleteGuildEmojiAsync(Snowflake guildId, Snowflake emojiId)
         {
