@@ -3,29 +3,58 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Voltaic;
+using Wumpus.Entities;
+using Wumpus.Net;
 using Wumpus.Requests;
 
 namespace Wumpus.Server.Controllers
 {
     [ApiController]
-    public class ChannelController : ControllerBase
+    public class Controller : ControllerBase
     {
-        // Channel
+        private Channel CreateBaseChannel(Snowflake channelId, ChannelType type) => new Channel
+        {
+            Id = channelId,
+            Type = type
+        };
 
         [HttpGet("channels/{channelId}")]
         public async Task<IActionResult> GetChannelAsync(Snowflake channelId)
         {
-            return BadRequest();
+            return Ok(CreateBaseChannel(channelId, ChannelType.Text));
         }
         [HttpPut("channels/{channelId}")]
         public async Task<IActionResult> ReplaceTextChannelAsync(Snowflake channelId, [FromBody] ModifyTextChannelParams args)
         {
-            return BadRequest();
+            args.Validate();
+            var channel = new Channel
+            {
+                Id = channelId,
+                Type = ChannelType.Text,
+                Name = args.Name,
+                ParentId = args.ParentId,
+                PermissionOverwrites = args.PermissionOverwrites,
+                Position = args.Position,
+                Topic = args.Topic
+            };
+            return Ok(channel);
         }
         [HttpPut("channels/{channelId}")]
         public async Task<IActionResult> ReplaceVoiceChannelAsync(Snowflake channelId, [FromBody] ModifyVoiceChannelParams args)
         {
-            return BadRequest();
+            args.Validate();
+            var channel = new Channel
+            {
+                Id = channelId,
+                Type = ChannelType.Voice,
+                Bitrate = args.Bitrate,
+                Name = args.Name,
+                ParentId = args.ParentId,
+                PermissionOverwrites = args.PermissionOverwrites,
+                Position = args.Position,
+                UserLimit = args.UserLimit
+            };
+            return Ok(channel);
         }
         [HttpPatch("channels/{channelId}")]
         public async Task<IActionResult> ModifyGuildChannelAsync(Snowflake channelId, [FromBody] ModifyGuildChannelParams args)
@@ -71,12 +100,12 @@ namespace Wumpus.Server.Controllers
         [HttpDelete("channels/{channelId}/messages/{messageId}")]
         public async Task<IActionResult> DeleteMessageAsync(Snowflake channelId, Snowflake messageId)
         {
-            return BadRequest();
+            return NoContent();
         }
         [HttpPost("channels/{channelId}/messages/bulk-delete")]
         public async Task<IActionResult> DeleteMessagesAsync(Snowflake channelId, [FromBody] DeleteMessagesParams args)
         {
-            return BadRequest();
+            return NoContent();
         }
 
         [HttpGet("channels/{channelId}/messages/{messageId}/reactions/{emoji}")]
@@ -87,33 +116,33 @@ namespace Wumpus.Server.Controllers
         [HttpPut("channels/{channelId}/messages/{messageId}/reactions/{emoji}/@me")]
         public async Task<IActionResult> CreateReactionAsync(Snowflake channelId, Snowflake messageId, Utf8String emoji)
         {
-            return BadRequest();
+            return NoContent();
         }
         [HttpDelete("channels/{channelId}/messages/{messageId}/reactions/{emoji}/@me")]
         public async Task<IActionResult> DeleteReactionAsync(Snowflake channelId, Snowflake messageId, Utf8String emoji)
         {
-            return BadRequest();
+            return NoContent();
         }
         [HttpDelete("channels/{channelId}/messages/{messageId}/reactions/{emoji}/{userId}")]
         public async Task<IActionResult> DeleteReactionAsync(Snowflake channelId, Snowflake messageId, Snowflake userId, Utf8String emoji)
         {
-            return BadRequest();
+            return NoContent();
         }
         [HttpDelete("channels/{channelId}/messages/{messageId}/reactions")]
         public async Task<IActionResult> DeleteAllReactionsAsync(Snowflake channelId, Snowflake messageId)
         {
-            return BadRequest();
+            return NoContent();
         }
 
         [HttpPut("channels/{channelId}/permissions/{overwriteId}")]
         public async Task<IActionResult> EditChannelPermissionsAsync(Snowflake channelId, Snowflake overwriteId, [FromBody] ModifyChannelPermissionsParams args)
         {
-            return BadRequest();
+            return NoContent();
         }
         [HttpDelete("channels/{channelId}/permissions/{overwriteId}")]
         public async Task<IActionResult> DeleteChannelPermissionsAsync(Snowflake channelId, Snowflake overwriteId)
         {
-            return BadRequest();
+            return NoContent();
         }
 
         [HttpGet("channels/{channelId}/invites")]
@@ -135,34 +164,23 @@ namespace Wumpus.Server.Controllers
         [HttpPut("channels/{channelId}/pins/{messageId}")]
         public async Task<IActionResult> PinMessageAsync(Snowflake channelId, Snowflake messageId)
         {
-            return BadRequest();
+            return NoContent();
         }
         [HttpDelete("channels/{channelId}/pins/{messageId}")]
         public async Task<IActionResult> UnpinMessageAsync(Snowflake channelId, Snowflake messageId)
         {
-            return BadRequest();
+            return NoContent();
         }
 
         [HttpPut("channels/{channelId}/recipients/{userId}")]
         public async Task<IActionResult> AddRecipientAsync(Snowflake channelId, Snowflake userId, [FromBody] AddChannelRecipientParams args)
         {
-            return BadRequest();
+            return NoContent();
         }
         [HttpDelete("channels/{channelId}/recipients/{userId}")]
         public async Task<IActionResult> RemoveRecipientAsync(Snowflake channelId, Snowflake userId)
         {
-            return BadRequest();
-        }
-
-        [HttpPost("channels/{channelId}/webhooks")]
-        public async Task<IActionResult> CreateWebhookAsync(Snowflake channelId, [FromBody] CreateWebhookParams args)
-        {
-            return BadRequest();
-        }
-        [HttpGet("channels/{channelId}/webhooks")]
-        public async Task<IActionResult> GetChannelWebhooksAsync(Snowflake channelId)
-        {
-            return BadRequest();
+            return NoContent();
         }
 
         [HttpPost("channels/{channelId}/typing")]

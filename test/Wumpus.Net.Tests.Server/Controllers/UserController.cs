@@ -9,8 +9,6 @@ namespace Wumpus.Server.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        // User
-
         [HttpGet("users/@me")]
         public async Task<IActionResult> GetCurrentUserAsync()
         {
@@ -49,7 +47,7 @@ namespace Wumpus.Server.Controllers
             return BadRequest();
         }
         [HttpPost("users/@me/channels")]
-        public async Task<IActionResult> CreateGroupChannelAsync([FromBody] CreateGroupChannelParams args)
+        public async Task<IActionResult> CreateGroupChannelAsync([FromBody] CreateGroupDMChannelParams args)
         {
             return BadRequest();
         }

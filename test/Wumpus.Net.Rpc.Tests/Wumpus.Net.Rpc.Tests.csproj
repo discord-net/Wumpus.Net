@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/Wumpus.Net.Rpc/Wumpus.Net.Rpc.csproj" />
+    <ProjectReference Include="../Wumpus.Net.Tests.Server/Wumpus.Net.Tests.Server.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />

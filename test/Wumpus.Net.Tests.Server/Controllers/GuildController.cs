@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS1998
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Wumpus.Requests;
@@ -9,17 +10,6 @@ namespace Wumpus.Server.Controllers
     [ApiController]
     public class GuildController : ControllerBase
     {
-        // Audit Log
-
-        [HttpGet("guilds/{guildId}/audit-logs")]
-        public async Task<IActionResult> GetGuildAuditLogAsync(Snowflake guildId)
-        {
-            return BadRequest();
-        }
-
-        // Guild
-
-
         [HttpGet("guilds/{guildId}")]
         public async Task<IActionResult> GetGuildAsync(Snowflake guildId)
         {
@@ -58,7 +48,7 @@ namespace Wumpus.Server.Controllers
             return BadRequest();
         }
         [HttpPatch("guilds/{guildId}/channels")]
-        public async Task<IActionResult> ReorderGuildChannelsAsync(Snowflake guildId, [FromBody] ModifyGuildChannelPositionParams[] args)
+        public async Task<IActionResult> ModifyGuildChannelPositionsAsync(Snowflake guildId, [FromBody] IEnumerable<ModifyGuildChannelPositionParams> args)
         {
             return BadRequest();
         }
@@ -75,7 +65,7 @@ namespace Wumpus.Server.Controllers
             return BadRequest();
         }
         [HttpPut("guilds/{guildId}/members/{userId}")]
-        public async Task<IActionResult> AddGuildMemberAsync(Snowflake guildId, Snowflake userId, [FromBody] AddGuildMemberParams args)
+        public async Task<IActionResult> AddGuildMemberAsync(Snowflake guildId, Snowflake userId, [FromBody] CreateGuildEmojiParams args)
         {
             return BadRequest();
         }
@@ -138,7 +128,7 @@ namespace Wumpus.Server.Controllers
             return BadRequest();
         }
         [HttpPatch("guilds/{guildId}/roles")]
-        public async Task<IActionResult> ReorderGuildRolesAsync(Snowflake guildId, [FromBody] ModifyGuildRolePositionParams[] args)
+        public async Task<IActionResult> ModifyGuildRolePositionsAsync(Snowflake guildId, [FromBody] IEnumerable<ModifyGuildRolePositionParams> args)
         {
             return BadRequest();
         }
@@ -205,12 +195,6 @@ namespace Wumpus.Server.Controllers
         }
         [HttpPatch("guilds/{guildId}/embed")]
         public async Task<IActionResult> ModifyGuildEmbedAsync(Snowflake guildId, [FromBody] ModifyGuildEmbedParams args)
-        {
-            return BadRequest();
-        }
-
-        [HttpGet("guilds/{guildId}/webhooks")]
-        public async Task<IActionResult> GetGuildWebhooksAsync(Snowflake guildId)
         {
             return BadRequest();
         }

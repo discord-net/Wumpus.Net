@@ -9,8 +9,6 @@ namespace Wumpus.Server.Controllers
     [ApiController]
     public class InviteCotroller : ControllerBase
     {
-        // Invite
-
         [HttpGet("invites/{code}")]
         public async Task<IActionResult> GetInviteAsync(Utf8String code)
         {
