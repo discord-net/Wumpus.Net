@@ -12,7 +12,7 @@ namespace Wumpus.Requests
         public Utf8String Name { get; }
         /// <summary> <see cref="VoiceRegion"/> id. </summary>
         [ModelProperty("region")]
-        public Utf8String RegionId { get; }
+        public Utf8String Region { get; }
         /// <summary> Base64 128x128 jpeg image for the <see cref="Guild"/> icon. </summary>
         [ModelProperty("icon")]
         public Optional<Image?> Icon { get; set; }
@@ -22,17 +22,20 @@ namespace Wumpus.Requests
         /// <summary> <see cref="Entities.DefaultMessageNotifications"/> level. </summary>
         [ModelProperty("default_message_notifications")]
         public Optional<DefaultMessageNotifications> DefaultMessageNotifications { get; set; }
+        /// <summary> <see cref="Entities.DefaultMessageNotifications"/> level. </summary>
+        [ModelProperty("explicit_content_filter")]
+        public Optional<ExplicitContentFilter> ExplicitContentFilter { get; set; }
         /// <summary> New <see cref="Guild"/> <see cref="Role"/>s. </summary>
         [ModelProperty("roles")]
-        public Optional<Role[]> Roles { get; set; }
+        public Optional<CreateGuildRoleParams[]> Roles { get; set; }
         /// <summary> New <see cref="Guild"/>'s <see cref="Channel"/>s. </summary>
         [ModelProperty("channels")]
-        public Optional<Channel[]> Channels { get; set; }
+        public Optional<CreateGuildChannelParams[]> Channels { get; set; }
 
-        public CreateGuildParams(Utf8String name, Utf8String regionId)
+        public CreateGuildParams(Utf8String name, Utf8String region)
         {
             Name = name;
-            RegionId = regionId;
+            Region = region;
         }
 
         public void Validate()
@@ -41,7 +44,7 @@ namespace Wumpus.Requests
             Preconditions.LengthAtLeast(Name, Guild.MinNameLength, nameof(Name));
             Preconditions.LengthAtMost(Name, Guild.MaxNameLength, nameof(Name));
 
-            Preconditions.NotNullOrWhitespace(RegionId, nameof(RegionId));
+            Preconditions.NotNullOrWhitespace(Region, nameof(Region));
         }
     }
 }

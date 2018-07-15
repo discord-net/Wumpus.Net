@@ -12,7 +12,7 @@ namespace Wumpus.Requests
         public Optional<Utf8String> Name { get; set; }
         /// <summary> <see cref="Guild"/> <see cref="VoiceRegion"/> id. </summary>
         [ModelProperty("region")]
-        public Optional<Utf8String> RegionId { get; set; }
+        public Optional<Utf8String> Region { get; set; }
         /// <summary> <see cref="Entities.VerificationLevel"/>. </summary>
         [ModelProperty("verification_level")]
         public Optional<VerificationLevel> VerificationLevel { get; set; }
@@ -47,7 +47,7 @@ namespace Wumpus.Requests
             Preconditions.LengthAtLeast(Name, Guild.MinNameLength, nameof(Name));
             Preconditions.LengthAtMost(Name, Guild.MaxNameLength, nameof(Name));
 
-            Preconditions.NotNullOrWhitespace(RegionId, nameof(RegionId));
+            Preconditions.NotNullOrWhitespace(Region, nameof(Region));
 
             Preconditions.AtLeast(AfkTimeout, Channel.MinAfkTimeoutDuration, nameof(AfkTimeout));
             Preconditions.AtMost(AfkTimeout, Channel.MaxAFkTimeoutDuration, nameof(AfkTimeout));

@@ -5,7 +5,7 @@ using Voltaic.Serialization;
 namespace Wumpus.Requests
 {
     /// <summary> https://discordapp.com/developers/docs/resources/user#create-group-dm-json-params </summary>
-    public class CreateGroupChannelParams
+    public class CreateGroupDMChannelParams
     {
         /// <summary> Access tokens of <see cref="Entities.User"/>s that have granted your app the <see cref="Entities.DiscordOAuthScope.GroupDMJoin"/> scope. </summary>
         [ModelProperty("access_tokens")]
@@ -14,7 +14,7 @@ namespace Wumpus.Requests
         [ModelProperty("nicks")]
         public Optional<Dictionary<Snowflake, string>> Nicks { get; set; } //TODO: Serializer does not currently support numeric keys
 
-        public CreateGroupChannelParams(Utf8String[] accessTokens)
+        public CreateGroupDMChannelParams(Utf8String[] accessTokens)
         {
             AccessTokens = accessTokens;
         }

@@ -11,19 +11,18 @@ namespace Wumpus.Requests
         /// <summary> The <see cref="Message"/> contents. </summary>
         [ModelProperty("content")]
         public Optional<Utf8String> Content { get; set; }
-        /// <summary> True if this is a TTS <see cref="Message"/>. </summary>
-        [ModelProperty("tts")]
-        public Optional<bool> IsTTS { get; set; }
-        /// <summary> Embedded rich content. </summary>
-        [ModelProperty("embeds")]
-        public Optional<Embed[]> Embeds { get; set; }
-
         /// <summary> Override the default username of the <see cref="Webhook"/>. </summary>
         [ModelProperty("username")]
         public Optional<Utf8String> Username { get; set; }
         /// <summary> Override the default avatar of the <see cref="Webhook"/>. </summary>
         [ModelProperty("avatar_url")]
         public Optional<Utf8String> AvatarUrl { get; set; }
+        /// <summary> True if this is a TTS <see cref="Message"/>. </summary>
+        [ModelProperty("tts")]
+        public Optional<bool> IsTTS { get; set; }
+        /// <summary> Embedded rich content. </summary>
+        [ModelProperty("embeds")]
+        public Optional<Embed[]> Embeds { get; set; }
 
         /// <summary> Waits for server confirmation of <see cref="Message"/> send before response, and returns the created <see cref="Message"/> body. </summary>
         public Optional<bool> Wait { get; set; }

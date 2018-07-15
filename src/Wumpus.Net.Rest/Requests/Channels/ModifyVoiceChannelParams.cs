@@ -13,6 +13,9 @@ namespace Wumpus.Requests
         /// <summary> The <see cref="User"/> limit of the voice <see cref="Channel"/>. </summary>
         [ModelProperty("user_limit")]
         public Optional<int> UserLimit { get; set; }
+        /// <summary> Id of the new parent category for a <see cref="Channel"/>. </summary>
+        [ModelProperty("parent_id")]
+        public Optional<Snowflake?> ParentId { get; set; }
 
         public override void Validate()
         {

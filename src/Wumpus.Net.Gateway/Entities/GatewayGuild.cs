@@ -28,8 +28,5 @@ namespace Wumpus.Entities
         /// <summary> <see cref="Channel"/> entities in the <see cref="GatewayGuild"/>. </summary>
         [ModelProperty("channels")]
         public Optional<Channel[]> Channels { get; set; }
-        /// <summary> When this <see cref="GatewayGuild"/> was joined at. </summary>
-        [ModelProperty("joined_at"), StandardFormat('O')]
-        public Optional<DateTimeOffset> JoinedAt { get; set; }
     }
 }

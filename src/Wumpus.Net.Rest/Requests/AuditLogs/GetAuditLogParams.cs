@@ -4,10 +4,6 @@ using Wumpus.Entities;
 
 namespace Wumpus.Requests
 {
-    /// <summary> 
-    ///    Returns an <see cref="AuditLog"/> object for the <see cref="Guild"/>. Requires <see cref="GuildPermissions.ViewAuditLog"/>.
-    ///    https://discordapp.com/developers/docs/resources/audit-log#get-guild-audit-log 
-    /// </summary>
     public class GetAuditLogParams : QueryMap
     {
         /// <summary> Filter the log for a <see cref="User"/> id. </summary>
@@ -24,9 +20,9 @@ namespace Wumpus.Requests
         {
             var dict = new Dictionary<string, object>();
             if (UserId.IsSpecified)
-                dict["userId"] = UserId.ToString();
+                dict["user_id"] = UserId.ToString();
             if (ActionType.IsSpecified)
-                dict["actionType"] = ((int)ActionType.Value).ToString();
+                dict["action_type"] = ((int)ActionType.Value).ToString();
             if (Before.IsSpecified)
                 dict["before"] = Before.Value.ToString();
             if (Limit.IsSpecified)

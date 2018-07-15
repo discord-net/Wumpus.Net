@@ -30,6 +30,7 @@ namespace Wumpus.Requests
         {
             Preconditions.AtLeast(Limit, Guild.MinGetGuildsLimit, nameof(Limit));
             Preconditions.AtMost(Limit, Guild.MaxGetGuildsLimit, nameof(Limit));
+            Preconditions.Exclusive(new[] { Before, After }, new[] { nameof(Before), nameof(After) });
         }
     }
 }

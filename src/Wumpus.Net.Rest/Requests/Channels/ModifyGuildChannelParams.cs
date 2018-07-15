@@ -16,9 +16,6 @@ namespace Wumpus.Requests
         /// <summary> <see cref="Channel"/> or category-specific <see cref="Overwrite"/>s. </summary>
         [ModelProperty("permission_overwrites")]
         public Optional<Overwrite[]> PermissionOverwrites { get; set; }
-        /// <summary> Id of the new parent category for a <see cref="Channel"/>. </summary>
-        [ModelProperty("parent_id")]
-        public Optional<Snowflake> ParentId { get; set; }
 
         public virtual void Validate()
         {

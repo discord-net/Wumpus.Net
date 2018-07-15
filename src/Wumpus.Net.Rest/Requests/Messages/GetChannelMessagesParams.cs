@@ -4,12 +4,6 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Requests
 {
-    /// <summary> 
-    ///     Returns the <see cref="Entities.Message"/> for a <see cref="Entities.Channel"/>. If operating on a <see cref="Entities.Guild"/> <see cref="Entities.Channel"/>, this endpoint requires the <see cref="Entities.ChannelPermissions.ViewChannel"/> to be present on the current <see cref="Entities.User"/>.
-    ///     If the current <see cref="Entities.User"/> is missing <see cref="Entities.ChannelPermissions.ReadMessageHistory"> in the <see cref="Entities.Channel"/> then this will return no messages (since they cannot read the message history). 
-    ///     Returns an array of <see cref="Entities.Message"/> objects on success.
-    ///     https://discordapp.com/developers/docs/resources/channel#get-channel-messages 
-    /// </summary>
     public class GetChannelMessagesParams : QueryMap
     {
         /// <summary> Get <see cref="Entities.Message"/>s before this id. </summary>
@@ -43,7 +37,7 @@ namespace Wumpus.Requests
         public void Validate()
         {
             Preconditions.NotNegative(Limit, nameof(Limit));
-            // TODO: Before, Around, After are mutually exclusive
+            Preconditions.Exclusive(new[] { Before, After, Around }, new[] { nameof(Before), nameof(After), nameof(Around) });
         }
     }
 }

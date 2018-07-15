@@ -5,7 +5,7 @@ namespace Wumpus
 {
     internal static class Preconditions
     {
-        //Objects
+        // Objects
 
         public static void NotNull<T>(T obj, string name, string msg = null) where T : class { if (obj == null) throw CreateNotNullException(name, msg); }
         public static void NotNull<T>(Optional<T> obj, string name, string msg = null) where T : class { if (obj.IsSpecified && obj.Value == null) throw CreateNotNullException(name, msg); }
@@ -16,7 +16,24 @@ namespace Wumpus
             else return new ArgumentNullException(name, msg);
         }
 
-        //Strings
+        // Optionals
+
+        public static void Exclusive<T>(Optional<T>[] objs, string[] names, string msg = null)
+        {
+            int count = 0;
+            for (int i = 0; i < objs.Length; i++)
+            {
+                if (objs[i].IsSpecified)
+                    count++;
+            }
+            if (count > 1)
+            {
+                if (msg != null) throw new ArgumentException(msg);
+                else throw new ArgumentException($"[{string.Join(", ", names)}] are exclusive parameters and may not be used together");
+            }
+        }
+
+        // Strings
 
         public static void NotEmpty(string obj, string name, string msg = null) { if (obj.Length == 0) throw CreateNotEmptyException(name, msg); }
         public static void NotEmpty(Optional<string> obj, string name, string msg = null) { if (obj.IsSpecified && obj.Value.Length == 0) throw CreateNotEmptyException(name, msg); }
@@ -186,7 +203,7 @@ namespace Wumpus
             else return new ArgumentException(name, msg);
         }
 
-        //Numerics
+        // Numerics
 
         public static void NotZero(sbyte obj, string name, string msg = null) { if (obj == 0) throw CreateNotZeroException(name, msg); }
         public static void NotZero(byte obj, string name, string msg = null) { if (obj == 0) throw CreateNotZeroException(name, msg); }
@@ -566,7 +583,7 @@ namespace Wumpus
         {
             if (snowflake > maximumSnowflake)
             {
-                if (msg == null) throw new ArgumentOutOfRangeException(name, "Entity is too old");
+                if (msg == null) throw new ArgumentOutOfRangeException(name, "Entity is too young");
                 else throw new ArgumentOutOfRangeException(name, msg);
             }
         }

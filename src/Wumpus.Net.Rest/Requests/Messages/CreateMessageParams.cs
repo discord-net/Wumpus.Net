@@ -5,12 +5,6 @@ using Voltaic;
 
 namespace Wumpus.Requests
 {
-    /// <summary> 
-    /// Post a message to a <see cref="Guild"/> text or DM <see cref="Channel"/>. If operating on a <see cref="Guild"/> <see cref="Channel"/>, this endpoint requires <see cref="ChannelPermissions.SendMessages"/> to be present on the current <see cref="User"/>.
-    /// If the tts field is set to true, <see cref="ChannelPermissions.SendTTSMessages"/> is required for the message to be spoken. 
-    /// Returns a <see cref="Message"/> object. 
-    /// Fires a Message Create Gateway event. 
-    /// </summary>
     public class CreateMessageParams : IFormData
     {
         /// <summary> The <see cref="Message"/> contents. </summary>

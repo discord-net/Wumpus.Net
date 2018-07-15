@@ -5,6 +5,7 @@ namespace Wumpus.Entities
     [ModelStringEnum]
     public enum EmbedType
     {
+        Unknown = 0,
         [ModelEnumValue("rich")] Rich,
         [ModelEnumValue("link")] Link,
         [ModelEnumValue("video")] Video,
