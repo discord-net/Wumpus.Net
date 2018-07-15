@@ -42,19 +42,19 @@ namespace Wumpus.Server.Formatters
                     buffer.Advance(read);
                     read = await request.Body.ReadAsync(buffer.GetMemory(1024 * 4));
                 }
-                
-                    if (encoding == Encoding.UTF8)
-                    {
-                        var obj = _serializer.ReadUtf8(context.ModelType, buffer.AsReadOnlySpan());
-                        return InputFormatterResult.Success(obj);
-                    }
-                    else if (encoding == Encoding.Unicode)
-                    {
-                        var obj = _serializer.ReadUtf16(context.ModelType, buffer.AsReadOnlySpan());
-                        return InputFormatterResult.Success(obj);
-                    }
-                    else
-                        throw new ArgumentOutOfRangeException(nameof(encoding));
+
+                if (encoding == Encoding.UTF8)
+                {
+                    var obj = _serializer.ReadUtf8(context.ModelType, buffer.AsReadOnlySpan());
+                    return InputFormatterResult.Success(obj);
+                }
+                else if (encoding == Encoding.Unicode)
+                {
+                    var obj = _serializer.ReadUtf16(context.ModelType, buffer.AsReadOnlySpan());
+                    return InputFormatterResult.Success(obj);
+                }
+                else
+                    throw new ArgumentOutOfRangeException(nameof(encoding));
             }
             catch (Exception ex)
             {
