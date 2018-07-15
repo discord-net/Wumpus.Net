@@ -120,19 +120,33 @@ namespace Voltaic.Serialization.Json
         public T ReadUtf8<T>(Utf8Span data, ValueConverter<T> converter = null)
             => Read(data.Bytes, converter);
 
+        public object ReadUtf8(Type type, ResizableMemory<byte> data, ValueConverter converter = null)
+            => Read(type, data.AsReadOnlySpan(), converter);
+        public object ReadUtf8(Type type, ReadOnlyMemory<byte> data, ValueConverter converter = null)
+            => Read(type, data.Span, converter);
+        public object ReadUtf8(Type type, ReadOnlySpan<byte> data, ValueConverter converter = null)
+            => Read(type, data, converter);
+        public object ReadUtf8(Type type, Utf8String data, ValueConverter converter = null)
+            => Read(type, data.Bytes, converter);
+        public object ReadUtf8(Type type, Utf8Span data, ValueConverter converter = null)
+            => Read(type, data.Bytes, converter);
+
         public T ReadUtf16<T>(ResizableMemory<char> data, ValueConverter<T> converter = null)
-            => ReadUtf16(data.AsReadOnlySpan(), converter);
+            => ReadUtf16(MemoryMarshal.AsBytes(data.AsReadOnlySpan()), converter);
         public T ReadUtf16<T>(ReadOnlyMemory<char> data, ValueConverter<T> converter = null)
+            => ReadUtf16(MemoryMarshal.AsBytes(data.Span), converter);
+        public T ReadUtf16<T>(ResizableMemory<byte> data, ValueConverter<T> converter = null)
+            => ReadUtf16(data.AsReadOnlySpan(), converter);
+        public T ReadUtf16<T>(ReadOnlyMemory<byte> data, ValueConverter<T> converter = null)
             => ReadUtf16(data.Span, converter);
-        public T ReadUtf16<T>(ReadOnlySpan<char> data, ValueConverter<T> converter = null)
+        public T ReadUtf16<T>(ReadOnlySpan<byte> data, ValueConverter<T> converter = null)
         {
-            var utf16Bytes = MemoryMarshal.AsBytes(data);
-            if (Encodings.Utf16.ToUtf8Length(utf16Bytes, out int bytes) != OperationStatus.Done)
+            if (Encodings.Utf16.ToUtf8Length(data, out int bytes) != OperationStatus.Done)
                 throw new SerializationException("Failed to convert to UTF8");
             var utf8 = _pool.Rent(bytes);
             try
             {
-                if (Encodings.Utf16.ToUtf8(utf16Bytes, MemoryMarshal.AsBytes(utf8.AsSpan()), out _, out _) != OperationStatus.Done)
+                if (Encodings.Utf16.ToUtf8(data, MemoryMarshal.AsBytes(utf8.AsSpan()), out _, out _) != OperationStatus.Done)
                     throw new SerializationException("Failed to convert to UTF8");
                 return Read(utf8.AsSpan(0, bytes), converter);
             }
@@ -142,7 +156,34 @@ namespace Voltaic.Serialization.Json
             }
         }
         public T ReadUtf16<T>(string data, ValueConverter<T> converter = null)
-            => ReadUtf16(data.AsSpan(), converter);
+            => ReadUtf16(MemoryMarshal.AsBytes(data.AsSpan()), converter);
+
+        public object ReadUtf16(Type type, ResizableMemory<char> data, ValueConverter converter = null)
+            => ReadUtf16(type, MemoryMarshal.AsBytes(data.AsReadOnlySpan()), converter);
+        public object ReadUtf16(Type type, ReadOnlyMemory<char> data, ValueConverter converter = null)
+            => ReadUtf16(type, MemoryMarshal.AsBytes(data.Span), converter);
+        public object ReadUtf16(Type type, ResizableMemory<byte> data, ValueConverter converter = null)
+            => ReadUtf16(type, data.AsReadOnlySpan(), converter);
+        public object ReadUtf16(Type type, ReadOnlyMemory<byte> data, ValueConverter converter = null)
+            => ReadUtf16(type, data.Span, converter);
+        public object ReadUtf16(Type type, ReadOnlySpan<byte> data, ValueConverter converter = null)
+        {
+            if (Encodings.Utf16.ToUtf8Length(data, out int bytes) != OperationStatus.Done)
+                throw new SerializationException("Failed to convert to UTF8");
+            var utf8 = _pool.Rent(bytes);
+            try
+            {
+                if (Encodings.Utf16.ToUtf8(data, MemoryMarshal.AsBytes(utf8.AsSpan()), out _, out _) != OperationStatus.Done)
+                    throw new SerializationException("Failed to convert to UTF8");
+                return Read(type, utf8.AsSpan(0, bytes), converter);
+            }
+            finally
+            {
+                _pool.Return(utf8);
+            }
+        }
+        public object ReadUtf16(Type type, string data, ValueConverter converter = null)
+            => ReadUtf16(type, MemoryMarshal.AsBytes(data.AsSpan()), converter);
 
         public ReadOnlyMemory<byte> WriteUtf8<T>(T value, ValueConverter<T> converter = null)
             => Write(value, converter).AsReadOnlyMemory();
@@ -165,6 +206,27 @@ namespace Voltaic.Serialization.Json
                 if (Encodings.Utf8.ToUtf16Length(span, out int bytes) != OperationStatus.Done)
                     throw new SerializationException("Failed to convert to UTF16");
                 var utf16 = new char[bytes / 2];
+                if (Encodings.Utf8.ToUtf16(span, MemoryMarshal.AsBytes(utf16.AsSpan()), out _, out _) != OperationStatus.Done)
+                    throw new SerializationException("Failed to convert to UTF16");
+                return utf16.AsMemory();
+            }
+            finally
+            {
+                _pool.Return(data.Array);
+            }
+        }
+        public ReadOnlyMemory<byte> WriteUtf16Bytes<T>(T value, ValueConverter<T> converter = null)
+            => FinishWriteUtf16Bytes(Write(value, converter));
+        public ReadOnlyMemory<byte> WriteUtf16Bytes(object value, ValueConverter converter = null)
+            => FinishWriteUtf16Bytes(Write(value, converter));
+        private ReadOnlyMemory<byte> FinishWriteUtf16Bytes(ResizableMemory<byte> data)
+        {
+            try
+            {
+                var span = data.AsSpan();
+                if (Encodings.Utf8.ToUtf16Length(span, out int bytes) != OperationStatus.Done)
+                    throw new SerializationException("Failed to convert to UTF16");
+                var utf16 = new byte[bytes];
                 if (Encodings.Utf8.ToUtf16(span, MemoryMarshal.AsBytes(utf16.AsSpan()), out _, out _) != OperationStatus.Done)
                     throw new SerializationException("Failed to convert to UTF16");
                 return utf16.AsMemory();
