@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Wumpus.Net.Server;
 using Wumpus.Serialization;
+using Wumpus.Server;
 using Xunit;
 
 namespace Wumpus.Net.Tests
