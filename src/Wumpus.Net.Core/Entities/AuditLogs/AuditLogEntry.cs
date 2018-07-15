@@ -12,7 +12,7 @@ namespace Wumpus.Entities
         public Utf8String TargetId { get; set; }
         /// <summary> Changes made to the <see cref="TargetId"/>. </summary>
         [ModelProperty("changes")]
-        public AuditLogChange[] Changes { get; set; }
+        public Optional<AuditLogChange[]> Changes { get; set; }
         /// <summary> The <see cref="User"/> who made the changes. </summary>
         [ModelProperty("user_id")]
         public Snowflake UserId { get; set; }
@@ -27,6 +27,6 @@ namespace Wumpus.Entities
         public Optional<OptionalAuditEntryInfo[]> Options { get; set; }
         /// <summary> The reason for the change. </summary>
         [ModelProperty("reason")]
-        public Utf8String Reason { get; set; }
+        public Optional<Utf8String> Reason { get; set; }
     }
 }

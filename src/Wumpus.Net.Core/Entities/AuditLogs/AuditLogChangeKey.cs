@@ -7,6 +7,7 @@ namespace Wumpus.Entities
     public enum AuditLogChangeKey
     {
         // General
+
         /// <summary> The id of the changed entity - sometimes used in conjunction with other keys. </summary>
         [ModelEnumValue("id")] Id,
         /// <summary> Type of entity created. </summary>
