@@ -24,7 +24,7 @@ namespace Wumpus.Entities
         public AuditLogEvent ActionType { get; set; }
         /// <summary> Additional info for certain <see cref="ActionType"/>. </summary>
         [ModelProperty("options")]
-        public Optional<OptionalAuditEntryInfo[]> Options { get; set; }
+        public Optional<OptionalAuditEntryInfo> Options { get; set; }
         /// <summary> The reason for the change. </summary>
         [ModelProperty("reason")]
         public Optional<Utf8String> Reason { get; set; }

@@ -24,12 +24,19 @@ namespace Wumpus.Net
         ///     https://discordapp.com/developers/docs/resources/audit-log#get-guild-audit-log
         /// </summary>
         [Get("guilds/{guildId}/audit-logs")]
-        Task<AuditLog> GetGuildAuditLogAsync([Path] Snowflake guildId, [QueryMap] GetAuditLogParams args);
+        Task<AuditLog> GetGuildAuditLogAsync([Path] Snowflake guildId, [QueryMap] GetGuildAuditLogParams args);
 
         // Channel
 
         [Get("channels/{channelId}")]
         Task<Channel> GetChannelAsync([Path] Snowflake channelId);
+        /// <summary>
+        ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>.
+        ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event.
+        ///     If modifying a category, individual Channel Update events will fire for each child channel that also changes.
+        /// </summary>
+        [Put("channels/{channelId}")]
+        Task<Channel> ReplaceGuildChannelAsync([Path] Snowflake channelId, [Body] ModifyGuildChannelParams args);
         /// <summary>
         ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>.
         ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event.
@@ -174,9 +181,9 @@ namespace Wumpus.Net
         [Get("guilds/{guildId}/members")]
         Task<IReadOnlyList<GuildMember>> GetGuildMembersAsync([Path] Snowflake guildId, [QueryMap] GetGuildMembersParams args);
         [Get("guilds/{guildId}/members/{userId}")]
-        Task<IReadOnlyList<GuildMember>> GetGuildMemberAsync([Path] Snowflake guildId, [Path] Snowflake userId);
+        Task<GuildMember> GetGuildMemberAsync([Path] Snowflake guildId, [Path] Snowflake userId);
         [Put("guilds/{guildId}/members/{userId}")]
-        Task<GuildMember> AddGuildMemberAsync([Path] Snowflake guildId, [Path] Snowflake userId, [Body] CreateGuildEmojiParams args);
+        Task<GuildMember> AddGuildMemberAsync([Path] Snowflake guildId, [Path] Snowflake userId, [Body] AddGuildMemberParams args);
         [Delete("guilds/{guildId}/members/{userId}")]
         Task RemoveGuildMemberAsync([Path] Snowflake guildId, [Path] Snowflake userId);
         [Patch("guilds/{guildId}/members/{userId}")]
@@ -190,7 +197,7 @@ namespace Wumpus.Net
         Task RemoveGuildMemberRoleAsync([Path] Snowflake guildId, [Path] Snowflake userId, [Path] Snowflake roleId);
 
         [Get("guilds/{guildId}/bans")]
-        Task<Ban> GetGuildBansAsync([Path] Snowflake guildId);
+        Task<IReadOnlyList<Ban>> GetGuildBansAsync([Path] Snowflake guildId);
         [Put("guilds/{guildId}/bans/{userId}")]
         Task CreateGuildBanAsync([Path] Snowflake guildId, [Path] Snowflake userId, [QueryMap] CreateGuildBanParams args);
         [Delete("guilds/{guildId}/bans/{userId}")]
@@ -221,9 +228,9 @@ namespace Wumpus.Net
         [Get("guilds/{guildId}/integrations")]
         Task<IReadOnlyList<Integration>> GetGuildIntegrationsAsync([Path] Snowflake guildId);
         [Post("guilds/{guildId}/integrations")]
-        Task<Integration> CreateGuildIntegrationsAsync([Path] Snowflake guildId, [Body] CreateGuildIntegrationParams args);
+        Task<Integration> CreateGuildIntegrationAsync([Path] Snowflake guildId, [Body] CreateGuildIntegrationParams args);
         [Delete("guilds/{guildId}/integrations/{integrationId}")]
-        Task DeleteGuildIntegrationsAsync([Path] Snowflake guildId, [Path] Snowflake integrationId);
+        Task DeleteGuildIntegrationAsync([Path] Snowflake guildId, [Path] Snowflake integrationId);
         [Patch("guilds/{guildId}/integrations/{integrationId}")]
         Task ModifyGuildIntegrationsAsync([Path] Snowflake guildId, [Path] Snowflake integrationId, [Body] ModifyGuildIntegrationParams args);
         [Post("guilds/{guildId}/integrations/{integrationId}/sync")]
@@ -243,6 +250,11 @@ namespace Wumpus.Net
         Task<Invite> GetInviteAsync([Path] Utf8String code, [QueryMap] GetInviteParams args);
         [Delete("invites/{code}")]
         Task<Invite> DeleteInviteAsync([Path] Utf8String code);
+
+        // OAuth
+
+        [Get("/oauth2/applications/me")]
+        Task<Application> GetCurrentApplicationAsync();
 
         // User
 
@@ -304,10 +316,5 @@ namespace Wumpus.Net
         [Post("webhooks/{webhookId}/{webhookToken}")]
         [Header("Authorization", null)]
         Task ExecuteWebhookAsync([Path] Snowflake webhookId, [Path] Utf8String webhookToken, [QueryMap] [Body] ExecuteWebhookParams args);
-
-        // OAuth
-
-        [Get("/oauth2/applications/me")]
-        Task<Application> GetCurrentApplicationAsync();
     }
 }

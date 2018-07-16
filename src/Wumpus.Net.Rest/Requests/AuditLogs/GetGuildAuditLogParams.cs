@@ -4,7 +4,7 @@ using Wumpus.Entities;
 
 namespace Wumpus.Requests
 {
-    public class GetAuditLogParams : QueryMap
+    public class GetGuildAuditLogParams : QueryMap
     {
         /// <summary> Filter the log for a <see cref="User"/> id. </summary>
         public Optional<Snowflake> UserId { get; set; }

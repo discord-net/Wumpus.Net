@@ -8,20 +8,20 @@ namespace Wumpus.Requests
     {
         /// <summary> The <see cref="Entities.Integration"/> id. </summary>
         [ModelProperty("id")]
-        public Snowflake Id { get; }
+        public Snowflake IntegrationId { get; }
         /// <summary> The <see cref="Entities.Integration"/> type. </summary>
         [ModelProperty("type")]
         public Utf8String Type { get; }
 
-        public CreateGuildIntegrationParams(Snowflake id, Utf8String type)
+        public CreateGuildIntegrationParams(Snowflake integrationId, Utf8String type)
         {
-            Id = id;
+            IntegrationId = integrationId;
             Type = type;
         }
 
         public void Validate()
         {
-            Preconditions.NotZero(Id, nameof(Id));
+            Preconditions.NotZero(IntegrationId, nameof(IntegrationId));
             Preconditions.NotNullOrWhitespace(Type, nameof(Type));
         }
     }
