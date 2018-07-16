@@ -29,7 +29,6 @@ namespace Voltaic.Serialization
     }
 
     public class ModelMap<T> : ModelMap
-        where T : class
     {
         public override string Name => typeof(T).Name;
         public override Type ModelType => typeof(T);
@@ -102,6 +101,6 @@ namespace Voltaic.Serialization
             keyProp.IndexMask = 1U << keyProp.Index.Value;
         }
 
-        public T CreateUninitialized() => FormatterServices.GetUninitializedObject(typeof(T)) as T;
+        public T CreateUninitialized() => (T)FormatterServices.GetUninitializedObject(typeof(T));
     }
 }
