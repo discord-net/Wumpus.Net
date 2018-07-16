@@ -9,12 +9,17 @@ namespace Wumpus.Requests
         /// <summary> Whether the <see cref="Entities.Invite"/> should contain approximate member counts. </summary>
         public Optional<bool> WithCounts { get; set; }
 
-        public override IDictionary<string, object> GetQueryMap()
+        public override IDictionary<string, string> CreateQueryMap()
         {
-            var dict = new Dictionary<string, object>();
+            var map = new Dictionary<string, string>();
             if (WithCounts.IsSpecified)
-                dict["with_counts"] = WithCounts.Value;
-            return dict;
+                map["with_counts"] = WithCounts.Value.ToString();
+            return map;
+        }
+        public void LoadQueryMap(IReadOnlyDictionary<string, string> map)
+        {
+            if (map.TryGetValue("with_counts", out string str))
+                WithCounts = bool.Parse(str);
         }
 
         public void Validate() { }

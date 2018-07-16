@@ -1,6 +1,7 @@
 ﻿#pragma warning disable CS1998
 
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Wumpus.Entities;
 using Wumpus.Requests;
@@ -38,8 +39,10 @@ namespace Wumpus.Server.Controllers
         }
 
         [HttpGet("users/@me/guilds")]
-        public async Task<IActionResult> GetCurrentUserGuildsAsync(GetCurrentUserGuildsParams args)
+        public async Task<IActionResult> GetCurrentUserGuildsAsync([FromQuery] Dictionary<string, string> queryMap)
         {
+            var args = new GetCurrentUserGuildsParams();
+            args.LoadQueryMap(queryMap);
             args.Validate();
 
             var guild = new UserGuild();

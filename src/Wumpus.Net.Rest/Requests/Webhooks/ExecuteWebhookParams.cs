@@ -29,12 +29,12 @@ namespace Wumpus.Requests
         /// <summary> The contents of the file being sent. </summary>
         public Optional<MultipartFile> File { get; set; }
 
-        public override IDictionary<string, object> GetQueryMap()
+        public override IDictionary<string, string> CreateQueryMap()
         {
-            var dict = new Dictionary<string, object>();
+            var map = new Dictionary<string, string>();
             if (Wait.IsSpecified)
-                dict["wait"] = Wait.Value;
-            return dict;
+                map["wait"] = Wait.Value.ToString();
+            return map;
         }
 
         public IDictionary<string, object> GetFormData()

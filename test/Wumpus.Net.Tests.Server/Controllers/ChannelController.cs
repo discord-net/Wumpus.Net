@@ -1,6 +1,7 @@
 ﻿#pragma warning disable CS1998
 
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Voltaic;
 using Wumpus.Entities;
@@ -109,8 +110,10 @@ namespace Wumpus.Server.Controllers
         }
 
         [HttpGet("channels/{channelId}/messages")]
-        public async Task<IActionResult> GetChannelMessagesAsync(Snowflake channelId, GetChannelMessagesParams args)
+        public async Task<IActionResult> GetChannelMessagesAsync(Snowflake channelId, [FromQuery] Dictionary<string, string> queryMap)
         {
+            var args = new GetChannelMessagesParams();
+            args.LoadQueryMap(queryMap);
             args.Validate();
 
             var msg = new Message();

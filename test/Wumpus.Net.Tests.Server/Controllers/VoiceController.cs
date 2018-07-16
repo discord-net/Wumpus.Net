@@ -2,7 +2,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Voltaic;
 using Wumpus.Entities;
 
 namespace Wumpus.Server.Controllers
@@ -13,27 +12,7 @@ namespace Wumpus.Server.Controllers
         [HttpGet("voice/regions")]
         public async Task<IActionResult> GetVoiceRegionsAsync()
         {
-            return Ok(new VoiceRegion[]
-            {
-                new VoiceRegion
-                {
-                    Id = (Utf8String)"test",
-                    Name = (Utf8String)"Test",
-                    IsOptimal = false,
-                    IsVip = false,
-                    Deprecated = false,
-                    Custom = true,
-                },
-                new VoiceRegion
-                {
-                    Id = (Utf8String)"test-wip",
-                    Name = (Utf8String)"Test (VIP)",
-                    IsOptimal = false,
-                    IsVip = true,
-                    Deprecated = false,
-                    Custom = true,
-                }
-            });
+            return Ok(new VoiceRegion());
         }
     }
 }

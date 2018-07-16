@@ -25,6 +25,8 @@ namespace Wumpus.Server.Controllers
         [HttpPost("guilds")]
         public async Task<IActionResult> CreateGuildAsync([FromBody] CreateGuildParams args)
         {
+            args.Validate();
+
             var guild = new Guild
             {
                 DefaultMessageNotifications = args.DefaultMessageNotifications.GetValueOrDefault(DefaultMessageNotifications.AllMessages),
@@ -137,8 +139,10 @@ namespace Wumpus.Server.Controllers
         }
 
         [HttpGet("guilds/{guildId}/members")]
-        public async Task<IActionResult> GetGuildMembersAsync(Snowflake guildId, GetGuildMembersParams args)
+        public async Task<IActionResult> GetGuildMembersAsync(Snowflake guildId, [FromQuery] Dictionary<string, string> queryMap)
         {
+            var args = new GetGuildMembersParams();
+            args.LoadQueryMap(queryMap);
             args.Validate();
 
             var user = new User();
@@ -214,8 +218,12 @@ namespace Wumpus.Server.Controllers
             return Ok(new[] { new Ban() });
         }
         [HttpPut("guilds/{guildId}/bans/{userId}")]
-        public async Task<IActionResult> CreateGuildBanAsync(Snowflake guildId, Snowflake userId)
+        public async Task<IActionResult> CreateGuildBanAsync(Snowflake guildId, Snowflake userId, [FromQuery] Dictionary<string, string> queryMap)
         {
+            var args = new CreateGuildBanParams();
+            args.LoadQueryMap(queryMap);
+            args.Validate();
+
             return NoContent();
         }
         [HttpDelete("guilds/{guildId}/bans/{userId}")]
@@ -283,16 +291,20 @@ namespace Wumpus.Server.Controllers
         }
 
         [HttpGet("guilds/{guildId}/prune")]
-        public async Task<IActionResult> GetGuildPruneCountAsync(Snowflake guildId, GuildPruneParams args)
+        public async Task<IActionResult> GetGuildPruneCountAsync(Snowflake guildId, [FromQuery] Dictionary<string, string> queryMap)
         {
+            var args = new GuildPruneParams(0);
+            args.LoadQueryMap(queryMap);
             args.Validate();
 
             return Ok(new GuildPruneCountResponse());
         }
 
         [HttpPost("guilds/{guildId}/prune")]
-        public async Task<IActionResult> PruneGuildMembersAsync(Snowflake guildId, GuildPruneParams args)
+        public async Task<IActionResult> PruneGuildMembersAsync(Snowflake guildId, [FromQuery] Dictionary<string, string> queryMap)
         {
+            var args = new GuildPruneParams(0);
+            args.LoadQueryMap(queryMap);
             args.Validate();
 
             return Ok(new GuildPruneCountResponse());

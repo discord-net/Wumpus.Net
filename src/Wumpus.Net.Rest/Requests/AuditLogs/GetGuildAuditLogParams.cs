@@ -16,18 +16,29 @@ namespace Wumpus.Requests
         /// <remarks> Default: 50, Minimum: 1, Maximum: 100 </remarks>
         public Optional<int> Limit { get; set; }
 
-        public override IDictionary<string, object> GetQueryMap()
+        public override IDictionary<string, string> CreateQueryMap()
         {
-            var dict = new Dictionary<string, object>();
+            var map = new Dictionary<string, string>();
             if (UserId.IsSpecified)
-                dict["user_id"] = UserId;
+                map["user_id"] = UserId.Value.ToString();
             if (ActionType.IsSpecified)
-                dict["action_type"] = (int)ActionType.Value;
+                map["action_type"] = ((int)ActionType.Value).ToString();
             if (Before.IsSpecified)
-                dict["before"] = Before.Value;
+                map["before"] = Before.Value.ToString();
             if (Limit.IsSpecified)
-                dict["limit"] = Limit.Value;
-            return dict;
+                map["limit"] = Limit.Value.ToString();
+            return map;
+        }
+        public void LoadQueryMap(IReadOnlyDictionary<string, string> map)
+        {
+            if (map.TryGetValue("user_id", out string str))
+                UserId = new Snowflake(ulong.Parse(str));
+            if (map.TryGetValue("action_type", out str))
+                ActionType = (AuditLogEvent)int.Parse(str);
+            if (map.TryGetValue("limit", out str))
+                Limit = int.Parse(str);
+            if (map.TryGetValue("before", out str))
+                Before = new Snowflake(ulong.Parse(str));
         }
 
         public void Validate()

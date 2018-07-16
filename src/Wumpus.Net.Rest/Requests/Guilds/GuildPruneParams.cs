@@ -13,13 +13,18 @@ namespace Wumpus.Requests
             Days = days;
         }
 
-        public override IDictionary<string, object> GetQueryMap()
+        public override IDictionary<string, string> CreateQueryMap()
         {
-            var dict = new Dictionary<string, object>
+            var map = new Dictionary<string, string>
             {
-                ["days"] = Days
+                ["days"] = Days.ToString()
             };
-            return dict;
+            return map;
+        }
+        public void LoadQueryMap(IReadOnlyDictionary<string, string> map)
+        {
+            if (map.TryGetValue("days", out string str))
+                Days = int.Parse(str);
         }
 
         public void Validate()

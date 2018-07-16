@@ -15,14 +15,21 @@ namespace Wumpus.Requests
         [ModelProperty("reason")]
         public Optional<Utf8String> Reason { get; set; }
 
-        public override IDictionary<string, object> GetQueryMap()
+        public override IDictionary<string, string> CreateQueryMap()
         {
-            var dict = new Dictionary<string, object>();
+            var map = new Dictionary<string, string>();
             if (DeleteMessageDays.IsSpecified)
-                dict["delete-message-days"] = DeleteMessageDays.Value;
+                map["delete-message-days"] = DeleteMessageDays.Value.ToString();
             if (Reason.IsSpecified)
-                dict["reason"] = Reason.Value;
-            return dict;
+                map["reason"] = Reason.Value.ToString();
+            return map;
+        }
+        public void LoadQueryMap(IReadOnlyDictionary<string, string> map)
+        {
+            if (map.TryGetValue("delete-message-days", out string str))
+                DeleteMessageDays = int.Parse(str);
+            if (map.TryGetValue("reason", out str))
+                Reason = (Utf8String)str;
         }
 
         public void Validate()
