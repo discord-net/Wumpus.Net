@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/RogueException/Wumpus.Net</PackageProjectUrl>
     <RepositoryUrl>git://github.com/RogueException/Wumpus.Net</RepositoryUrl>
     <Description>Provides a low-level REST client for the Discord API</Description>
-    <TargetFrameworks>netstandard1.3</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="RestEase" Version="1.4.5" />

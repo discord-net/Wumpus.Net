@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/RogueException/Wumpus.Net</PackageProjectUrl>
     <RepositoryUrl>git://github.com/RogueException/Wumpus.Net</RepositoryUrl>
     <Description>A test extension for Voltaic.Serialization adding String support via Utf8Parser/Utf8Formatter</Description>
-    <TargetFrameworks>netstandard1.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>

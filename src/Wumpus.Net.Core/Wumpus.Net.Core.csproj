@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/RogueException/Wumpus.Net</PackageProjectUrl>
     <RepositoryUrl>git://github.com/RogueException/Wumpus.Net</RepositoryUrl>
     <Description>A collection of common types and models used by Wumpus.Net packages</Description>
-    <TargetFrameworks>netstandard1.3</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../Voltaic.Serialization.Json/Voltaic.Serialization.Json.csproj" />

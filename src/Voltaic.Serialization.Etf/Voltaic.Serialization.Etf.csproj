@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/RogueException/Wumpus.Net</PackageProjectUrl>
     <RepositoryUrl>git://github.com/RogueException/Wumpus.Net</RepositoryUrl>
     <Description>An extension for Voltaic.Serialization adding ETF support. This extension is designed for use with the Discord API and may not support other APIs.</Description>
-    <TargetFrameworks>netstandard1.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
