@@ -10,6 +10,6 @@ namespace Wumpus.Entities
         public bool Enabled { get; set; }
         /// <summary> The embed <see cref="Channel" /> Id. </summary>
         [ModelProperty("channel_id")]
-        public Snowflake ChannelId { get; set; }
+        public Snowflake? ChannelId { get; set; }
     }
 }

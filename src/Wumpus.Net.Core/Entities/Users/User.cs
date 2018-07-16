@@ -20,7 +20,7 @@ namespace Wumpus.Entities
         public Optional<bool> Bot { get; set; }
         /// <summary> The <see cref="User"/>'s avatar hash. </summary>
         [ModelProperty("avatar")]
-        public Optional<Utf8String> Avatar { get; set; }
+        public Optional<Image?> Avatar { get; set; }
 
         //CurrentUser
         /// <summary> Whether the email on this account has been verified. </summary>

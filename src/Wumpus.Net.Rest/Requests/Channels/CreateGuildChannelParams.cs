@@ -18,7 +18,7 @@ namespace Wumpus.Requests
         public Optional<Overwrite[]> PermissionOverwrites { get; set; }
         /// <summary> Id of the parent category for a <see cref="Channel"/>. </summary>
         [ModelProperty("parent_id")]
-        public Optional<Snowflake> ParentId { get; set; }
+        public Optional<Snowflake?> ParentId { get; set; }
 
         public CreateGuildChannelParams(Utf8String name, ChannelType type)
         {

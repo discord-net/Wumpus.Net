@@ -277,7 +277,7 @@ namespace Wumpus.Rest.Tests
         [Fact]
         public void ModifyGuildIntegrationsAsync()
         {
-            RunTest(c => c.ModifyGuildIntegrationsAsync(123, 456, new ModifyGuildIntegrationParams
+            RunTest(c => c.ModifyGuildIntegrationAsync(123, 456, new ModifyGuildIntegrationParams
             {
                 // TODO: Impl
             }));
@@ -285,7 +285,7 @@ namespace Wumpus.Rest.Tests
         [Fact]
         public void SyncGuildIntegrationsAsync()
         {
-            RunTest(c => c.SyncGuildIntegrationsAsync(123, 456));
+            RunTest(c => c.SyncGuildIntegrationAsync(123, 456));
         }
 
         [Fact]
@@ -302,7 +302,7 @@ namespace Wumpus.Rest.Tests
                 Enabled = true
             }), x =>
             {
-                Assert.Equal(456UL, x.ChannelId.RawValue);
+                Assert.Equal(456UL, x.ChannelId?.RawValue ?? 0UL);
                 Assert.True(x.Enabled);
             });
         }

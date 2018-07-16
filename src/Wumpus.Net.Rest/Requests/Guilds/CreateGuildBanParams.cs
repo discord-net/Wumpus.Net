@@ -19,7 +19,7 @@ namespace Wumpus.Requests
         {
             var dict = new Dictionary<string, object>();
             if (DeleteMessageDays.IsSpecified)
-                dict["delete-message-days"] = DeleteMessageDays.Value.ToString();
+                dict["delete-message-days"] = DeleteMessageDays.Value;
             if (Reason.IsSpecified)
                 dict["reason"] = Reason.Value;
             return dict;

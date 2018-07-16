@@ -16,9 +16,9 @@ namespace Wumpus.Requests
         {
             var dict = new Dictionary<string, object>();
             if (Limit.IsSpecified)
-                dict["limit"] = Limit.Value.ToString();
+                dict["limit"] = Limit.Value;
             if (After.IsSpecified)
-                dict["after"] = After.Value.ToString();
+                dict["after"] = After.Value;
             return dict;
         }
 

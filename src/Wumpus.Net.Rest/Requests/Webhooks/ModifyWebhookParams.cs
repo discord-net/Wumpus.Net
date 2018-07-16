@@ -12,7 +12,7 @@ namespace Wumpus.Requests
         public Optional<Utf8String> Name { get; set; }
         /// <summary> Image for the default <see cref="Webhook"/> avatar. </summary>
         [ModelProperty("avatar")]
-        public Optional<Image> Avatar { get; set; }
+        public Optional<Image?> Avatar { get; set; }
         /// <summary> The new <see cref="Channel"/> id this <see cref="Webhook"/> should be moved to. </summary>
         [ModelProperty("channel_id")]
         public Optional<Snowflake> ChannelId { get; set; }

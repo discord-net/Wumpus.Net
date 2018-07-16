@@ -16,7 +16,7 @@ namespace Wumpus.Requests
         public Optional<Utf8String> Nonce { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("tts")]
-        public Optional<bool> IsTTS { get; set; }
+        public Optional<bool> IsTextToSpeech { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("embed")]
         public Optional<Embed> Embed { get; set; }

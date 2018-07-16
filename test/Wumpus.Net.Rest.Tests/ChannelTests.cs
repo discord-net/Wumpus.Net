@@ -119,7 +119,7 @@ namespace Wumpus.Rest.Tests
             {
                 Content = (Utf8String)"test",
                 Embed = new Embed { Author = new EmbedAuthor { Name = (Utf8String)"testtest" }, Url = (Utf8String)"http://discordapp.com" },
-                IsTTS = true
+                IsTextToSpeech = true
             }), x =>
             {
                 Assert.Equal(123UL, x.ChannelId.RawValue);

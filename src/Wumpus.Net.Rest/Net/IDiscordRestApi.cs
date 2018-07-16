@@ -232,9 +232,9 @@ namespace Wumpus.Net
         [Delete("guilds/{guildId}/integrations/{integrationId}")]
         Task DeleteGuildIntegrationAsync([Path] Snowflake guildId, [Path] Snowflake integrationId);
         [Patch("guilds/{guildId}/integrations/{integrationId}")]
-        Task ModifyGuildIntegrationsAsync([Path] Snowflake guildId, [Path] Snowflake integrationId, [Body] ModifyGuildIntegrationParams args);
+        Task ModifyGuildIntegrationAsync([Path] Snowflake guildId, [Path] Snowflake integrationId, [Body] ModifyGuildIntegrationParams args);
         [Post("guilds/{guildId}/integrations/{integrationId}/sync")]
-        Task SyncGuildIntegrationsAsync([Path] Snowflake guildId, [Path] Snowflake integrationId);
+        Task SyncGuildIntegrationAsync([Path] Snowflake guildId, [Path] Snowflake integrationId);
 
         [Get("guilds/{guildId}/embed")]
         Task<GuildEmbed> GetGuildEmbedAsync([Path] Snowflake guildId);
@@ -253,7 +253,7 @@ namespace Wumpus.Net
 
         // OAuth
 
-        [Get("/oauth2/applications/me")]
+        [Get("oauth2/applications/me")]
         Task<Application> GetCurrentApplicationAsync();
 
         // User

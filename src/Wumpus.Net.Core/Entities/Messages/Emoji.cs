@@ -14,7 +14,7 @@ namespace Wumpus.Entities
         public Utf8String Name { get; set; }
         /// <summary> <see cref="Role"/>s this <see cref="Emoji"/> is whitelisted to. </summary>
         [ModelProperty("roles")]
-        public Optional<Snowflake[]> Roles { get; set; }
+        public Optional<Snowflake[]> RoleIds { get; set; }
         /// <summary> <see cref="Entities.User"/> that created this <see cref="Emoji"/>. </summary>
         [ModelProperty("user")]
         public Optional<EntityOrId<User>> User { get; set; }  

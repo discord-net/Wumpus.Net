@@ -505,19 +505,19 @@ namespace Wumpus
             Preconditions.NotZero(integrationId, nameof(integrationId));
             return _api.DeleteGuildIntegrationAsync(guildId, integrationId);
         }
-        public Task ModifyGuildIntegrationsAsync(Snowflake guildId, Snowflake integrationId, ModifyGuildIntegrationParams args)
+        public Task ModifyGuildIntegrationAsync(Snowflake guildId, Snowflake integrationId, ModifyGuildIntegrationParams args)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotZero(integrationId, nameof(integrationId));
             Preconditions.NotNull(args, nameof(args));
             args.Validate();
-            return _api.ModifyGuildIntegrationsAsync(guildId, integrationId, args);
+            return _api.ModifyGuildIntegrationAsync(guildId, integrationId, args);
         }
-        public Task SyncGuildIntegrationsAsync(Snowflake guildId, Snowflake integrationId)
+        public Task SyncGuildIntegrationAsync(Snowflake guildId, Snowflake integrationId)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotZero(integrationId, nameof(integrationId));
-            return _api.SyncGuildIntegrationsAsync(guildId, integrationId);
+            return _api.SyncGuildIntegrationAsync(guildId, integrationId);
         }
 
         public Task<GuildEmbed> GetGuildEmbedAsync(Snowflake guildId)

@@ -20,13 +20,13 @@ namespace Wumpus.Requests
         {
             var dict = new Dictionary<string, object>();
             if (UserId.IsSpecified)
-                dict["user_id"] = UserId.ToString();
+                dict["user_id"] = UserId;
             if (ActionType.IsSpecified)
-                dict["action_type"] = ((int)ActionType.Value).ToString();
+                dict["action_type"] = (int)ActionType.Value;
             if (Before.IsSpecified)
-                dict["before"] = Before.Value.ToString();
+                dict["before"] = Before.Value;
             if (Limit.IsSpecified)
-                dict["limit"] = Limit.Value.ToString();
+                dict["limit"] = Limit.Value;
             return dict;
         }
 

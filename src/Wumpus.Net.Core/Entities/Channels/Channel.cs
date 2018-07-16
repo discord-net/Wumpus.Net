@@ -61,7 +61,7 @@ namespace Wumpus.Entities
         public Optional<Utf8String> Topic { get; set; }
         /// <summary> If the <see cref="Channel"/> is nsfw </summary>
         [ModelProperty("nsfw")]
-        public Optional<bool> Nsfw { get; set; }
+        public Optional<bool> IsNsfw { get; set; }
 
         //MessageChannel
 

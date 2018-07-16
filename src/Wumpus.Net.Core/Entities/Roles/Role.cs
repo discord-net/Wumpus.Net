@@ -15,13 +15,13 @@ namespace Wumpus.Entities
         public Utf8String Name { get; set; }
         /// <summary> Integer representation of hexadecimal color code. </summary>
         [ModelProperty("color")]
-        public uint Color { get; set; }
+        public Color Color { get; set; }
         /// <summary> If this <see cref="Role"/> is pinned in the <see cref="User"/> listing. </summary>
         [ModelProperty("hoist")]
-        public bool Hoist { get; set; }
+        public bool IsHoisted { get; set; }
         /// <summary> Whether this <see cref="Role"/> is mentionable. </summary>
         [ModelProperty("mentionable")]
-        public bool Mentionable { get; set; }
+        public bool IsMentionable { get; set; }
         /// <summary> Position of this <see cref="Role"/>. </summary>
         [ModelProperty("position")]
         public int Position { get; set; }

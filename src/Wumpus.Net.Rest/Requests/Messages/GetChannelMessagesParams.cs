@@ -24,13 +24,13 @@ namespace Wumpus.Requests
         {
             var dict = new Dictionary<string, object>();
             if (Limit.IsSpecified)
-                dict["limit"] = Limit.Value.ToString();
+                dict["limit"] = Limit.Value;
             if (Around.IsSpecified)
-                dict["around"] = Around.Value.ToString();
+                dict["around"] = Around.Value;
             if (Before.IsSpecified)
-                dict["before"] = Before.Value.ToString();
+                dict["before"] = Before.Value;
             if (After.IsSpecified)
-                dict["after"] = After.Value.ToString();
+                dict["after"] = After.Value;
             return dict;
         }
 
