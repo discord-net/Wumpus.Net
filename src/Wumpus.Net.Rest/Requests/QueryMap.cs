@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Wumpus.Requests
 {
     // TODO: Should this be Utf8String?
-    public abstract class QueryMap : IDictionary<string, string>
+    public abstract class QueryMap : IQueryMap
     {
         public abstract IDictionary<string, object> GetQueryMap();
 
@@ -29,7 +30,12 @@ namespace Wumpus.Requests
         void ICollection<KeyValuePair<string, string>>.CopyTo(KeyValuePair<string, string>[] array, int arrayIndex) => throw new NotSupportedException();
 
         // IEnumerable
-        IEnumerator<KeyValuePair<string, string>> IEnumerable<KeyValuePair<string, string>>.GetEnumerator() => throw new NotSupportedException();
+        IEnumerator<KeyValuePair<string, string>> IEnumerable<KeyValuePair<string, string>>.GetEnumerator() => GetQueryMap()
+            .Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString()))
+            .GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => throw new NotSupportedException();
     }
+
+    // Used to hide IDictionary extension methods
+    internal interface IQueryMap : IDictionary<string, string> { }
 }
