@@ -13,17 +13,19 @@ namespace Wumpus.Server.Controllers
         [HttpGet("guilds/{guildId}/audit-logs")]
         public async Task<IActionResult> GetGuildAuditLogAsync(Snowflake guildId, [FromBody] GetGuildAuditLogParams args)
         {
+            args.Validate();
+
+            var entry = new AuditLogEntry();
+            if (args.ActionType.IsSpecified)
+                entry.ActionType = args.ActionType.Value;
+            if (args.Before.IsSpecified)
+                entry.Id = args.Before.Value;
+            if (args.UserId.IsSpecified)
+                entry.UserId = args.UserId.Value;
+
             return Ok(new AuditLog
             {
-                Entries = new[]
-                {
-                    new AuditLogEntry
-                    {
-                        ActionType = args.ActionType.Value,
-                        Id = args.Before.Value,
-                        UserId = args.UserId.Value
-                    }
-                }
+                Entries = new[] { entry }
             });
         }
     }
