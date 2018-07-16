@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace Voltaic.Serialization
 {
@@ -28,6 +29,7 @@ namespace Voltaic.Serialization
     }
 
     public class ModelMap<T> : ModelMap
+        where T : class
     {
         public override string Name => typeof(T).Name;
         public override Type ModelType => typeof(T);
@@ -99,5 +101,7 @@ namespace Voltaic.Serialization
             keyProp.Index = _selectorKeyCount++;
             keyProp.IndexMask = 1U << keyProp.Index.Value;
         }
+
+        public T CreateUninitialized() => FormatterServices.GetUninitializedObject(typeof(T)) as T;
     }
 }
