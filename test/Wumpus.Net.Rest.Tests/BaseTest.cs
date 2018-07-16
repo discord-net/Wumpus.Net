@@ -1,35 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Wumpus.Rest.Tests;
 using Wumpus.Serialization;
 using Wumpus.Server;
 using Xunit;
 
-namespace Wumpus.Net.Tests
+namespace Wumpus.Rest.Tests
 {
-    public class TestData
-    {
-        public Func<WumpusRestClient, Task> Action { get; }
-
-        public TestData(Func<WumpusRestClient, Task> action)
-        {
-            Action = action;
-        }
-    }
-
-    public class TestData<TResponse>
-    {
-        public Func<WumpusRestClient, Task<TResponse>> Action { get; }
-        public TResponse Response { get; }
-
-        public TestData(Func<WumpusRestClient, Task<TResponse>> action, TResponse response)
-        {
-            Action = action;
-            Response = response;
-        }
-    }
 
     public abstract class BaseTest
     {
@@ -40,7 +19,7 @@ namespace Wumpus.Net.Tests
             _serializer = new WumpusJsonSerializer();
         }
 
-        protected void RunTest(TestData test)
+        protected void RunTest(Func<WumpusRestClient, Task> action)
         {
             const string url = "http://localhost:34560/";
 
@@ -50,32 +29,19 @@ namespace Wumpus.Net.Tests
                 .UseUrls(url)
                 .Build();
             server.Start();
-
-            var requestTask = test.Action(client);
-            var timeoutTask = Task.Delay(3000);
-            var task = Task.WhenAny(requestTask, timeoutTask).Result;
-            if (task == timeoutTask)
-                throw new TimeoutException();
-            if (requestTask.IsFaulted)
-                throw requestTask.Exception;
+            try
+            { 
+                var requestTask = action(client);
+                var timeoutTask = Task.Delay(3000);
+                var task = Task.WhenAny(requestTask, timeoutTask).Result;
+                if (task == timeoutTask)
+                    throw new TimeoutException();
+                requestTask.GetAwaiter().GetResult();
+            }
+            finally { server.StopAsync().GetAwaiter().GetResult(); }
         }
 
-        public static object[] Test(Func<WumpusRestClient, Task> action)
-          => new object[] { new TestData(action) };
-    }
-
-    public abstract class BaseTest<TResponse>
-    {
-        private readonly WumpusJsonSerializer _serializer;
-        private readonly IEqualityComparer<TResponse> _comparer;
-
-        public BaseTest(IEqualityComparer<TResponse> comparer = null)
-        {
-            _serializer = new WumpusJsonSerializer();
-            _comparer = comparer ?? EqualityComparer<TResponse>.Default;
-        }
-
-        protected void RunTest(TestData<TResponse> test)
+        protected void RunTest<T>(Func<WumpusRestClient, Task<T>> action, T expectedResponse)
         {
             const string url = "http://localhost:34560/";
 
@@ -85,17 +51,17 @@ namespace Wumpus.Net.Tests
                 .UseUrls(url)
                 .Build();
             server.Start();
-
-            var requestTask = test.Action(client);
-            var timeoutTask = Task.Delay(3000);
-            var task = Task.WhenAny(requestTask, timeoutTask).Result;
-            if (task == timeoutTask)
-                throw new TimeoutException();
-            var response = requestTask.GetAwaiter().GetResult();
-            Assert.Equal(requestTask.Result, response, _comparer);
+            try
+            {
+                var requestTask = action(client);
+                var timeoutTask = Task.Delay(3000);
+                var task = Task.WhenAny(requestTask, timeoutTask).Result;
+                if (task == timeoutTask)
+                    throw new TimeoutException();
+                var response = requestTask.GetAwaiter().GetResult();
+                Assert.Equal(expectedResponse, response, RecursiveComparer<T>.Instance);
+            }
+            finally { server.StopAsync().GetAwaiter().GetResult(); }
         }
-
-        public static object[] Test(Func<WumpusRestClient, Task<TResponse>> action, TResponse response)
-          => new object[] { new TestData<TResponse>(action, response) };
     }
 }

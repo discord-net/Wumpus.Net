@@ -15,7 +15,7 @@ namespace Wumpus.Server.Controllers
         {
             return Ok(new GetGatewayResponse
             {
-                Url = (Utf8String)Url.Content("")
+                Url = (Utf8String)"http://localhost:34560"
             });
         }
         [HttpGet("gateway/bot")]
@@ -23,7 +23,7 @@ namespace Wumpus.Server.Controllers
         {
             return Ok(new GetBotGatewayResponse
             {
-                Url = (Utf8String)Url.Content(""),
+                Url = (Utf8String)"http://localhost:34560",
                 Shards = 1
             });
         }

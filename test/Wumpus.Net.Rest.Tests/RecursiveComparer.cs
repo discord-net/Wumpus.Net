@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Wumpus.Net.Tests
+namespace Wumpus.Rest.Tests
 {
     public class RecursiveComparer<T> : IEqualityComparer<T>
     {
