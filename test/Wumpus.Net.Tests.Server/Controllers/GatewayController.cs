@@ -13,19 +13,12 @@ namespace Wumpus.Server.Controllers
         [HttpGet("gateway")]
         public async Task<IActionResult> GetGatewayAsync()
         {
-            return Ok(new GetGatewayResponse
-            {
-                Url = (Utf8String)"http://localhost:34560"
-            });
+            return Ok(new GetGatewayResponse());
         }
         [HttpGet("gateway/bot")]
         public async Task<IActionResult> GetBotGatewayAsync()
         {
-            return Ok(new GetBotGatewayResponse
-            {
-                Url = (Utf8String)"http://localhost:34560",
-                Shards = 1
-            });
+            return Ok(new GetBotGatewayResponse());
         }
     }
 }

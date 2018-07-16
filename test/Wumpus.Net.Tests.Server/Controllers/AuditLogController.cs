@@ -2,6 +2,8 @@
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Wumpus.Entities;
+using Wumpus.Requests;
 
 namespace Wumpus.Server.Controllers
 {
@@ -9,9 +11,20 @@ namespace Wumpus.Server.Controllers
     public class AuditLogController : ControllerBase
     {
         [HttpGet("guilds/{guildId}/audit-logs")]
-        public async Task<IActionResult> GetGuildAuditLogAsync(Snowflake guildId)
+        public async Task<IActionResult> GetGuildAuditLogAsync(Snowflake guildId, [FromBody] GetGuildAuditLogParams args)
         {
-            return BadRequest();
+            return Ok(new AuditLog
+            {
+                Entries = new[]
+                {
+                    new AuditLogEntry
+                    {
+                        ActionType = args.ActionType.Value,
+                        Id = args.Before.Value,
+                        UserId = args.UserId.Value
+                    }
+                }
+            });
         }
     }
 }

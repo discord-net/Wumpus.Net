@@ -9,20 +9,13 @@ namespace Wumpus.Rest.Tests
         [Fact]
         public void GetGatewayAsync()
         {
-            RunTest(c => c.GetGatewayAsync(), new GetGatewayResponse
-            {
-                Url = (Utf8String)"http://localhost:34560"
-            });
+            RunTest(c => c.GetGatewayAsync());
         }
 
         [Fact]
         public void GetBotGatewayAsync()
         {
-            RunTest(c => c.GetBotGatewayAsync(), new GetBotGatewayResponse
-            {
-                Url = (Utf8String)"http://localhost:34560",
-                Shards = 1
-            });
+            RunTest(c => c.GetBotGatewayAsync());
         }
     }
 }
