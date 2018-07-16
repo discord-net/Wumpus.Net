@@ -146,7 +146,7 @@ namespace Wumpus.Net
         Task<Emoji> CreateGuildEmojiAsync([Path] Snowflake guildId, [Body] CreateGuildEmojiParams args);
         [Patch("guilds/{guildId}/emoji/{emojiId}")]
         Task<Emoji> ModifyGuildEmojiAsync([Path] Snowflake guildId, [Path] Snowflake emojiId, [Body] ModifyGuildEmojiParams args);
-        [Patch("guilds/{guildId}/emoji/{emojiId}")]
+        [Delete("guilds/{guildId}/emoji/{emojiId}")]
         Task DeleteGuildEmojiAsync([Path] Snowflake guildId, [Path] Snowflake emojiId);
 
         // Gateway

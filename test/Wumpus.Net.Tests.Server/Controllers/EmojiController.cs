@@ -49,7 +49,7 @@ namespace Wumpus.Server.Controllers
                 emoji.RoleIds = args.RoleIds.Value;
             return Ok(emoji);
         }
-        [HttpPatch("guilds/{guildId}/emoji/{emojiId}")]
+        [HttpDelete("guilds/{guildId}/emoji/{emojiId}")]
         public async Task<IActionResult> DeleteGuildEmojiAsync(Snowflake guildId, Snowflake emojiId)
         {
             return NoContent();
