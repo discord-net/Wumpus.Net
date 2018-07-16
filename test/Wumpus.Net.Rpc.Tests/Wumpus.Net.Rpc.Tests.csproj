@@ -3,6 +3,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
+    <RootNamespace>Wumpus.Rpc.Tests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/Wumpus.Net.Rpc/Wumpus.Net.Rpc.csproj" />
