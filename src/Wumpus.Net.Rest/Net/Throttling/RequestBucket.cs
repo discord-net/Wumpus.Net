@@ -7,7 +7,7 @@ namespace Wumpus.Net
 {
     internal class RequestBucket
     {
-        private readonly WumpusRequester _requester;
+        private readonly DefaultRateLimiter _rateLimiter;
         private readonly object _lock;
         private int _semaphore;
         private DateTimeOffset? _resetsAt;
@@ -15,16 +15,16 @@ namespace Wumpus.Net
         public int WindowCount { get; private set; }
         public DateTimeOffset LastAttemptAt { get; private set; }
 
-        public RequestBucket(WumpusRequester requester)
+        public RequestBucket(DefaultRateLimiter rateLimiter)
         {
-            _requester = requester;
+            _rateLimiter = rateLimiter;
             _lock = new object();
 
             WindowCount = 1;
             _semaphore = WindowCount;
         }
 
-        internal async Task EnterAsync(IRequestInfo requestInfo)
+        public async Task EnterAsync(CancellationToken cancelToken)
         {
             int windowCount;
             DateTimeOffset? resetsAt;
@@ -45,17 +45,17 @@ namespace Wumpus.Net
                     {
                         int millis = (int)Math.Ceiling((resetsAt.Value - DateTimeOffset.UtcNow).TotalMilliseconds);
                         if (millis > 0)
-                            await Task.Delay(millis, requestInfo.CancellationToken).ConfigureAwait(false);
+                            await Task.Delay(millis, cancelToken).ConfigureAwait(false);
                     }
                     else
-                        await Task.Delay(500, requestInfo.CancellationToken).ConfigureAwait(false);
+                        await Task.Delay(500, cancelToken).ConfigureAwait(false);
                     continue;
                 }
                 break;
             }
         }
 
-        internal void UpdateRateLimit(RateLimitInfo info, bool is429)
+        public void UpdateRateLimit(RateLimitInfo info)
         {
             if (WindowCount == 0)
                 return;

@@ -4,7 +4,7 @@ using System.Net.Http.Headers;
 
 namespace Wumpus.Net
 {
-    internal struct RateLimitInfo
+    public struct RateLimitInfo
     {
         public bool IsGlobal { get; }
         public int? Limit { get; }

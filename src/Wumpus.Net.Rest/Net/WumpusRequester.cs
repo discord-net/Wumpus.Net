@@ -15,15 +15,13 @@ namespace Wumpus.Net
     internal class WumpusRequester : Requester
     {
         private readonly WumpusJsonSerializer _serializer;
-        private readonly ConcurrentDictionary<string, RequestBucket> _buckets;
+        private readonly IRateLimiter _rateLimiter;
 
-        private DateTimeOffset _globalWaitUntil;
-
-        public WumpusRequester(HttpClient httpClient, WumpusJsonSerializer serializer)
+        public WumpusRequester(HttpClient httpClient, WumpusJsonSerializer serializer, IRateLimiter rateLimiter)
             : base(httpClient)
         {
             _serializer = serializer;
-            _buckets = new ConcurrentDictionary<string, RequestBucket>();
+            _rateLimiter = rateLimiter;
 
             ResponseDeserializer = new WumpusResponseDeserializer(_serializer);
             RequestBodySerializer = new WumpusBodySerializer(_serializer);
@@ -32,12 +30,10 @@ namespace Wumpus.Net
 
         protected override async Task<HttpResponseMessage> SendRequestAsync(IRequestInfo request, bool readBody)
         {
-            var bucket = GetOrCreateBucket(request);
-
+            var bucketId = GenerateBucketId(request);
             while (true)
             {
-                await EnterGlobalLockAsync().ConfigureAwait(false);
-                await bucket.EnterAsync(request).ConfigureAwait(false);
+                await _rateLimiter.EnterLockAsync(bucketId, request.CancellationToken).ConfigureAwait(false);
 
                 bool allowAnyStatus = request.AllowAnyStatusCode;
                 ((RequestInfo)request).AllowAnyStatusCode = true;
@@ -46,19 +42,14 @@ namespace Wumpus.Net
                 var info = new RateLimitInfo(response.Headers);                
                 if (response.IsSuccessStatusCode)
                 {
-                    bucket.UpdateRateLimit(info, false);
+                    _rateLimiter.UpdateLimit(bucketId, info);
                     return response;
                 }
                 
                 switch (response.StatusCode)
                 {
                     case (HttpStatusCode)429:
-                        {
-                            if (info.IsGlobal)
-                                UpdateGlobalRateLimit(info);
-                            else
-                                bucket.UpdateRateLimit(info, true);
-                        }
+                        _rateLimiter.UpdateLimit(bucketId, info);
                         continue;
                     case HttpStatusCode.BadGateway: //502
                         await Task.Delay(250, request.CancellationToken).ConfigureAwait(false);
@@ -81,11 +72,6 @@ namespace Wumpus.Net
             }
         }
 
-        internal RequestBucket GetOrCreateBucket(IRequestInfo request)
-        {
-            string bucketId = GenerateBucketId(request);
-            return _buckets.GetOrAdd(bucketId, x => new RequestBucket(this));
-        }
         private string GenerateBucketId(IRequestInfo request)
         {
             if (request.Path == null || (!request.PathParams.Any() && !request.PathProperties.Any()))
@@ -103,17 +89,6 @@ namespace Wumpus.Net
                 sb.Replace("{" + (serialized.Key ?? string.Empty) + "}", value);
             }
             return sb.ToString();
-        }
-
-        internal async Task EnterGlobalLockAsync()
-        {
-            int millis = (int)Math.Ceiling((_globalWaitUntil - DateTimeOffset.UtcNow).TotalMilliseconds);
-            if (millis > 0)
-                await Task.Delay(millis).ConfigureAwait(false);
-        }
-        internal void UpdateGlobalRateLimit(RateLimitInfo info)
-        {
-            _globalWaitUntil = DateTimeOffset.UtcNow.AddMilliseconds(info.RetryAfter.Value + (info.Lag?.TotalMilliseconds ?? 0.0));
         }
     }
 }

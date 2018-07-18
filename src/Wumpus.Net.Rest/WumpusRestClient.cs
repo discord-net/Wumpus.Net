@@ -20,13 +20,14 @@ namespace Wumpus
 
         public AuthenticationHeaderValue Authorization { get => _api.Authorization; set => _api.Authorization = value; }
 
-        public WumpusRestClient(WumpusJsonSerializer serializer = null)
+        public WumpusRestClient(WumpusJsonSerializer serializer = null, IRateLimiter rateLimiter = null)
             : this("https://discordapp.com/api/v6/", serializer) { }
-        public WumpusRestClient(string url, WumpusJsonSerializer serializer = null)
+        public WumpusRestClient(string url, WumpusJsonSerializer serializer = null, IRateLimiter rateLimiter = null)
         {
             _serializer = serializer ?? new WumpusJsonSerializer();
+            rateLimiter = rateLimiter ?? new DefaultRateLimiter();
             var httpClient = new HttpClient { BaseAddress = new Uri(url) };
-            _api = RestClient.For<IDiscordRestApi>(new WumpusRequester(httpClient, _serializer));
+            _api = RestClient.For<IDiscordRestApi>(new WumpusRequester(httpClient, _serializer, rateLimiter));
 
         }
         public void Dispose() => _api.Dispose();
