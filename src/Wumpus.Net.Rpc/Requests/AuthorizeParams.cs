@@ -1,5 +1,4 @@
 ﻿using Voltaic.Serialization;
-using System.Collections.Generic;
 using Voltaic;
 
 namespace Wumpus.Requests
@@ -12,7 +11,7 @@ namespace Wumpus.Requests
         public Utf8String ClientId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("scopes")]
-        public IReadOnlyCollection<string> Scopes { get; set; }
+        public string[] Scopes { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("rpc_token")]
         public Optional<Utf8String> RpcToken { get; set; }

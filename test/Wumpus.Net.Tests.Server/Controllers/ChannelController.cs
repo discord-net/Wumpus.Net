@@ -70,7 +70,10 @@ namespace Wumpus.Server.Controllers
             args.LoadQueryMap(queryMap);
             args.Validate();
 
-            var msg = new Message();
+            var msg = new Message
+            {
+                ChannelId = channelId
+            };
             if (args.Before.IsSpecified)
                 msg.Id = args.Before.Value;
             if (args.Around.IsSpecified)

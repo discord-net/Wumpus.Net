@@ -1,4 +1,5 @@
-﻿using Voltaic;
+﻿using System;
+using Voltaic;
 using Wumpus.Entities;
 using Wumpus.Requests;
 using Xunit;
@@ -112,7 +113,7 @@ namespace Wumpus.Rest.Tests
                 Assert.Equal(456UL, x.Id.RawValue);
             });
         }
-        [Fact]
+        [Fact(Skip = "Test server doesn't support IFormData yet")]
         public void CreateMessageAsync()
         {
             RunTest(c => c.CreateMessageAsync(123, new Requests.CreateMessageParams
@@ -149,7 +150,7 @@ namespace Wumpus.Rest.Tests
         [Fact]
         public void DeleteMessagesAsync()
         {
-            RunTest(c => c.DeleteMessagesAsync(123, new DeleteMessagesParams(new Snowflake[] { 456UL, 789UL })));
+            RunTest(c => c.DeleteMessagesAsync(123, new DeleteMessagesParams(new[] { new Snowflake(DateTime.UtcNow), new Snowflake(DateTime.UtcNow.AddDays(-1)) })));
         }
 
         [Fact]

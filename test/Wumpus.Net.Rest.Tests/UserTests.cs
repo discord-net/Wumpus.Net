@@ -62,7 +62,7 @@ namespace Wumpus.Rest.Tests
         [Fact]
         public void CreateGroupDMChannelAsync()
         {
-            RunTest(c => c.CreateGroupDMChannelAsync(new CreateGroupDMChannelParams(new[] { (Utf8String)"access_token1", (Utf8String)"access_token2" })));
+            RunTest(c => c.CreateDMChannelAsync(new CreateDMChannelParams(new[] { (Utf8String)"access_token1", (Utf8String)"access_token2" })));
         }
 
         [Fact]

@@ -36,6 +36,12 @@ namespace Voltaic
         
         public override bool Equals(object other)
         {
+            if (other is Optional<T> optionalOther)
+            {
+                if (!optionalOther.IsSpecified) return !IsSpecified;
+                return _value?.Equals(optionalOther._value) ?? false;
+            }
+
             if (!IsSpecified) return false;
             return _value?.Equals(other) ?? false;
         }

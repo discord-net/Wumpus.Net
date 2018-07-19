@@ -68,24 +68,24 @@ namespace Wumpus.Server.Controllers
         {
             args.Validate();
 
-            return Ok(new Channel
+            if (args.RecipientId.IsSpecified)
             {
-                Type = ChannelType.Dm,
-                Recipients = new User[] { new User
+                return Ok(new Channel
                 {
-                    Id = args.RecipientId
-                }
-            }});
-        }
-        [HttpPost("users/@me/channels")]
-        public async Task<IActionResult> CreateGroupChannelAsync([FromBody] CreateGroupDMChannelParams args)
-        {
-            args.Validate();
-
-            return Ok(new Channel
+                    Type = ChannelType.Dm,
+                    Recipients = new User[] { new User
+                    {
+                        Id = args.RecipientId.Value
+                    }}
+                });
+            }
+            else
             {
-                Type = ChannelType.GroupDm
-            });
+                return Ok(new Channel
+                {
+                    Type = ChannelType.GroupDm
+                });
+            }
         }
 
         [HttpGet("users/@me/connections")]

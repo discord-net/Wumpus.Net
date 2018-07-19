@@ -1,5 +1,4 @@
 ﻿using Voltaic.Serialization;
-using System.Collections.Generic;
 using Voltaic;
 
 namespace Wumpus.Entities
@@ -22,6 +21,6 @@ namespace Wumpus.Entities
         public bool Revoked { get; set; }
         /// <summary> An array of partial <see cref="Integration"/>s. </summary>
         [ModelProperty("integrations")]
-        public IReadOnlyCollection<Snowflake> Integrations { get; set; }
+        public Snowflake[] Integrations { get; set; }
     }
 }

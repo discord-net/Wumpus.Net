@@ -94,7 +94,10 @@ namespace Wumpus.Server.Controllers
         [HttpGet("guilds/{guildId}/channels")]
         public async Task<IActionResult> GetGuildChannelsAsync(Snowflake guildId)
         {
-            return Ok(new[] { new Channel() });
+            return Ok(new[] { new Channel
+            {
+                GuildId = guildId
+            }});
         }
         [HttpPost("guilds/{guildId}/channels")]
         public async Task<IActionResult> CreateGuildChannelAsync(Snowflake guildId, [FromBody] CreateGuildChannelParams args)
@@ -115,7 +118,7 @@ namespace Wumpus.Server.Controllers
             });
         }
         [HttpPatch("guilds/{guildId}/channels")]
-        public async Task<IActionResult> ModifyGuildChannelPositionsAsync(Snowflake guildId, [FromBody] IEnumerable<ModifyGuildChannelPositionParams> args)
+        public async Task<IActionResult> ModifyGuildChannelPositionsAsync(Snowflake guildId, [FromBody] ModifyGuildChannelPositionParams[] args)
         {
             foreach (var arg in args)
                 arg.Validate();
@@ -271,7 +274,7 @@ namespace Wumpus.Server.Controllers
             return Ok(role);
         }
         [HttpPatch("guilds/{guildId}/roles")]
-        public async Task<IActionResult> ModifyGuildRolePositionsAsync(Snowflake guildId, [FromBody] IEnumerable<ModifyGuildRolePositionParams> args)
+        public async Task<IActionResult> ModifyGuildRolePositionsAsync(Snowflake guildId, [FromBody] ModifyGuildRolePositionParams[] args)
         {
             foreach (var arg in args)
                 arg.Validate();
