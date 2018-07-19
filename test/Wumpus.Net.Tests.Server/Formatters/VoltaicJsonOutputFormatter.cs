@@ -8,19 +8,21 @@ using Voltaic.Serialization.Json;
 
 namespace Wumpus.Server.Formatters
 {
-    public class VoltaicJsonSerializerOutputFormatter : TextOutputFormatter
+    public class VoltaicJsonOutputFormatter : TextOutputFormatter
     {
         private readonly JsonSerializer _serializer;
 
-        public VoltaicJsonSerializerOutputFormatter(ConverterCollection converters = null, ArrayPool<byte> pool = null)
+        public VoltaicJsonOutputFormatter(ConverterCollection converters = null, ArrayPool<byte> pool = null)
             : this(new JsonSerializer(converters, pool), pool) { }
-        public VoltaicJsonSerializerOutputFormatter(JsonSerializer serializer, ArrayPool<byte> pool = null)
+        public VoltaicJsonOutputFormatter(JsonSerializer serializer, ArrayPool<byte> pool = null)
         {
             _serializer = serializer;
 
             SupportedEncodings.Add(Encoding.UTF8);
             SupportedEncodings.Add(Encoding.Unicode);
             SupportedMediaTypes.Add("application/json");
+            SupportedMediaTypes.Add("text/json");
+            SupportedMediaTypes.Add("application/*+json");
         }
 
         public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding encoding)

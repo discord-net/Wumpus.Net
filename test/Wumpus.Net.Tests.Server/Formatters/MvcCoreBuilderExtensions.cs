@@ -11,15 +11,15 @@ namespace Wumpus.Server.Formatters
 {
     public static class MvcCoreBuilderExtensions
     {
-        public static IMvcCoreBuilder AddVoltaicJsonSerializerFormatters(this IMvcCoreBuilder builder, ConverterCollection converters = null, ArrayPool<byte> pool = null)
+        public static IMvcBuilder AddVoltaicJsonSerializerFormatters(this IMvcBuilder builder, ConverterCollection converters = null, ArrayPool<byte> pool = null)
             => AddVoltaicJsonSerializerFormatters(builder, new JsonSerializer(converters, pool), pool);
-        public static IMvcCoreBuilder AddVoltaicJsonSerializerFormatters(this IMvcCoreBuilder builder, JsonSerializer serializer, ArrayPool<byte> pool = null)
+        public static IMvcBuilder AddVoltaicJsonSerializerFormatters(this IMvcBuilder builder, JsonSerializer serializer, ArrayPool<byte> pool = null)
         {
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
             builder.Services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<MvcOptions>, VoltaicJsonSerializerMvcOptionsSetup>(_ => new VoltaicJsonSerializerMvcOptionsSetup(serializer, pool)));
+                ServiceDescriptor.Transient<IConfigureOptions<MvcOptions>, VoltaicJsonMvcOptionsSetup>(_ => new VoltaicJsonMvcOptionsSetup(serializer, pool)));
             return builder;
         }
     }

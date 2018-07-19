@@ -11,8 +11,7 @@ namespace Wumpus.Server.Binders
             if (bindingContext == null)
                 throw new ArgumentNullException(nameof(bindingContext));
 
-            var modelName = bindingContext.BinderModelName;
-
+            var modelName = bindingContext.ModelMetadata.ParameterName;
             var valueProviderResult = bindingContext.ValueProvider.GetValue(modelName);
             if (valueProviderResult == ValueProviderResult.None)
                 return Task.CompletedTask;
@@ -27,7 +26,7 @@ namespace Wumpus.Server.Binders
             {
                 bindingContext.ModelState.TryAddModelError(
                                         bindingContext.ModelName,
-                                        "Author Id must be an integer.");
+                                        "Snowflake must be an integer.");
                 return Task.CompletedTask;
             }
 

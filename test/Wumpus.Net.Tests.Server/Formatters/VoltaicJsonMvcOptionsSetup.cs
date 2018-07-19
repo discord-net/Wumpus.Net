@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using System.Buffers;
 using Voltaic.Serialization;
@@ -6,14 +7,14 @@ using Voltaic.Serialization.Json;
 
 namespace Wumpus.Server.Formatters
 {
-    public class VoltaicJsonSerializerMvcOptionsSetup : IConfigureOptions<MvcOptions>
+    public class VoltaicJsonMvcOptionsSetup : IConfigureOptions<MvcOptions>
     {
         private readonly JsonSerializer _serializer;
         private readonly ArrayPool<byte> _pool;
 
-        public VoltaicJsonSerializerMvcOptionsSetup(ConverterCollection converters = null, ArrayPool<byte> pool = null)
+        public VoltaicJsonMvcOptionsSetup(ConverterCollection converters = null, ArrayPool<byte> pool = null)
             : this(new JsonSerializer(converters, pool), pool) { }
-        public VoltaicJsonSerializerMvcOptionsSetup(JsonSerializer serializer, ArrayPool<byte> pool = null)
+        public VoltaicJsonMvcOptionsSetup(JsonSerializer serializer, ArrayPool<byte> pool = null)
         {
             _serializer = serializer;
             _pool = pool;
@@ -26,8 +27,13 @@ namespace Wumpus.Server.Formatters
             if (string.IsNullOrEmpty(mapping))
                 options.FormatterMappings.SetMediaTypeMappingForFormat(key, "application/json");
 
-            options.OutputFormatters.Add(new VoltaicJsonSerializerOutputFormatter(_serializer, _pool));
-            options.InputFormatters.Add(new VoltaicJsonSerializerInputFormatter(_serializer, _pool));
+            // Disable Newtonsoft.Json
+            options.OutputFormatters.RemoveType<JsonOutputFormatter>();
+            options.InputFormatters.RemoveType<JsonInputFormatter>();
+
+            // Add our serializer
+            options.OutputFormatters.Add(new VoltaicJsonOutputFormatter(_serializer, _pool));
+            options.InputFormatters.Add(new VoltaicJsonInputFormatter(_serializer, _pool));
         }
     }
 }
