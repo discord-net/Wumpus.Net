@@ -379,5 +379,16 @@ namespace Wumpus.Server.Controllers
 
             return Ok(embed);
         }
+
+        [HttpGet("guilds/{guildId}/vanity-url")]
+        public async Task<IActionResult> GetGuildVanityUrlAsync(Snowflake guildId)
+        {
+            return Ok(new Invite {
+                Guild = new InviteGuild
+                {
+                    Id = guildId
+                }
+            });
+        }
     }
 }
