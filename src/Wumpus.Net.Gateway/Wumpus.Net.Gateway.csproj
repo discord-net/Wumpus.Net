@@ -15,6 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../Voltaic.Serialization.Etf/Voltaic.Serialization.Etf.csproj" />
-    <ProjectReference Include="../Wumpus.Net.Rest/Wumpus.Net.Rest.csproj" />
+    <ProjectReference Include="../Wumpus.Net.Core/Wumpus.Net.Core.csproj" />
   </ItemGroup>
 </Project>
