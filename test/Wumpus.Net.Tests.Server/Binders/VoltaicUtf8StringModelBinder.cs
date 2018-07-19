@@ -12,7 +12,7 @@ namespace Wumpus.Server.Binders
             if (bindingContext == null)
                 throw new ArgumentNullException(nameof(bindingContext));
 
-            var modelName = bindingContext.ModelMetadata.ParameterName;
+            var modelName = bindingContext.FieldName ?? bindingContext.ModelMetadata.ParameterName;
             var valueProviderResult = bindingContext.ValueProvider.GetValue(modelName);
             if (valueProviderResult == ValueProviderResult.None)
                 return Task.CompletedTask;

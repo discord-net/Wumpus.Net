@@ -6,7 +6,6 @@ using Wumpus.Entities;
 
 namespace Wumpus.Server.Controllers
 {
-    [ApiController]
     public class OAuthController : ControllerBase
     {
         [HttpGet("oauth2/applications/me")]

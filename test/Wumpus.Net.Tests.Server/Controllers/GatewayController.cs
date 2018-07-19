@@ -2,12 +2,10 @@
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Voltaic;
 using Wumpus.Responses;
 
 namespace Wumpus.Server.Controllers
 {
-    [ApiController]
     public class GatewayController : ControllerBase
     {
         [HttpGet("gateway")]

@@ -9,7 +9,6 @@ using Wumpus.Requests;
 
 namespace Wumpus.Server.Controllers
 {
-    [ApiController]
     public class ChannelController : ControllerBase
     {
         [HttpGet("channels/{channelId}")]

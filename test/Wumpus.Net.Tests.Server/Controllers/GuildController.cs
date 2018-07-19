@@ -11,7 +11,6 @@ using Wumpus.Responses;
 
 namespace Wumpus.Server.Controllers
 {
-    [ApiController]
     public class GuildController : ControllerBase
     {
         [HttpGet("guilds/{guildId}")]
@@ -105,6 +104,7 @@ namespace Wumpus.Server.Controllers
             return Ok(new Channel
             {
                 Bitrate = args.Bitrate,
+                GuildId = guildId,
                 IsNsfw = args.IsNsfw,
                 Name = args.Name,
                 ParentId = args.ParentId,

@@ -8,7 +8,6 @@ using Wumpus.Requests;
 
 namespace Wumpus.Server.Controllers
 {
-    [ApiController]
     public class UserController : ControllerBase
     {
         [HttpGet("users/@me")]

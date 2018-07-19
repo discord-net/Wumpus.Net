@@ -58,6 +58,10 @@ namespace Wumpus.Server.Formatters
                 else
                     throw new ArgumentOutOfRangeException(nameof(encoding));
             }
+            catch (SerializationException)
+            {
+                return InputFormatterResult.Failure();
+            }
             catch (Exception ex)
             {
                 throw new InputFormatterException($"Failed to deserialize {context.ModelType}", ex);

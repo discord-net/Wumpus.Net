@@ -8,7 +8,7 @@ namespace Wumpus.Requests
     {
         /// <summary> Value to set the <see cref="Entities.User"/>'s nickname to. Requires <see cref="Entities.GuildPermissions.ChangeNickname"/>. </summary>
         [ModelProperty("nick")]
-        public Utf8String Nickname { get; }
+        public Utf8String Nickname { get; private set; }
 
         public ModifyCurrentUserNickParams(Utf8String nickname)
         {

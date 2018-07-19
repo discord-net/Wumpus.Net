@@ -7,7 +7,7 @@ namespace Wumpus.Requests
     {
         /// <summary> The recipient to open a DM <see cref="Entities.Channel"/> with. </summary>
         [ModelProperty("recipient_id")]
-        public Snowflake RecipientId { get; }
+        public Snowflake RecipientId { get; private set; }
 
         public CreateDMChannelParams(Snowflake recipientId)
         {

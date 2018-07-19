@@ -6,7 +6,7 @@ namespace Wumpus.Requests
     public class GuildPruneParams : QueryMap
     {
         /// <summary> Number of days to count prune for. </summary>
-        public int Days { get; set; }
+        public int Days { get; private set; }
 
         public GuildPruneParams(int days)
         {

@@ -6,7 +6,6 @@ using Wumpus.Entities;
 
 namespace Wumpus.Server.Controllers
 {
-    [ApiController]
     public class VoiceController : ControllerBase
     {
         [HttpGet("voice/regions")]

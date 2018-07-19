@@ -7,10 +7,10 @@ namespace Wumpus.Requests
     {
         /// <summary> <see cref="Entities.Channel"/> id; </summary>
         [ModelProperty("id")]
-        public Snowflake Id { get; }
+        public Snowflake Id { get; private set; }
         /// <summary> Sorting position of the <see cref="Entities.Channel"/>. </summary>
         [ModelProperty("position")]
-        public int Position { get; }
+        public int Position { get; private set; }
 
         public ModifyGuildChannelPositionParams(Snowflake id, int position)
         {

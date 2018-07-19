@@ -7,7 +7,6 @@ using Wumpus.Requests;
 
 namespace Wumpus.Server.Controllers
 {
-    [ApiController]
     public class EmojiController : ControllerBase
     {
         [HttpGet("guilds/{guildId}/emojis")]

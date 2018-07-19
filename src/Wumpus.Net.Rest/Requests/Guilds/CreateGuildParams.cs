@@ -9,10 +9,10 @@ namespace Wumpus.Requests
     {
         /// <summary> Name of the <see cref="Guild"/>. </summary>
         [ModelProperty("name")]
-        public Utf8String Name { get; }
+        public Utf8String Name { get; private set; }
         /// <summary> <see cref="VoiceRegion"/> id. </summary>
         [ModelProperty("region")]
-        public Utf8String Region { get; }
+        public Utf8String Region { get; private set; }
         /// <summary> Base64 128x128 jpeg image for the <see cref="Guild"/> icon. </summary>
         [ModelProperty("icon")]
         public Optional<Image?> Icon { get; set; }

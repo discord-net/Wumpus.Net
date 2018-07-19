@@ -9,10 +9,10 @@ namespace Wumpus.Requests
     {
         /// <summary> <see cref="Channel"/> name. </summary>
         [ModelProperty("name")]
-        public Utf8String Name { get; }
+        public Utf8String Name { get; private set; }
         /// <summary> The type of <see cref="Channel"/>. </summary>
         [ModelProperty("type")]
-        public ChannelType Type { get; }
+        public ChannelType Type { get; private set; }
 
         // Guild Channel
 
