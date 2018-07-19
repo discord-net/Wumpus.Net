@@ -21,7 +21,7 @@ namespace Wumpus.Server.Controllers
             });
         }
         [HttpPut("channels/{channelId}")]
-        public async Task<IActionResult> ReplaceTextChannelAsync(Snowflake channelId, [FromBody] ModifyTextChannelParams args)
+        public async Task<IActionResult> ReplaceGuildChannelAsync(Snowflake channelId, [FromBody] ModifyChannelParams args)
         {
             args.Validate();
 
@@ -29,74 +29,29 @@ namespace Wumpus.Server.Controllers
             {
                 Id = channelId,
                 Type = ChannelType.Text,
-                Name = args.Name,
-                ParentId = args.ParentId,
-                PermissionOverwrites = args.PermissionOverwrites,
-                Position = args.Position,
-                Topic = args.Topic
-            });
-        }
-        [HttpPut("channels/{channelId}")]
-        public async Task<IActionResult> ReplaceVoiceChannelAsync(Snowflake channelId, [FromBody] ModifyVoiceChannelParams args)
-        {
-            args.Validate();
-
-            return Ok(new Channel
-            {
-                Id = channelId,
-                Type = ChannelType.Voice,
                 Bitrate = args.Bitrate,
                 Name = args.Name,
                 ParentId = args.ParentId,
                 PermissionOverwrites = args.PermissionOverwrites,
                 Position = args.Position,
+                Topic = args.Topic,
                 UserLimit = args.UserLimit
             });
         }
         [HttpPatch("channels/{channelId}")]
-        public async Task<IActionResult> ModifyGuildChannelAsync(Snowflake channelId, [FromBody] ModifyGuildChannelParams args)
+        public async Task<IActionResult> ModifyGuildChannelAsync(Snowflake channelId, [FromBody] ModifyChannelParams args)
         {
             args.Validate();
 
             return Ok(new Channel
             {
                 Id = channelId,
-                Type = ChannelType.Text,
-                Name = args.Name,
-                PermissionOverwrites = args.PermissionOverwrites,
-                Position = args.Position
-            });
-        }
-        [HttpPatch("channels/{channelId}")]
-        public async Task<IActionResult> ModifyTextChannelAsync(Snowflake channelId, [FromBody] ModifyTextChannelParams args)
-        {
-            args.Validate();
-
-            return Ok(new Channel
-            {
-                Id = channelId,
-                Type = ChannelType.Text,
-                Name = args.Name,
-                ParentId = args.ParentId,
-                PermissionOverwrites = args.PermissionOverwrites,
-                Position = args.Position,
-                Topic = args.Topic
-            });
-        }
-        [HttpPatch("channels/{channelId}")]
-        public async Task<IActionResult> ModifyVoiceChannelAsync(Snowflake channelId, [FromBody] ModifyVoiceChannelParams args)
-        {
-            args.Validate();
-
-            return Ok(new Channel
-            {
-                Id = channelId,
-                Type = ChannelType.Voice,
                 Bitrate = args.Bitrate,
                 Name = args.Name,
                 ParentId = args.ParentId,
                 PermissionOverwrites = args.PermissionOverwrites,
                 Position = args.Position,
+                Topic = args.Topic,
                 UserLimit = args.UserLimit
             });
         }

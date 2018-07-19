@@ -36,42 +36,14 @@ namespace Wumpus.Net
         ///     If modifying a category, individual Channel Update events will fire for each child channel that also changes.
         /// </summary>
         [Put("channels/{channelId}")]
-        Task<Channel> ReplaceGuildChannelAsync([Path] Snowflake channelId, [Body] ModifyGuildChannelParams args);
-        /// <summary>
-        ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>.
-        ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event.
-        ///     If modifying a category, individual Channel Update events will fire for each child channel that also changes.
-        /// </summary>
-        [Put("channels/{channelId}")]
-        Task<Channel> ReplaceTextChannelAsync([Path] Snowflake channelId, [Body] ModifyTextChannelParams args);
-        /// <summary>
-        ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>.
-        ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event.
-        ///     If modifying a category, individual Channel Update events will fire for each child channel that also changes.
-        /// </summary>
-        [Put("channels/{channelId}")]
-        Task<Channel> ReplaceVoiceChannelAsync([Path] Snowflake channelId, [Body] ModifyVoiceChannelParams args);
+        Task<Channel> ReplaceChannelAsync([Path] Snowflake channelId, [Body] ModifyChannelParams args);
         /// <summary>
         ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>.
         ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event.
         ///     If modifying a category, individual Channel Update events will fire for each child channel that also changes.
         /// </summary>
         [Patch("channels/{channelId}")]
-        Task<Channel> ModifyGuildChannelAsync([Path] Snowflake channelId, [Body] ModifyGuildChannelParams args);
-        /// <summary>
-        ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>.
-        ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event.
-        ///     If modifying a category, individual Channel Update events will fire for each child channel that also changes.
-        /// </summary>
-        [Patch("channels/{channelId}")]
-        Task<Channel> ModifyTextChannelAsync([Path] Snowflake channelId, [Body] ModifyTextChannelParams args);
-        /// <summary>
-        ///     Update a <see cref="Entities.Channel"/>'s settings. Requires the <see cref="Entities.ChannelPermissions.ManageChannels"> permission for the <see cref="Entities.Guild"/>.
-        ///     Returns a <see cref="Entities.Channel"/> on success, and a <see cref="System.Net.HttpStatusCode.BadRequest"/> on invalid parameters. Fires a Channel Update Gateway event.
-        ///     If modifying a category, individual Channel Update events will fire for each child channel that also changes.
-        /// </summary>
-        [Patch("channels/{channelId}")]
-        Task<Channel> ModifyVoiceChannelAsync([Path] Snowflake channelId, [Body] ModifyVoiceChannelParams args);
+        Task<Channel> ModifyChannelAsync([Path] Snowflake channelId, [Body] ModifyChannelParams args);
         [Delete("channels/{channelId}")]
         Task<Channel> DeleteChannelAsync([Path] Snowflake channelId);
 
@@ -170,11 +142,7 @@ namespace Wumpus.Net
         [Get("guilds/{guildId}/channels")]
         Task<List<Channel>> GetGuildChannelsAsync([Path] Snowflake guildId);
         [Post("guilds/{guildId}/channels")]
-        Task<Channel> CreateCategoryChannelAsync([Path] Snowflake guildId, [Body] CreateGuildChannelParams args);
-        [Post("guilds/{guildId}/channels")]
-        Task<Channel> CreateTextChannelAsync([Path] Snowflake guildId, [Body] CreateTextChannelParams args);
-        [Post("guilds/{guildId}/channels")]
-        Task<Channel> CreateVoiceChannelAsync([Path] Snowflake guildId, [Body] CreateVoiceChannelParams args);
+        Task<Channel> CreateGuildChannelAsync([Path] Snowflake guildId, [Body] CreateGuildChannelParams args);
         [Patch("guilds/{guildId}/channels")]
         Task<Channel> ModifyGuildChannelPositionsAsync([Path] Snowflake guildId, [Body] IEnumerable<ModifyGuildChannelPositionParams> args);
 

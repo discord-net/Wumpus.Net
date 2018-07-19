@@ -1,34 +1,34 @@
-﻿using Wumpus.Entities;
+﻿using Voltaic;
 using Voltaic.Serialization;
-using Voltaic;
+using Wumpus.Entities;
 
 namespace Wumpus.Requests
 {
-    /// <summary> https://discordapp.com/developers/docs/resources/guild#create-guild-channel-json-params </summary>
-    public class CreateGuildChannelParams
+    /// <summary> https://discordapp.com/developers/docs/resources/channel#modify-channel-json-params </summary>
+    public class ModifyChannelParams
     {
-        /// <summary> <see cref="Channel"/> name. </summary>
+        /// <summary> 2-100 character <see cref="Channel"/> name. </summary>
         [ModelProperty("name")]
-        public Utf8String Name { get; }
-        /// <summary> The type of <see cref="Channel"/>. </summary>
-        [ModelProperty("type")]
-        public ChannelType Type { get; }
+        public Optional<Utf8String> Name { get; set; }
 
         // Guild Channel
 
-        /// <summary> Id of the parent category for a <see cref="Channel"/>. </summary>
+        /// <summary> Id of the new parent category for a <see cref="Channel"/>. </summary>
         [ModelProperty("parent_id")]
         public Optional<Snowflake?> ParentId { get; set; }
-        /// <summary> The <see cref="Channel"/>'s permission <see cref="Overwrite"/>s. </summary>
+        /// <summary> <see cref="Channel"/> or category-specific <see cref="Overwrite"/>s. </summary>
         [ModelProperty("permission_overwrites")]
         public Optional<Overwrite[]> PermissionOverwrites { get; set; }
+        /// <summary> The position of the <see cref="Channel"/> in the left-hand listing. </summary>
+        [ModelProperty("position")]
+        public Optional<int> Position { get; set; }
 
         // Text Channel
 
         /// <summary> 0-1024 character <see cref="Entities.Channel"/> topic. </summary>
         [ModelProperty("topic")]
         public Optional<Utf8String> Topic { get; set; }
-        /// <summary> If the <see cref="Channel"/> is nsfw. </summary>
+        /// <summary> If the <see cref="Entities.Channel"/> is nsfw. </summary>
         [ModelProperty("nsfw")]
         public Optional<bool> IsNsfw { get; set; }
 
@@ -41,17 +41,12 @@ namespace Wumpus.Requests
         [ModelProperty("user_limit")]
         public Optional<int> UserLimit { get; set; }
 
-        public CreateGuildChannelParams(Utf8String name, ChannelType type)
-        {
-            Name = name;
-            Type = type;
-        }
-
-        public void Validate()
+        public virtual void Validate()
         {
             Preconditions.NotNullOrWhitespace(Name, nameof(Name));
             Preconditions.LengthAtLeast(Name, Channel.MinChannelNameLength, nameof(Name));
             Preconditions.LengthAtMost(Name, Channel.MaxChannelNameLength, nameof(Name));
+            Preconditions.NotNegative(Position, nameof(Position));
             Preconditions.NotNull(PermissionOverwrites, nameof(PermissionOverwrites));
             Preconditions.NotNull(Topic, nameof(Topic));
             Preconditions.LengthAtLeast(Topic, Channel.MinChannelTopicLength, nameof(Topic));

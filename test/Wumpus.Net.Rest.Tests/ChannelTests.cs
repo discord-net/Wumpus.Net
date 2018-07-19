@@ -16,9 +16,17 @@ namespace Wumpus.Rest.Tests
             });
         }
         [Fact]
-        public void ReplaceGuildChannelAsync()
+        public void DeleteChannelAsync()
         {
-            RunTest(c => c.ReplaceGuildChannelAsync(123, new ModifyGuildChannelParams
+            RunTest(c => c.DeleteChannelAsync(123), x =>
+            {
+                Assert.Equal(123UL, x.Id.RawValue);
+            });
+        }
+        [Fact]
+        public void ReplaceCategoryChannelAsync()
+        {
+            RunTest(c => c.ReplaceChannelAsync(123, new ModifyChannelParams
             {
                 // TODO: Impl
             }), x =>
@@ -29,7 +37,7 @@ namespace Wumpus.Rest.Tests
         [Fact]
         public void ReplaceTextChannelAsync()
         {
-            RunTest(c => c.ReplaceTextChannelAsync(123, new ModifyTextChannelParams
+            RunTest(c => c.ReplaceChannelAsync(123, new ModifyChannelParams
             {
                 // TODO: Impl
             }), x =>
@@ -40,7 +48,7 @@ namespace Wumpus.Rest.Tests
         [Fact]
         public void ReplaceVoiceChannelAsync()
         {
-            RunTest(c => c.ReplaceVoiceChannelAsync(123, new ModifyVoiceChannelParams
+            RunTest(c => c.ReplaceChannelAsync(123, new ModifyChannelParams
             {
                 // TODO: Impl
             }), x =>
@@ -49,9 +57,9 @@ namespace Wumpus.Rest.Tests
             });
         }
         [Fact]
-        public void ModifyGuildChannelAsync()
+        public void ModifyCategoryChannelAsync()
         {
-            RunTest(c => c.ModifyGuildChannelAsync(123, new ModifyGuildChannelParams
+            RunTest(c => c.ModifyChannelAsync(123, new ModifyChannelParams
             {
                 // TODO: Impl
             }), x =>
@@ -62,7 +70,7 @@ namespace Wumpus.Rest.Tests
         [Fact]
         public void ModifyTextChannelAsync()
         {
-            RunTest(c => c.ModifyTextChannelAsync(123, new ModifyTextChannelParams
+            RunTest(c => c.ModifyChannelAsync(123, new ModifyChannelParams
             {
                 // TODO: Impl
             }), x =>
@@ -73,20 +81,12 @@ namespace Wumpus.Rest.Tests
         [Fact]
         public void ModifyVoiceChannelAsync()
         {
-            RunTest(c => c.ModifyVoiceChannelAsync(123, new ModifyVoiceChannelParams
+            RunTest(c => c.ModifyChannelAsync(123, new ModifyChannelParams
             {
                 // TODO: Impl
             }), x =>
             {
                 // TODO: Impl
-            });
-        }
-        [Fact]
-        public void DeleteChannelAsync()
-        {
-            RunTest(c => c.DeleteChannelAsync(123), x =>
-            {
-                Assert.Equal(123UL, x.Id.RawValue);
             });
         }
 

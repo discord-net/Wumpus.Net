@@ -56,7 +56,7 @@ namespace Wumpus.Rest.Tests
         [Fact]
         public void CreateCategoryChannelAsync()
         {
-            RunTest(c => c.CreateCategoryChannelAsync(123, new CreateGuildChannelParams((Utf8String)"category_channel", ChannelType.Category)
+            RunTest(c => c.CreateGuildChannelAsync(123, new CreateGuildChannelParams((Utf8String)"category_channel", ChannelType.Category)
             {
                 // TODO: Impl
             }), x =>
@@ -70,7 +70,7 @@ namespace Wumpus.Rest.Tests
         [Fact]
         public void CreateTextChannelAsync()
         {
-            RunTest(c => c.CreateTextChannelAsync(123, new CreateTextChannelParams((Utf8String)"text_channel")
+            RunTest(c => c.CreateGuildChannelAsync(123, new CreateGuildChannelParams((Utf8String)"text_channel", ChannelType.Text)
             {
                 // TODO: Impl
             }), x =>
@@ -84,7 +84,7 @@ namespace Wumpus.Rest.Tests
         [Fact]
         public void CreateVoiceChannelAsync()
         {
-            RunTest(c => c.CreateVoiceChannelAsync(123, new CreateVoiceChannelParams((Utf8String)"voice_channel")
+            RunTest(c => c.CreateGuildChannelAsync(123, new CreateGuildChannelParams((Utf8String)"voice_channel", ChannelType.Voice)
             {
                 // TODO: Impl
             }), x =>

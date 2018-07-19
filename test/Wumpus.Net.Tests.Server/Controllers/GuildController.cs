@@ -98,31 +98,20 @@ namespace Wumpus.Server.Controllers
             return Ok(new[] { new Channel() });
         }
         [HttpPost("guilds/{guildId}/channels")]
-        public async Task<IActionResult> CreateTextChannelAsync(Snowflake guildId, [FromBody] CreateTextChannelParams args)
-        {
-            args.Validate();
-
-            return Ok(new Channel
-            {
-                IsNsfw = args.IsNsfw,
-                Name = args.Name,
-                ParentId = args.ParentId,
-                PermissionOverwrites = args.PermissionOverwrites,
-                Type = args.Type.Value
-            });
-        }
-        [HttpPost("guilds/{guildId}/channels")]
-        public async Task<IActionResult> CreateVoiceChannelAsync(Snowflake guildId, [FromBody] CreateVoiceChannelParams args)
+        public async Task<IActionResult> CreateGuildChannelAsync(Snowflake guildId, [FromBody] CreateGuildChannelParams args)
         {
             args.Validate();
 
             return Ok(new Channel
             {
                 Bitrate = args.Bitrate,
+                IsNsfw = args.IsNsfw,
                 Name = args.Name,
                 ParentId = args.ParentId,
                 PermissionOverwrites = args.PermissionOverwrites,
-                Type = args.Type.Value
+                Topic = args.Topic,
+                Type = args.Type,
+                UserLimit = args.UserLimit
             });
         }
         [HttpPatch("guilds/{guildId}/channels")]

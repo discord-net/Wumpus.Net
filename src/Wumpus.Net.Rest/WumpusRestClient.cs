@@ -49,47 +49,19 @@ namespace Wumpus
             Preconditions.NotZero(channelId, nameof(channelId));
             return _api.GetChannelAsync(channelId);
         }
-        public Task<Channel> ReplaceGuildChannelAsync(Snowflake channelId, ModifyGuildChannelParams args)
+        public Task<Channel> ReplaceChannelAsync(Snowflake channelId, ModifyChannelParams args)
         {
             Preconditions.NotZero(channelId, nameof(channelId));
             Preconditions.NotNull(args, nameof(args));
             args.Validate();
-            return _api.ReplaceGuildChannelAsync(channelId, args);
+            return _api.ReplaceChannelAsync(channelId, args);
         }
-        public Task<Channel> ReplaceTextChannelAsync(Snowflake channelId, ModifyTextChannelParams args)
+        public Task<Channel> ModifyChannelAsync(Snowflake channelId, ModifyChannelParams args)
         {
             Preconditions.NotZero(channelId, nameof(channelId));
             Preconditions.NotNull(args, nameof(args));
             args.Validate();
-            return _api.ReplaceTextChannelAsync(channelId, args);
-        }
-        public Task<Channel> ReplaceVoiceChannelAsync(Snowflake channelId, ModifyVoiceChannelParams args)
-        {
-            Preconditions.NotZero(channelId, nameof(channelId));
-            Preconditions.NotNull(args, nameof(args));
-            args.Validate();
-            return _api.ReplaceVoiceChannelAsync(channelId, args);
-        }
-        public Task<Channel> ModifyGuildChannelAsync(Snowflake channelId, ModifyGuildChannelParams args)
-        {
-            Preconditions.NotZero(channelId, nameof(channelId));
-            Preconditions.NotNull(args, nameof(args));
-            args.Validate();
-            return _api.ModifyGuildChannelAsync(channelId, args);
-        }
-        public Task<Channel> ModifyTextChannelAsync(Snowflake channelId, ModifyTextChannelParams args)
-        {
-            Preconditions.NotZero(channelId, nameof(channelId));
-            Preconditions.NotNull(args, nameof(args));
-            args.Validate();
-            return _api.ModifyTextChannelAsync(channelId, args);
-        }
-        public Task<Channel> ModifyVoiceChannelAsync(Snowflake channelId, ModifyVoiceChannelParams args)
-        {
-            Preconditions.NotZero(channelId, nameof(channelId));
-            Preconditions.NotNull(args, nameof(args));
-            args.Validate();
-            return _api.ModifyVoiceChannelAsync(channelId, args);
+            return _api.ModifyChannelAsync(channelId, args);
         }
         public Task<Channel> DeleteChannelAsync(Snowflake channelId)
         {
@@ -317,26 +289,12 @@ namespace Wumpus
             Preconditions.NotZero(guildId, nameof(guildId));
             return _api.GetGuildChannelsAsync(guildId);
         }
-        public Task<Channel> CreateTextChannelAsync(Snowflake guildId, CreateTextChannelParams args)
+        public Task<Channel> CreateGuildChannelAsync(Snowflake guildId, CreateGuildChannelParams args)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotNull(args, nameof(args));
             args.Validate();
-            return _api.CreateTextChannelAsync(guildId, args);
-        }
-        public Task<Channel> CreateVoiceChannelAsync(Snowflake guildId, CreateVoiceChannelParams args)
-        {
-            Preconditions.NotZero(guildId, nameof(guildId));
-            Preconditions.NotNull(args, nameof(args));
-            args.Validate();
-            return _api.CreateVoiceChannelAsync(guildId, args);
-        }
-        public Task<Channel> CreateCategoryChannelAsync(Snowflake guildId, CreateGuildChannelParams args)
-        {
-            Preconditions.NotZero(guildId, nameof(guildId));
-            Preconditions.NotNull(args, nameof(args));
-            args.Validate();
-            return _api.CreateCategoryChannelAsync(guildId, args);
+            return _api.CreateGuildChannelAsync(guildId, args);
         }
         public Task<Channel> ModifyGuildChannelPositionsAsync(Snowflake guildId, IEnumerable<ModifyGuildChannelPositionParams> args)
         {
