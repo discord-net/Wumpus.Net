@@ -69,7 +69,7 @@ namespace Wumpus
             return _api.DeleteChannelAsync(channelId);
         }
 
-        public Task<List<Message>> GetChannelMessagesAsync(Snowflake channelId, GetChannelMessagesParams args)
+        public Task<Message[]> GetChannelMessagesAsync(Snowflake channelId, GetChannelMessagesParams args)
         {
             Preconditions.NotZero(channelId, nameof(channelId));
             Preconditions.NotNull(args, nameof(args));
@@ -111,7 +111,7 @@ namespace Wumpus
             return _api.DeleteMessagesAsync(channelId, args);
         }
 
-        public Task<List<User>> GetReactionsAsync(Snowflake channelId, Snowflake messageId, Utf8String emoji)
+        public Task<User[]> GetReactionsAsync(Snowflake channelId, Snowflake messageId, Utf8String emoji)
         {
             Preconditions.NotZero(channelId, nameof(channelId));
             Preconditions.NotZero(messageId, nameof(messageId));
@@ -162,7 +162,7 @@ namespace Wumpus
             return _api.DeleteChannelPermissionsAsync(channelId, overwriteId);
         }
 
-        public Task<List<Invite>> GetChannelInvitesAsync(Snowflake channelId)
+        public Task<Invite[]> GetChannelInvitesAsync(Snowflake channelId)
         {
             Preconditions.NotZero(channelId, nameof(channelId));
             return _api.GetChannelInvitesAsync(channelId);
@@ -175,7 +175,7 @@ namespace Wumpus
             return _api.CreateChannelInviteAsync(channelId, args);
         }
 
-        public Task<List<Message>> GetPinnedMessagesAsync(Snowflake channelId)
+        public Task<Message[]> GetPinnedMessagesAsync(Snowflake channelId)
         {
             Preconditions.NotZero(channelId, nameof(channelId));
             return _api.GetPinnedMessagesAsync(channelId);
@@ -216,7 +216,7 @@ namespace Wumpus
 
         // Emoji
 
-        public Task<List<Emoji>> GetGuildEmojisAsync(Snowflake guildId)
+        public Task<Emoji[]> GetGuildEmojisAsync(Snowflake guildId)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             return _api.GetGuildEmojisAsync(guildId);
@@ -284,7 +284,7 @@ namespace Wumpus
             return _api.DeleteGuildAsync(guildId);
         }
 
-        public Task<List<Channel>> GetGuildChannelsAsync(Snowflake guildId)
+        public Task<Channel[]> GetGuildChannelsAsync(Snowflake guildId)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             return _api.GetGuildChannelsAsync(guildId);
@@ -296,7 +296,7 @@ namespace Wumpus
             args.Validate();
             return _api.CreateGuildChannelAsync(guildId, args);
         }
-        public Task<Channel> ModifyGuildChannelPositionsAsync(Snowflake guildId, IEnumerable<ModifyGuildChannelPositionParams> args)
+        public Task<Channel> ModifyGuildChannelPositionsAsync(Snowflake guildId, ModifyGuildChannelPositionParams[] args)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotNull(args, nameof(args));
@@ -305,7 +305,7 @@ namespace Wumpus
             return _api.ModifyGuildChannelPositionsAsync(guildId, args);
         }
 
-        public Task<List<GuildMember>> GetGuildMembersAsync(Snowflake guildId, GetGuildMembersParams args)
+        public Task<GuildMember[]> GetGuildMembersAsync(Snowflake guildId, GetGuildMembersParams args)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotNull(args, nameof(args));
@@ -363,7 +363,7 @@ namespace Wumpus
             return _api.RemoveGuildMemberRoleAsync(guildId, userId, roleId);
         }
 
-        public Task<List<Ban>> GetGuildBansAsync(Snowflake guildId)
+        public Task<Ban[]> GetGuildBansAsync(Snowflake guildId)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             return _api.GetGuildBansAsync(guildId);
@@ -383,7 +383,7 @@ namespace Wumpus
             return _api.DeleteGuildBanAsync(guildId, userId);
         }
 
-        public Task<List<Role>> GetGuildRolesAsync(Snowflake guildId)
+        public Task<Role[]> GetGuildRolesAsync(Snowflake guildId)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             return _api.GetGuildRolesAsync(guildId);
@@ -409,7 +409,7 @@ namespace Wumpus
             args.Validate();
             return _api.ModifyGuildRoleAsync(guildId, roleId, args);
         }
-        public Task ModifyGuildRolePositionsAsync(Snowflake guildId, IEnumerable<ModifyGuildRolePositionParams> args)
+        public Task ModifyGuildRolePositionsAsync(Snowflake guildId, ModifyGuildRolePositionParams[] args)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotNull(args, nameof(args));
@@ -433,19 +433,19 @@ namespace Wumpus
             return _api.PruneGuildMembersAsync(guildId, args);
         }
 
-        public Task<List<VoiceRegion>> GetGuildVoiceRegionsAsync(Snowflake guildId)
+        public Task<VoiceRegion[]> GetGuildVoiceRegionsAsync(Snowflake guildId)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             return _api.GetGuildVoiceRegionsAsync(guildId);
         }
 
-        public Task<List<InviteMetadata>> GetGuildInvitesAsync(Snowflake guildId)
+        public Task<InviteMetadata[]> GetGuildInvitesAsync(Snowflake guildId)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             return _api.GetGuildInvitesAsync(guildId);
         }
 
-        public Task<List<Integration>> GetGuildIntegrationsAsync(Snowflake guildId)
+        public Task<Integration[]> GetGuildIntegrationsAsync(Snowflake guildId)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             return _api.GetGuildIntegrationsAsync(guildId);
@@ -530,7 +530,7 @@ namespace Wumpus
             return _api.ModifyCurrentUserAsync(args);
         }
 
-        public Task<List<UserGuild>> GetCurrentUserGuildsAsync(GetCurrentUserGuildsParams args)
+        public Task<UserGuild[]> GetCurrentUserGuildsAsync(GetCurrentUserGuildsParams args)
         {
             Preconditions.NotNull(args, nameof(args));
             args.Validate();
@@ -542,7 +542,7 @@ namespace Wumpus
             return _api.LeaveGuildAsync(guildId);
         }
 
-        public Task<List<Channel>> GetDMChannelsAsync()
+        public Task<Channel[]> GetDMChannelsAsync()
         {
             return _api.GetDMChannelsAsync();
         }
@@ -552,33 +552,27 @@ namespace Wumpus
             args.Validate();
             return _api.CreateDMChannelAsync(args);
         }
-        public Task<Channel> CreateGroupDMChannelAsync(CreateGroupDMChannelParams args)
-        {
-            Preconditions.NotNull(args, nameof(args));
-            args.Validate();
-            return _api.CreateGroupDMChannelAsync(args);
-        }
 
-        public Task<List<Connection>> GetUserConnectionsAsync()
+        public Task<Connection[]> GetUserConnectionsAsync()
         {
             return _api.GetUserConnectionsAsync();
         }
 
         // Voice
 
-        public Task<List<VoiceRegion>> GetVoiceRegionsAsync()
+        public Task<VoiceRegion[]> GetVoiceRegionsAsync()
         {
             return _api.GetVoiceRegionsAsync();
         }
 
         // Webhook
 
-        public Task<List<Webhook>> GetChannelWebhooksAsync(Snowflake channelId)
+        public Task<Webhook[]> GetChannelWebhooksAsync(Snowflake channelId)
         {
             Preconditions.NotZero(channelId, nameof(channelId));
             return _api.GetChannelWebhooksAsync(channelId);
         }
-        public Task<List<Webhook>> GetGuildWebhooksAsync(Snowflake guildId)
+        public Task<Webhook[]> GetGuildWebhooksAsync(Snowflake guildId)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             return _api.GetGuildWebhooksAsync(guildId);

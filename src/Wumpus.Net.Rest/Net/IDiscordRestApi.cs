@@ -54,7 +54,7 @@ namespace Wumpus.Net
         ///     https://discordapp.com/developers/docs/resources/channel#get-channel-messages
         /// </summary>
         [Get("channels/{channelId}/messages")]
-        Task<List<Message>> GetChannelMessagesAsync([Path] Snowflake channelId, [QueryMap] GetChannelMessagesParams args);
+        Task<Message[]> GetChannelMessagesAsync([Path] Snowflake channelId, [QueryMap] GetChannelMessagesParams args);
         [Get("channels/{channelId}/messages/{messageId}")]
         Task<Message> GetChannelMessageAsync([Path] Snowflake channelId, [Path] Snowflake messageId);
         /// <summary>
@@ -73,7 +73,7 @@ namespace Wumpus.Net
         Task DeleteMessagesAsync([Path] Snowflake channelId, [Body] DeleteMessagesParams args);
 
         [Get("channels/{channelId}/messages/{messageId}/reactions/{emoji}")]
-        Task<List<User>> GetReactionsAsync([Path] Snowflake channelId, [Path] Snowflake messageId, [Path] Utf8String emoji);
+        Task<User[]> GetReactionsAsync([Path] Snowflake channelId, [Path] Snowflake messageId, [Path] Utf8String emoji);
         [Put("channels/{channelId}/messages/{messageId}/reactions/{emoji}/@me")]
         Task CreateReactionAsync([Path] Snowflake channelId, [Path] Snowflake messageId, [Path] Utf8String emoji);
         [Delete("channels/{channelId}/messages/{messageId}/reactions/{emoji}/@me")]
@@ -89,12 +89,12 @@ namespace Wumpus.Net
         Task DeleteChannelPermissionsAsync([Path] Snowflake channelId, [Path] Snowflake overwriteId);
 
         [Get("channels/{channelId}/invites")]
-        Task<List<Invite>> GetChannelInvitesAsync([Path] Snowflake channelId);
+        Task<Invite[]> GetChannelInvitesAsync([Path] Snowflake channelId);
         [Post("channels/{channelId}/invites")]
         Task<Invite> CreateChannelInviteAsync([Path] Snowflake channelId, [Body] CreateChannelInviteParams args);
 
         [Get("channels/{channelId}/pins")]
-        Task<List<Message>> GetPinnedMessagesAsync([Path] Snowflake channelId);
+        Task<Message[]> GetPinnedMessagesAsync([Path] Snowflake channelId);
         [Put("channels/{channelId}/pins/{messageId}")]
         Task PinMessageAsync([Path] Snowflake channelId, [Path] Snowflake messageId);
         [Delete("channels/{channelId}/pins/{messageId}")]
@@ -111,7 +111,7 @@ namespace Wumpus.Net
         // Emoji
 
         [Get("guilds/{guildId}/emojis")]
-        Task<List<Emoji>> GetGuildEmojisAsync([Path] Snowflake guildId);
+        Task<Emoji[]> GetGuildEmojisAsync([Path] Snowflake guildId);
         [Get("guilds/{guildId}/emoji/{emojiId}")]
         Task<Emoji> GetGuildEmojiAsync([Path] Snowflake guildId, [Path] Snowflake emojiId);
         [Post("guilds/{guildId}/emojis")]
@@ -140,14 +140,14 @@ namespace Wumpus.Net
         Task DeleteGuildAsync([Path] Snowflake guildId);
 
         [Get("guilds/{guildId}/channels")]
-        Task<List<Channel>> GetGuildChannelsAsync([Path] Snowflake guildId);
+        Task<Channel[]> GetGuildChannelsAsync([Path] Snowflake guildId);
         [Post("guilds/{guildId}/channels")]
         Task<Channel> CreateGuildChannelAsync([Path] Snowflake guildId, [Body] CreateGuildChannelParams args);
         [Patch("guilds/{guildId}/channels")]
-        Task<Channel> ModifyGuildChannelPositionsAsync([Path] Snowflake guildId, [Body] IEnumerable<ModifyGuildChannelPositionParams> args);
+        Task<Channel> ModifyGuildChannelPositionsAsync([Path] Snowflake guildId, [Body] ModifyGuildChannelPositionParams[] args);
 
         [Get("guilds/{guildId}/members")]
-        Task<List<GuildMember>> GetGuildMembersAsync([Path] Snowflake guildId, [QueryMap] GetGuildMembersParams args);
+        Task<GuildMember[]> GetGuildMembersAsync([Path] Snowflake guildId, [QueryMap] GetGuildMembersParams args);
         [Get("guilds/{guildId}/members/{userId}")]
         Task<GuildMember> GetGuildMemberAsync([Path] Snowflake guildId, [Path] Snowflake userId);
         [Put("guilds/{guildId}/members/{userId}")]
@@ -165,14 +165,14 @@ namespace Wumpus.Net
         Task RemoveGuildMemberRoleAsync([Path] Snowflake guildId, [Path] Snowflake userId, [Path] Snowflake roleId);
 
         [Get("guilds/{guildId}/bans")]
-        Task<List<Ban>> GetGuildBansAsync([Path] Snowflake guildId);
+        Task<Ban[]> GetGuildBansAsync([Path] Snowflake guildId);
         [Put("guilds/{guildId}/bans/{userId}")]
         Task CreateGuildBanAsync([Path] Snowflake guildId, [Path] Snowflake userId, [QueryMap] CreateGuildBanParams args);
         [Delete("guilds/{guildId}/bans/{userId}")]
         Task DeleteGuildBanAsync([Path] Snowflake guildId, [Path] Snowflake userId);
 
         [Get("guilds/{guildId}/roles")]
-        Task<List<Role>> GetGuildRolesAsync([Path] Snowflake guildId);
+        Task<Role[]> GetGuildRolesAsync([Path] Snowflake guildId);
         [Post("guilds/{guildId}/roles")]
         Task<Role> CreateGuildRoleAsync([Path] Snowflake guildId, [Body] CreateGuildRoleParams args);
         [Delete("guilds/{guildId}/roles/{roleId}")]
@@ -180,7 +180,7 @@ namespace Wumpus.Net
         [Patch("guilds/{guildId}/roles/{roleId}")]
         Task<Role> ModifyGuildRoleAsync([Path] Snowflake guildId, [Path] Snowflake roleId, [Body] ModifyGuildRoleParams args);
         [Patch("guilds/{guildId}/roles")]
-        Task ModifyGuildRolePositionsAsync([Path] Snowflake guildId, [Body] IEnumerable<ModifyGuildRolePositionParams> args);
+        Task ModifyGuildRolePositionsAsync([Path] Snowflake guildId, [Body] ModifyGuildRolePositionParams[] args);
 
         [Get("guilds/{guildId}/prune")]
         Task<GuildPruneCountResponse> GetGuildPruneCountAsync([Path] Snowflake guildId, [QueryMap] GuildPruneParams args);
@@ -188,13 +188,13 @@ namespace Wumpus.Net
         Task<GuildPruneCountResponse> PruneGuildMembersAsync([Path] Snowflake guildId, [QueryMap] GuildPruneParams args);
 
         [Get("guilds/{guildId}/regions")]
-        Task<List<VoiceRegion>> GetGuildVoiceRegionsAsync([Path] Snowflake guildId);
+        Task<VoiceRegion[]> GetGuildVoiceRegionsAsync([Path] Snowflake guildId);
 
         [Get("guilds/{guildId}/invites")]
-        Task<List<InviteMetadata>> GetGuildInvitesAsync([Path] Snowflake guildId);
+        Task<InviteMetadata[]> GetGuildInvitesAsync([Path] Snowflake guildId);
 
         [Get("guilds/{guildId}/integrations")]
-        Task<List<Integration>> GetGuildIntegrationsAsync([Path] Snowflake guildId);
+        Task<Integration[]> GetGuildIntegrationsAsync([Path] Snowflake guildId);
         [Post("guilds/{guildId}/integrations")]
         Task<Integration> CreateGuildIntegrationAsync([Path] Snowflake guildId, [Body] CreateGuildIntegrationParams args);
         [Delete("guilds/{guildId}/integrations/{integrationId}")]
@@ -234,31 +234,29 @@ namespace Wumpus.Net
         Task<User> ModifyCurrentUserAsync([Body] ModifyCurrentUserParams args);
 
         [Get("users/@me/guilds")]
-        Task<List<UserGuild>> GetCurrentUserGuildsAsync([QueryMap] GetCurrentUserGuildsParams args);
+        Task<UserGuild[]> GetCurrentUserGuildsAsync([QueryMap] GetCurrentUserGuildsParams args);
         [Delete("users/@me/guilds/{guildId}")]
         Task LeaveGuildAsync([Path] Snowflake guildId);
 
         [Get("users/@me/channels")]
-        Task<List<Channel>> GetDMChannelsAsync();
+        Task<Channel[]> GetDMChannelsAsync();
         [Post("users/@me/channels")]
         Task<Channel> CreateDMChannelAsync([Body] CreateDMChannelParams args);
-        [Post("users/@me/channels")]
-        Task<Channel> CreateGroupDMChannelAsync([Body] CreateGroupDMChannelParams args);
 
         [Get("users/@me/connections")]
-        Task<List<Connection>> GetUserConnectionsAsync();
+        Task<Connection[]> GetUserConnectionsAsync();
 
         // Voice
 
         [Get("voice/regions")]
-        Task<List<VoiceRegion>> GetVoiceRegionsAsync();
+        Task<VoiceRegion[]> GetVoiceRegionsAsync();
 
         // Webhook
 
         [Get("channels/{channelId}/webhooks")]
-        Task<List<Webhook>> GetChannelWebhooksAsync([Path] Snowflake channelId);
+        Task<Webhook[]> GetChannelWebhooksAsync([Path] Snowflake channelId);
         [Get("guilds/{guildId}/webhooks")]
-        Task<List<Webhook>> GetGuildWebhooksAsync([Path] Snowflake guildId);
+        Task<Webhook[]> GetGuildWebhooksAsync([Path] Snowflake guildId);
 
         [Get("webhooks/{webhookId}")]
         Task<Webhook> GetWebhookAsync([Path] Snowflake webhookId);
