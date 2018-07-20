@@ -1,23 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
-using System.Buffers;
-using Voltaic.Serialization;
-using Voltaic.Serialization.Json;
+using Wumpus.Server.Binders;
 
 namespace Wumpus.Server.Formatters
 {
     public class VoltaicJsonMvcOptionsSetup : IConfigureOptions<MvcOptions>
     {
-        private readonly JsonSerializer _serializer;
-        private readonly ArrayPool<byte> _pool;
+        private readonly SerializerOptions _serializerOptions;
 
-        public VoltaicJsonMvcOptionsSetup(ConverterCollection converters = null, ArrayPool<byte> pool = null)
-            : this(new JsonSerializer(converters, pool), pool) { }
-        public VoltaicJsonMvcOptionsSetup(JsonSerializer serializer, ArrayPool<byte> pool = null)
+        public VoltaicJsonMvcOptionsSetup(SerializerOptions serializerOptions)
         {
-            _serializer = serializer;
-            _pool = pool;
+            _serializerOptions = serializerOptions;
         }
 
         public void Configure(MvcOptions options)
@@ -32,8 +26,11 @@ namespace Wumpus.Server.Formatters
             options.InputFormatters.RemoveType<JsonInputFormatter>();
 
             // Add our serializer
-            options.OutputFormatters.Add(new VoltaicJsonOutputFormatter(_serializer, _pool));
-            options.InputFormatters.Add(new VoltaicJsonInputFormatter(_serializer, _pool));
+            options.OutputFormatters.Add(new VoltaicJsonOutputFormatter(_serializerOptions.Serializer, _serializerOptions.Pool));
+            options.InputFormatters.Add(new VoltaicJsonInputFormatter(_serializerOptions.Serializer, _serializerOptions.Pool));
+
+            // Model binders
+            options.ModelBinderProviders.Insert(0, new VoltaicModelBinderProvider());
         }
     }
 }

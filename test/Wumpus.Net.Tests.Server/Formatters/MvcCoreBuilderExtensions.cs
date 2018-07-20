@@ -18,8 +18,8 @@ namespace Wumpus.Server.Formatters
             if (builder == null)
                 throw new ArgumentNullException(nameof(builder));
 
-            builder.Services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<MvcOptions>, VoltaicJsonMvcOptionsSetup>(_ => new VoltaicJsonMvcOptionsSetup(serializer, pool)));
+            builder.Services.TryAddSingleton(new SerializerOptions(serializer, pool));
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<MvcOptions>, VoltaicJsonMvcOptionsSetup>());
             return builder;
         }
     }

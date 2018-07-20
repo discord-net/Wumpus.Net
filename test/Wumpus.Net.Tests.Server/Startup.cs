@@ -26,10 +26,7 @@ namespace Wumpus.Server
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(x =>
-                {
-                    x.ModelBinderProviders.Insert(0, new VoltaicModelBinderProvider());
-                })
+            services.AddMvc()
                 .AddVoltaicJsonSerializerFormatters(new WumpusJsonSerializer())
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddTransient<IObjectModelValidator, NullObjectValidator>();
