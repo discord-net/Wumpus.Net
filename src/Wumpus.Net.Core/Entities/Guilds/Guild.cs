@@ -1,4 +1,5 @@
-﻿using Voltaic;
+﻿using System;
+using Voltaic;
 using Voltaic.Serialization;
 
 namespace Wumpus.Entities
@@ -24,22 +25,25 @@ namespace Wumpus.Entities
         public Utf8String Name { get; set; }
         /// <summary> Icon hash. </summary>
         [ModelProperty("icon")]
-        public Utf8String Icon { get; set; }
+        public Image? Icon { get; set; }
         /// <summary> Splash hash. </summary>
         [ModelProperty("splash")]
-        public Utf8String Splash { get; set; }
+        public Image? Splash { get; set; }
         /// <summary> Id of owner. </summary>
         [ModelProperty("owner_id")]
         public Snowflake OwnerId { get; set; }
+        /// <summary> Total permissions for the <see cref="User"/> in the <see cref="Guild"/> (does not include <see cref="Overwrite"/>). </summary>
+        [ModelProperty("permissions")]
+        public Optional<GuildPermissions> Permissions { get; set; }
         /// <summary> <see cref="VoiceRegion"/> Id for the <see cref="Guild"/>. </summary>
         [ModelProperty("region")]
         public Utf8String Region { get; set; }
         /// <summary> Id of AFK <see cref="Channel"/>. </summary>
         [ModelProperty("afk_channel_id")]
-        public Snowflake? AFKChannelId { get; set; }
+        public Snowflake? AfkChannelId { get; set; }
         /// <summary> AFK timeout in seconds. </summary>
         [ModelProperty("afk_timeout")]
-        public int AFKTimeout { get; set; }
+        public int AfkTimeout { get; set; }
         /// <summary> Is this <see cref="Guild"/> embeddable? </summary>
         /// <remarks> e.g. widget. </remarks>
         [ModelProperty("embed_enabled")]
@@ -56,7 +60,7 @@ namespace Wumpus.Entities
         /// <summary> Explicit content filter level. </summary>
         [ModelProperty("explicit_content_filter")]
         public ExplicitContentFilter ExplicitContentFilter { get; set; }
-        /// <summary> <see cref="Role"/> entities in the guild. </summary>
+        /// <summary> <see cref="Role"/> entities in the <see cref="Guild"/>. </summary>
         [ModelProperty("roles")]
         public Role[] Roles { get; set; }
         /// <summary> Custom <see cref="Guild"/> <see cref="Emoji"/> entities. </summary>
@@ -80,6 +84,5 @@ namespace Wumpus.Entities
         /// <summary> The id of the <see cref="Channel"/> to which system <see cref="Message"/> entities are sent. </summary>
         [ModelProperty("system_channel_id")]
         public Snowflake? SystemChannelId { get; set; }
-
     }
 }

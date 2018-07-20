@@ -14,15 +14,18 @@ namespace Wumpus
         }
         public Snowflake(DateTimeOffset dto)
         {
-            RawValue = ((ulong)dto.ToUnixTimeMilliseconds() - DiscordEpoch) << 22;
+            RawValue = ((ulong)dto.ToUniversalTime().ToUnixTimeMilliseconds() - DiscordEpoch) << 22;
         }
         public Snowflake(DateTime dt)
             : this(new DateTimeOffset(dt)) { }
 
         public DateTimeOffset ToDateTimeOffset() => DateTimeOffset.FromUnixTimeMilliseconds((long)((RawValue >> 22) + DiscordEpoch));
-        public DateTimeOffset ToDateTime() => ToDateTimeOffset().DateTime;
+        public DateTimeOffset ToDateTime() => ToDateTimeOffset().UtcDateTime;
 
         public static implicit operator ulong(Snowflake snowflake) => snowflake.RawValue;
         public static implicit operator Snowflake(ulong value) => new Snowflake(value);
+
+        public override string ToString()
+            => RawValue.ToString();
     }
 }

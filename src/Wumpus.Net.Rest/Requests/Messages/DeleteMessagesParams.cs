@@ -9,7 +9,7 @@ namespace Wumpus.Requests
     {
         /// <summary> An array of <see cref="Entities.Message"/> ids to delete. </summary>
         [ModelProperty("messages")]
-        public Snowflake[] MessageIds { get; }
+        public Snowflake[] MessageIds { get; private set; }
 
         public DeleteMessagesParams(Snowflake[] messageIds)
         {

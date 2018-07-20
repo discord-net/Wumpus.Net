@@ -4,7 +4,7 @@ using System.Buffers.Binary;
 namespace Voltaic.Serialization.Etf
 {
     public class ObjectEtfConverter<T> : ValueConverter<T>
-        where T : class, new()
+        where T : class
     {
         private readonly EtfSerializer _serializer;
         private readonly ModelMap<T> _map;
@@ -36,7 +36,7 @@ namespace Voltaic.Serialization.Etf
                     uint arity = BinaryPrimitives.ReadUInt32BigEndian(remaining); // count
                     remaining = remaining.Slice(4);
 
-                    result = new T();
+                    result = _map.CreateUninitialized();
                     if (arity == 0)
                         return true;
 

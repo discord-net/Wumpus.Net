@@ -2,7 +2,10 @@
 
 namespace Wumpus.Entities
 {
-    /// <summary> https://discordapp.com/developers/docs/topics/gateway#message-reaction-add, https://discordapp.com/developers/docs/topics/gateway#message-reaction-remove </summary>
+    /// <summary> 
+    ///     https://discordapp.com/developers/docs/topics/gateway#message-reaction-add 
+    ///     https://discordapp.com/developers/docs/topics/gateway#message-reaction-remove 
+    /// </summary>
     public class GatewayReaction
     {
         /// <summary> The id of the <see cref="User"/>. </summary>

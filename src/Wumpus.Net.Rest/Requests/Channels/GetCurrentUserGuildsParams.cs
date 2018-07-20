@@ -14,22 +14,32 @@ namespace Wumpus.Requests
         /// <summary> Get <see cref="Guild"/>s after this <see cref="Guild"/> id. </summary>
         public Optional<Snowflake> After { get; set; }
 
-        public override IDictionary<string, object> GetQueryMap()
+        public override IDictionary<string, string> CreateQueryMap()
         {
-            var dict = new Dictionary<string, object>();
+            var map = new Dictionary<string, string>();
             if (Limit.IsSpecified)
-                dict["limit"] = Limit.Value.ToString();
+                map["limit"] = Limit.Value.ToString();
             if (Before.IsSpecified)
-                dict["before"] = Before.Value.ToString();
+                map["before"] = Before.Value.ToString();
             if (After.IsSpecified)
-                dict["after"] = After.Value.ToString();
-            return dict;
+                map["after"] = After.Value.ToString();
+            return map;
+        }
+        public void LoadQueryMap(IReadOnlyDictionary<string, string> map)
+        {
+            if (map.TryGetValue("limit", out string str))
+                Limit = int.Parse(str);
+            if (map.TryGetValue("before", out str))
+                Before = new Snowflake(ulong.Parse(str));
+            if (map.TryGetValue("after", out str))
+                After = new Snowflake(ulong.Parse(str));
         }
 
         public void Validate()
         {
             Preconditions.AtLeast(Limit, Guild.MinGetGuildsLimit, nameof(Limit));
             Preconditions.AtMost(Limit, Guild.MaxGetGuildsLimit, nameof(Limit));
+            Preconditions.Exclusive(new[] { Before, After }, new[] { nameof(Before), nameof(After) });
         }
     }
 }

@@ -18,6 +18,6 @@ namespace Wumpus.Entities
         public Utf8String IconUrl { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("members")]
-        public IEnumerable<GuildMember> Members { get; set; }
+        public GuildMember[] Members { get; set; }
     }
 }

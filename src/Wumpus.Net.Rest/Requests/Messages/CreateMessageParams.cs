@@ -5,12 +5,6 @@ using Voltaic;
 
 namespace Wumpus.Requests
 {
-    /// <summary> 
-    /// Post a message to a <see cref="Guild"/> text or DM <see cref="Channel"/>. If operating on a <see cref="Guild"/> <see cref="Channel"/>, this endpoint requires <see cref="ChannelPermissions.SendMessages"/> to be present on the current <see cref="User"/>.
-    /// If the tts field is set to true, <see cref="ChannelPermissions.SendTTSMessages"/> is required for the message to be spoken. 
-    /// Returns a <see cref="Message"/> object. 
-    /// Fires a Message Create Gateway event. 
-    /// </summary>
     public class CreateMessageParams : IFormData
     {
         /// <summary> The <see cref="Message"/> contents. </summary>
@@ -22,7 +16,7 @@ namespace Wumpus.Requests
         public Optional<Utf8String> Nonce { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("tts")]
-        public Optional<bool> IsTTS { get; set; }
+        public Optional<bool> IsTextToSpeech { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("embed")]
         public Optional<Embed> Embed { get; set; }
@@ -44,10 +38,8 @@ namespace Wumpus.Requests
 
             if (!Content.IsSpecified || Content.Value == (Utf8String)null)
                 Content = (Utf8String)"";
-            if (Embed.IsSpecified && Embed.Value != null)
-                Preconditions.NotNullOrWhitespace(Content, nameof(Content));
-            // else //TODO: Validate embed length
             Preconditions.LengthAtMost(Content, Message.MaxContentLength, nameof(Content));
+            //TODO: Validate embed length
         }
     }
 }

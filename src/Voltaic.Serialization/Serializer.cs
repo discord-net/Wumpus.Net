@@ -11,23 +11,41 @@ namespace Voltaic.Serialization
         public event Action<string> UnknownProperty;
         public event Action<string> FailedProperty;
 
+        private delegate object ReadMethod(ReadOnlySpan<byte> data, ValueConverter converter);
+        private delegate ResizableMemory<byte> WriteMethod(object data, ValueConverter converter);
+
         protected readonly ArrayPool<byte> _pool;
+        private static readonly MethodInfo _readMethod
+            = typeof(Serializer).GetTypeInfo().GetDeclaredMethods(nameof(ReadInternal))
+            .Single(x => x.IsGenericMethodDefinition);
         private static readonly MethodInfo _writeMethod
             = typeof(Serializer).GetTypeInfo().GetDeclaredMethods(nameof(WriteInternal))
             .Single(x => x.IsGenericMethodDefinition);
 
-        protected readonly ConcurrentDictionary<Type, ModelMap> _modelMaps;
-        protected readonly ConcurrentDictionary<Type, Func<object, ValueConverter, ResizableMemory<byte>>> _writeMethods;
         protected readonly ConverterCollection _converters;
+        protected readonly ConcurrentDictionary<Type, ModelMap> _modelMaps;
+        private readonly ConcurrentDictionary<Type, ReadMethod> _readMethods;
+        private readonly ConcurrentDictionary<Type, WriteMethod> _writeMethods;
 
         protected Serializer(ConverterCollection converters = null, ArrayPool<byte> pool = null)
         {
             _pool = pool ?? ArrayPool<byte>.Shared;
             _modelMaps = new ConcurrentDictionary<Type, ModelMap>();
-            _writeMethods = new ConcurrentDictionary<Type, Func<object, ValueConverter, ResizableMemory<byte>>>();
+            _readMethods = new ConcurrentDictionary<Type, ReadMethod>();
+            _writeMethods = new ConcurrentDictionary<Type, WriteMethod>();
             _converters = converters ?? new ConverterCollection();
         }
 
+        public object Read(Type type, ReadOnlyMemory<byte> data, ValueConverter converter = null)
+            => Read(type, data.Span, converter);
+        public virtual object Read(Type type, ReadOnlySpan<byte> data, ValueConverter converter = null)
+        {
+            var method = _readMethods.GetOrAdd(type, t =>
+                _readMethod.MakeGenericMethod(t).CreateDelegate(typeof(ReadMethod), this) as ReadMethod);
+            return method.Invoke(data, converter);
+        }
+        private object ReadInternal<T>(ReadOnlySpan<byte> data, ValueConverter converter = null)
+            => Read<T>(data, (ValueConverter<T>)converter);
         public T Read<T>(ReadOnlyMemory<byte> data, ValueConverter<T> converter = null)
             => Read<T>(data.Span, converter);
         public virtual T Read<T>(ReadOnlySpan<byte> data, ValueConverter<T> converter = null)
@@ -43,11 +61,7 @@ namespace Voltaic.Serialization
         {
             var type = value.GetType();
             var method = _writeMethods.GetOrAdd(type, t =>
-            {
-                return _writeMethod.MakeGenericMethod(t)
-                    .CreateDelegate(typeof(Func<object, ValueConverter, ResizableMemory<byte>>), this)
-                    as Func<object, ValueConverter, ResizableMemory<byte>>;
-            });
+                _writeMethod.MakeGenericMethod(t).CreateDelegate(typeof(WriteMethod), this) as WriteMethod);
             return method.Invoke(value, converter);
         }
         private ResizableMemory<byte> WriteInternal<T>(object value, ValueConverter converter = null)

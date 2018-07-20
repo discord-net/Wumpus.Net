@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace Voltaic.Serialization
 {
@@ -99,5 +100,7 @@ namespace Voltaic.Serialization
             keyProp.Index = _selectorKeyCount++;
             keyProp.IndexMask = 1U << keyProp.Index.Value;
         }
+
+        public T CreateUninitialized() => (T)FormatterServices.GetUninitializedObject(typeof(T));
     }
 }

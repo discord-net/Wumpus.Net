@@ -12,7 +12,7 @@ namespace Wumpus.Entities
         public User User { get; set; }
         /// <summary> This user's <see cref="Guild"/> nickname. </summary>
         [ModelProperty("nick")]
-        public Optional<Utf8String> Nick { get; set; }
+        public Optional<Utf8String> Nickname { get; set; }
         /// <summary> Array of <see cref="Role"/> ids. </summary>
         [ModelProperty("roles")]
         public Optional<Snowflake[]> Roles { get; set; }

@@ -4,11 +4,7 @@ using Wumpus.Entities;
 
 namespace Wumpus.Requests
 {
-    /// <summary> 
-    ///    Returns an <see cref="AuditLog"/> object for the <see cref="Guild"/>. Requires <see cref="GuildPermissions.ViewAuditLog"/>.
-    ///    https://discordapp.com/developers/docs/resources/audit-log#get-guild-audit-log 
-    /// </summary>
-    public class GetAuditLogParams : QueryMap
+    public class GetGuildAuditLogParams : QueryMap
     {
         /// <summary> Filter the log for a <see cref="User"/> id. </summary>
         public Optional<Snowflake> UserId { get; set; }
@@ -20,18 +16,29 @@ namespace Wumpus.Requests
         /// <remarks> Default: 50, Minimum: 1, Maximum: 100 </remarks>
         public Optional<int> Limit { get; set; }
 
-        public override IDictionary<string, object> GetQueryMap()
+        public override IDictionary<string, string> CreateQueryMap()
         {
-            var dict = new Dictionary<string, object>();
+            var map = new Dictionary<string, string>();
             if (UserId.IsSpecified)
-                dict["userId"] = UserId.ToString();
+                map["user_id"] = UserId.Value.ToString();
             if (ActionType.IsSpecified)
-                dict["actionType"] = ((int)ActionType.Value).ToString();
+                map["action_type"] = ((int)ActionType.Value).ToString();
             if (Before.IsSpecified)
-                dict["before"] = Before.Value.ToString();
+                map["before"] = Before.Value.ToString();
             if (Limit.IsSpecified)
-                dict["limit"] = Limit.Value.ToString();
-            return dict;
+                map["limit"] = Limit.Value.ToString();
+            return map;
+        }
+        public void LoadQueryMap(IReadOnlyDictionary<string, string> map)
+        {
+            if (map.TryGetValue("user_id", out string str))
+                UserId = new Snowflake(ulong.Parse(str));
+            if (map.TryGetValue("action_type", out str))
+                ActionType = (AuditLogEvent)int.Parse(str);
+            if (map.TryGetValue("limit", out str))
+                Limit = int.Parse(str);
+            if (map.TryGetValue("before", out str))
+                Before = new Snowflake(ulong.Parse(str));
         }
 
         public void Validate()

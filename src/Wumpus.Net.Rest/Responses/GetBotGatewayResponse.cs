@@ -1,5 +1,4 @@
-﻿using Voltaic;
-using Voltaic.Serialization;
+﻿using Voltaic.Serialization;
 
 namespace Wumpus.Responses
 {

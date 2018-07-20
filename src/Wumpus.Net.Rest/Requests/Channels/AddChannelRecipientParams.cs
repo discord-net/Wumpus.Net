@@ -8,7 +8,7 @@ namespace Wumpus.Requests
     {
         /// <summary> Access token of a <see cref="Entities.User"/> that has granted your app the <see cref="Entities.DiscordOAuthScope.GroupDMJoin"/> scope. </summary>
         [ModelProperty("access_token")]
-        public Utf8String AccessToken { get; set; }
+        public Utf8String AccessToken { get; private set; }
         /// <summary> Nickname of the <see cref="Entities.User"/> being added. </summary>
         [ModelProperty("nick")]
         public Optional<Utf8String> Nickname { get; set; }

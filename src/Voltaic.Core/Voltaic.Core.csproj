@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/RogueException/Voltaic</PackageProjectUrl>
     <RepositoryUrl>git://github.com/RogueException/Voltaic</RepositoryUrl>
     <Description>A collection of common types used by Voltaic packages</Description>
-    <TargetFrameworks>netstandard1.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>

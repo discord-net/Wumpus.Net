@@ -6,20 +6,25 @@ namespace Wumpus.Requests
     public class GuildPruneParams : QueryMap
     {
         /// <summary> Number of days to count prune for. </summary>
-        public int Days { get; set; }
+        public int Days { get; private set; }
 
         public GuildPruneParams(int days)
         {
             Days = days;
         }
 
-        public override IDictionary<string, object> GetQueryMap()
+        public override IDictionary<string, string> CreateQueryMap()
         {
-            var dict = new Dictionary<string, object>
+            var map = new Dictionary<string, string>
             {
-                ["days"] = Days
+                ["days"] = Days.ToString()
             };
-            return dict;
+            return map;
+        }
+        public void LoadQueryMap(IReadOnlyDictionary<string, string> map)
+        {
+            if (map.TryGetValue("days", out string str))
+                Days = int.Parse(str);
         }
 
         public void Validate()

@@ -9,14 +9,19 @@ namespace Wumpus.Requests
     {
         /// <summary> Name of the <see cref="Webhook"/>. </summary>
         [ModelProperty("name")]
-        public Utf8String Name { get; set; }
+        public Utf8String Name { get; private set; }
         /// <summary> Image for the default <see cref="Webhook"/> avatar. </summary>
         [ModelProperty("avatar")]
-        public Image Avatar { get; set; }
+        public Optional<Image> Avatar { get; set; }
+
+        public CreateWebhookParams(Utf8String name)
+        {
+            Name = name;
+        }
 
         public void Validate()
         {
-            Preconditions.NotNullOrWhitespace(Name, nameof(Name));
+            Preconditions.NotEmpty(Name, nameof(Name));
             Preconditions.LengthAtLeast(Name, Webhook.MinNameLength, nameof(Name));
             Preconditions.LengthAtMost(Name, Webhook.MaxNameLength, nameof(Name));
         }

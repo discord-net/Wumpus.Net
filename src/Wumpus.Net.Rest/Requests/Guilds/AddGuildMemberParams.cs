@@ -1,6 +1,5 @@
 ﻿using Voltaic;
 using Voltaic.Serialization;
-using Wumpus.Entities;
 
 namespace Wumpus.Requests
 {
@@ -22,6 +21,11 @@ namespace Wumpus.Requests
         /// <summary> If the <see cref="User"/ >is deafened. Requires <see cref="GuildPermissions.DeafenMembers"/>. </summary>
         [ModelProperty("deaf")]
         public Optional<bool> Deaf { get; set; }
+
+        public AddGuildMemberParams(Utf8String accessToken)
+        {
+            AccessToken = accessToken;
+        }
 
         public void Validate()
         {

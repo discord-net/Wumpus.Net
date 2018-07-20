@@ -1,6 +1,6 @@
-﻿using Voltaic.Serialization;
-using System;
+﻿using System;
 using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {

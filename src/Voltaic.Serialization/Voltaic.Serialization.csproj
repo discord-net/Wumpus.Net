@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/RogueException/Wumpus.Net</PackageProjectUrl>
     <RepositoryUrl>git://github.com/RogueException/Wumpus.Net</RepositoryUrl>
     <Description>A low-alloc (de)serialization library</Description>
-    <TargetFrameworks>netstandard1.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../Voltaic.Core/Voltaic.Core.csproj" />

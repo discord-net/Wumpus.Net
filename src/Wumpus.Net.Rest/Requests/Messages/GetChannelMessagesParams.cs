@@ -4,12 +4,6 @@ using Voltaic.Serialization;
 
 namespace Wumpus.Requests
 {
-    /// <summary> 
-    ///     Returns the <see cref="Entities.Message"/> for a <see cref="Entities.Channel"/>. If operating on a <see cref="Entities.Guild"/> <see cref="Entities.Channel"/>, this endpoint requires the <see cref="Entities.ChannelPermissions.ViewChannel"/> to be present on the current <see cref="Entities.User"/>.
-    ///     If the current <see cref="Entities.User"/> is missing <see cref="Entities.ChannelPermissions.ReadMessageHistory"> in the <see cref="Entities.Channel"/> then this will return no messages (since they cannot read the message history). 
-    ///     Returns an array of <see cref="Entities.Message"/> objects on success.
-    ///     https://discordapp.com/developers/docs/resources/channel#get-channel-messages 
-    /// </summary>
     public class GetChannelMessagesParams : QueryMap
     {
         /// <summary> Get <see cref="Entities.Message"/>s before this id. </summary>
@@ -26,24 +20,35 @@ namespace Wumpus.Requests
         [ModelProperty("limit")]
         public Optional<int> Limit { get; set; }
 
-        public override IDictionary<string, object> GetQueryMap()
+        public override IDictionary<string, string> CreateQueryMap()
         {
-            var dict = new Dictionary<string, object>();
+            var map = new Dictionary<string, string>();
             if (Limit.IsSpecified)
-                dict["limit"] = Limit.Value.ToString();
-            if (Around.IsSpecified)
-                dict["around"] = Around.Value.ToString();
+                map["limit"] = Limit.Value.ToString();
             if (Before.IsSpecified)
-                dict["before"] = Before.Value.ToString();
+                map["before"] = Before.Value.ToString();
+            if (Around.IsSpecified)
+                map["around"] = Around.Value.ToString();
             if (After.IsSpecified)
-                dict["after"] = After.Value.ToString();
-            return dict;
+                map["after"] = After.Value.ToString();
+            return map;
+        }
+        public void LoadQueryMap(IReadOnlyDictionary<string, string> map)
+        {
+            if (map.TryGetValue("limit", out string str))
+                Limit = int.Parse(str);
+            if (map.TryGetValue("before", out str))
+                Before = new Snowflake(ulong.Parse(str));
+            if (map.TryGetValue("around", out str))
+                Around = new Snowflake(ulong.Parse(str));
+            if (map.TryGetValue("after", out str))
+                After = new Snowflake(ulong.Parse(str));
         }
 
         public void Validate()
         {
             Preconditions.NotNegative(Limit, nameof(Limit));
-            // TODO: Before, Around, After are mutually exclusive
+            Preconditions.Exclusive(new[] { Before, After, Around }, new[] { nameof(Before), nameof(After), nameof(Around) });
         }
     }
 }

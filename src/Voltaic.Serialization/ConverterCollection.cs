@@ -183,7 +183,7 @@ namespace Voltaic.Serialization
         }
 
         internal ValueConverter<T> Get<T>(Serializer serializer, PropertyInfo propInfo = null, bool throwOnNotFound = true)
-            => Get(serializer, typeof(T), propInfo, throwOnNotFound) as ValueConverter<T>;
+            => Get<T>(serializer, typeof(T), propInfo, throwOnNotFound);
         internal ValueConverter<T> Get<T>(Serializer serializer, Type type, PropertyInfo propInfo = null, bool throwOnNotFound = true)
         {
             var converter = Get(serializer, type, propInfo, throwOnNotFound);

@@ -3,7 +3,7 @@
 namespace Voltaic.Serialization.Json
 {
     public class ObjectJsonConverter<T> : ValueConverter<T>
-        where T : class, new()
+        where T : class
     {
         private readonly JsonSerializer _serializer;
         private readonly ModelMap<T> _map;
@@ -34,7 +34,7 @@ namespace Voltaic.Serialization.Json
             }
             remaining = remaining.Slice(1);
 
-            result = new T();
+            result = _map.CreateUninitialized();;
             if (JsonReader.GetTokenType(ref remaining) == JsonTokenType.EndObject)
             {
                 remaining = remaining.Slice(1);

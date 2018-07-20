@@ -2,3 +2,4 @@
 using RestEase;
 
 [assembly: InternalsVisibleTo(RestClient.FactoryAssemblyName)]
+[assembly: InternalsVisibleTo("Wumpus.Net.Server")]

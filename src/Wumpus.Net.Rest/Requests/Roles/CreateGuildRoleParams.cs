@@ -15,13 +15,13 @@ namespace Wumpus.Requests
         public Optional<GuildPermissions> Permissions { get; set; }
         /// <summary> RGB color value. </summary>
         [ModelProperty("color")]
-        public Optional<uint> Color { get; set; }
+        public Optional<Color> Color { get; set; }
         /// <summary> Whether the <see cref="Role"/> should be displayed seperately in the sidebar. </summary>
         [ModelProperty("hoist")]
-        public Optional<bool> Hoist { get; set; }
+        public Optional<bool> IsHoisted { get; set; }
         /// <summary> Whether the <see cref="Role"/> should be mentionable. </summary>
         [ModelProperty("mentionable")]
-        public Optional<bool> Mentionable { get; set; }
+        public Optional<bool> IsMentionable { get; set; }
 
         public void Validate()
         {
