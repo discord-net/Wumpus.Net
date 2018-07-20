@@ -52,6 +52,20 @@ namespace Voltaic
 
         public static implicit operator Optional<T>(T value) => new Optional<T>(value);
         public static explicit operator T(Optional<T> value) => value.Value;
+
+        public static bool operator ==(Optional<T> a, Optional<T> b)
+        {
+            if (!b.IsSpecified) return !a.IsSpecified;
+            return a._value?.Equals(b._value) ?? false;
+        }
+        public static bool operator !=(Optional<T> a, Optional<T> b) => !(a == b);
+
+        public static bool operator ==(Optional<T> a, T b)
+        {
+            if (!a.IsSpecified) return false;
+            return a._value?.Equals(b) ?? false;
+        }
+        public static bool operator !=(Optional<T> a, T b) => !(a == b);
     }
 
     public static class Optional
