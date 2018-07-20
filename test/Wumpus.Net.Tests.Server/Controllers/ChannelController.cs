@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS1998
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -93,13 +94,16 @@ namespace Wumpus.Server.Controllers
             });
         }
         [HttpPost("channels/{channelId}/messages")]
-        public async Task<IActionResult> CreateMessageAsync(Snowflake channelId, [FromBody] CreateMessageParams args)
+        public async Task<IActionResult> CreateMessageAsync(Snowflake channelId,
+            [FromForm(Name = "payload_json")] CreateMessageParams args = null,
+            IFormFile file = null)
         {
             args.Validate();
 
             var msg = new Message
             {
-                Content = args.Content.GetValueOrDefault((Utf8String)null),
+                ChannelId = channelId,
+                Content = args.Content.GetValueOrDefault((Utf8String)""),
                 IsTextToSpeech = args.IsTextToSpeech.GetValueOrDefault(false),
                 Nonce = args.Nonce
             };            
@@ -207,10 +211,10 @@ namespace Wumpus.Server.Controllers
         [HttpGet("channels/{channelId}/pins")]
         public async Task<IActionResult> GetPinnedMessagesAsync(Snowflake channelId)
         {
-            return Ok(new Message
+            return Ok(new[] { new Message
             {
                 ChannelId = channelId
-            });
+            }});
         }
         [HttpPut("channels/{channelId}/pins/{messageId}")]
         public async Task<IActionResult> PinMessageAsync(Snowflake channelId, Snowflake messageId)

@@ -148,13 +148,13 @@ namespace Wumpus.Server.Controllers
         [HttpGet("guilds/{guildId}/members/{userId}")]
         public async Task<IActionResult> GetGuildMemberAsync(Snowflake guildId, Snowflake userId)
         {
-            return Ok(new[] { new GuildMember
+            return Ok(new GuildMember
             {
                 User = new User
                 {
                     Id = userId
                 }
-            }});
+            });
         }
         [HttpPut("guilds/{guildId}/members/{userId}")]
         public async Task<IActionResult> AddGuildMemberAsync(Snowflake guildId, Snowflake userId, [FromBody] AddGuildMemberParams args)

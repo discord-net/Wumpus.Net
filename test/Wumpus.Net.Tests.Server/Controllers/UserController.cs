@@ -50,7 +50,7 @@ namespace Wumpus.Server.Controllers
             if (args.After.IsSpecified)
                 guild.Id = args.After.Value;
 
-            return Ok(guild);
+            return Ok(new[] { guild });
         }
         [HttpDelete("users/@me/guilds/{guildId}")]
         public async Task<IActionResult> LeaveGuildAsync(Snowflake guildId)

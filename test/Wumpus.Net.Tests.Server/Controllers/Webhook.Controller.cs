@@ -2,6 +2,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Voltaic;
 using Wumpus.Entities;
@@ -31,20 +32,20 @@ namespace Wumpus.Server.Controllers
         [HttpGet("webhooks/{webhookId}")]
         public async Task<IActionResult> GetWebhookAsync(Snowflake webhookId)
         {
-            return Ok(new[] { new Webhook
+            return Ok(new Webhook
             {
                 Id = webhookId
-            }});
+            });
         }
         [HttpGet("webhooks/{webhookId}/{webhookToken}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetWebhookAsync(Snowflake webhookId, Utf8String webhookToken)
         {
-            return Ok(new[] { new Webhook
+            return Ok(new Webhook
             {
                 Id = webhookId,
                 Token = webhookToken
-            }});
+            });
         }
 
         [HttpPost("channels/{channelId}/webhooks")]
@@ -52,12 +53,12 @@ namespace Wumpus.Server.Controllers
         {
             args.Validate();
 
-            return Ok(new[] { new Webhook
+            return Ok(new Webhook
             {
                 ChannelId = channelId,
-                Avatar = args.Avatar,
+                Avatar = args.Avatar.ToNullable(),
                 Name = args.Name
-            }});
+            });
         }
 
         [HttpDelete("webhooks/{webhookId}")]
@@ -73,7 +74,7 @@ namespace Wumpus.Server.Controllers
         }
 
         [HttpPatch("webhooks/{webhookId}")]
-        public async Task<IActionResult> ModifyWebhookAsync(Snowflake webhookId, ModifyWebhookParams args)
+        public async Task<IActionResult> ModifyWebhookAsync(Snowflake webhookId, [FromQuery] ModifyWebhookParams args)
         {
             args.Validate();
 
@@ -92,7 +93,7 @@ namespace Wumpus.Server.Controllers
         }
         [HttpPatch("webhooks/{webhookId}/{webhookToken}")]
         [AllowAnonymous]
-        public async Task<IActionResult> ModifyWebhookAsync(Snowflake webhookId, Utf8String webhookToken, ModifyWebhookParams args)
+        public async Task<IActionResult> ModifyWebhookAsync(Snowflake webhookId, Utf8String webhookToken, [FromQuery] ModifyWebhookParams args)
         {
             args.Validate();
 
@@ -113,7 +114,9 @@ namespace Wumpus.Server.Controllers
 
         [HttpPost("webhooks/{webhookId}/{webhookToken}")]
         [AllowAnonymous]
-        public async Task<IActionResult> ExecuteWebhookAsync(Snowflake webhookId, Utf8String webhookToken, [FromBody] ExecuteWebhookParams args)
+        public async Task<IActionResult> ExecuteWebhookAsync(Snowflake webhookId, Utf8String webhookToken,
+            [FromForm(Name = "payload_json")] ExecuteWebhookParams args = null,
+            IFormFile file = null)
         {
             args.Validate();
 

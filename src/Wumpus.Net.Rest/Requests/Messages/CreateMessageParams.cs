@@ -38,10 +38,8 @@ namespace Wumpus.Requests
 
             if (!Content.IsSpecified || Content.Value == (Utf8String)null)
                 Content = (Utf8String)"";
-            if (Embed.IsSpecified && Embed.Value != null)
-                Preconditions.NotNullOrWhitespace(Content, nameof(Content));
-            // else //TODO: Validate embed length
             Preconditions.LengthAtMost(Content, Message.MaxContentLength, nameof(Content));
+            //TODO: Validate embed length
         }
     }
 }

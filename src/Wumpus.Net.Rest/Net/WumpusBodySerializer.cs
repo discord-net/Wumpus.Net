@@ -41,7 +41,7 @@ namespace Wumpus.Net
                         content.Add(new StreamContent(stream), pair.Key, (string)file.Filename);
                     }
                     else
-                        content.Add(new StringContent(_serializer.WriteUtf16String(pair.Value), Encoding.UTF8), pair.Key);
+                        content.Add(new StringContent(_serializer.WriteUtf16String(pair.Value), Encoding.UTF8, "application/json"), pair.Key);
                 }
                 return content;
             }

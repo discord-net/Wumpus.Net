@@ -42,7 +42,7 @@ namespace Wumpus.Rest.Tests
         [Fact]
         public void CreateWebhookAsync()
         {
-            RunTest(c => c.CreateWebhookAsync(123, new CreateWebhookParams
+            RunTest(c => c.CreateWebhookAsync(123, new CreateWebhookParams((Utf8String)"webhook_test")
             {
                 // TODO: Impl
             }), x =>

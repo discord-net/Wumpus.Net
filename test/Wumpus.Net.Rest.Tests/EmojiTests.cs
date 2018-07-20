@@ -1,4 +1,5 @@
-﻿using Wumpus.Requests;
+﻿using Voltaic;
+using Wumpus.Requests;
 using Xunit;
 
 namespace Wumpus.Rest.Tests
@@ -21,7 +22,7 @@ namespace Wumpus.Rest.Tests
         [Fact]
         public void CreateGuildEmojiAsync()
         {
-            RunTest(c => c.CreateGuildEmojiAsync(123, new CreateGuildEmojiParams
+            RunTest(c => c.CreateGuildEmojiAsync(123, new CreateGuildEmojiParams((Utf8String)"test_emoji", new Image((Utf8String)"old_hash"))
             {
                 // TODO: Impl
             }), x =>

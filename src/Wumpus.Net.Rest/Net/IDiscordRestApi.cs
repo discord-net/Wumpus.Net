@@ -144,7 +144,7 @@ namespace Wumpus.Net
         [Post("guilds/{guildId}/channels")]
         Task<Channel> CreateGuildChannelAsync([Path] Snowflake guildId, [Body] CreateGuildChannelParams args);
         [Patch("guilds/{guildId}/channels")]
-        Task<Channel> ModifyGuildChannelPositionsAsync([Path] Snowflake guildId, [Body] ModifyGuildChannelPositionParams[] args);
+        Task<Channel[]> ModifyGuildChannelPositionsAsync([Path] Snowflake guildId, [Body] ModifyGuildChannelPositionParams[] args);
 
         [Get("guilds/{guildId}/members")]
         Task<GuildMember[]> GetGuildMembersAsync([Path] Snowflake guildId, [QueryMap] GetGuildMembersParams args);

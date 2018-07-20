@@ -11,7 +11,7 @@ namespace Wumpus.Server.Controllers
         [HttpGet("voice/regions")]
         public async Task<IActionResult> GetVoiceRegionsAsync()
         {
-            return Ok(new VoiceRegion());
+            return Ok(new[] { new VoiceRegion() });
         }
     }
 }

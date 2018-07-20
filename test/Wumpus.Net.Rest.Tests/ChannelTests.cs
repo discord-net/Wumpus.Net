@@ -113,7 +113,7 @@ namespace Wumpus.Rest.Tests
                 Assert.Equal(456UL, x.Id.RawValue);
             });
         }
-        [Fact(Skip = "Test server doesn't support IFormData yet")]
+        [Fact]
         public void CreateMessageAsync()
         {
             RunTest(c => c.CreateMessageAsync(123, new Requests.CreateMessageParams
@@ -125,7 +125,9 @@ namespace Wumpus.Rest.Tests
             {
                 Assert.Equal(123UL, x.ChannelId.RawValue);
                 Assert.Equal((Utf8String)"test", x.Content);
-                Assert.Contains(new Embed { Author = new EmbedAuthor { Name = (Utf8String)"testtest" }, Url = (Utf8String)"http://discordapp.com" }, x.Embeds);
+                Assert.NotEmpty(x.Embeds);
+                Assert.Equal((Utf8String)"testtest", x.Embeds[0].Author.Value.Name);
+                Assert.Equal((Utf8String)"http://discordapp.com", x.Embeds[0].Url.Value);
                 Assert.True(x.IsTextToSpeech);
             });
         }

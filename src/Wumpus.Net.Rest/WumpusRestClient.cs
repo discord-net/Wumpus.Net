@@ -296,7 +296,7 @@ namespace Wumpus
             args.Validate();
             return _api.CreateGuildChannelAsync(guildId, args);
         }
-        public Task<Channel> ModifyGuildChannelPositionsAsync(Snowflake guildId, ModifyGuildChannelPositionParams[] args)
+        public Task<Channel[]> ModifyGuildChannelPositionsAsync(Snowflake guildId, ModifyGuildChannelPositionParams[] args)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotNull(args, nameof(args));
