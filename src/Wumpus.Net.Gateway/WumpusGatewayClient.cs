@@ -67,6 +67,7 @@ namespace Wumpus
 
         // Dispatch events
         public event Action<ReadyEvent> Ready;
+        public event Action Resumed;
         public event Action<GatewayGuild> GuildCreate;
         public event Action<Guild> GuildUpdate;
         public event Action<UnavailableGuild> GuildDelete;
@@ -207,6 +208,7 @@ namespace Wumpus
                         };
 
                         // Send IDENTIFY/RESUME (timeout = IdentifyTimeoutMillis)
+                        // TODO: Test resume
                         SendIdentify(initialPresence);
                         timeoutTask = Task.Delay(IdentifyTimeoutMillis);
                         // If anything in tasks fails, it'll throw an exception
@@ -438,11 +440,14 @@ namespace Wumpus
             switch (evnt.DispatchType)
             {
                 case GatewayDispatchType.Ready:
-                    if (!(evnt.Data is ReadyEvent readyEvent))
-                        throw new Exception("Failed to deserialize READY event"); // TODO: Exception type?
+                    var readyEvent = evnt.Data as ReadyEvent;
                     _sessionId = readyEvent.SessionId;
                     readySignal.TrySetResult(true);
-                    Ready?.Invoke(evnt.Data as ReadyEvent);
+                    Ready?.Invoke(readyEvent);
+                    break;
+                case GatewayDispatchType.Resumed:
+                    readySignal.TrySetResult(true);
+                    Resumed?.Invoke();
                     break;
                 case GatewayDispatchType.GuildCreate: GuildCreate?.Invoke(evnt.Data as GatewayGuild); break;
                 case GatewayDispatchType.GuildUpdate: GuildUpdate?.Invoke(evnt.Data as Guild); break;

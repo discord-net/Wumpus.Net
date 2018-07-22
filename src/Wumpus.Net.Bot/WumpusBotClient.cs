@@ -22,14 +22,17 @@ namespace Wumpus
             typeof(WumpusBotClient).GetTypeInfo().Assembly.GetName().Version.ToString(3) ??
             "Unknown";
 
-        // Raw events
+        // Status events
+        public event Action Connected;
+        public event Action<Exception> Disconnected;
 
+        // Raw events
         public event Action<GatewayPayload, ReadOnlyMemory<byte>> ReceivedPayload;
         public event Action<GatewayPayload, ReadOnlyMemory<byte>> SentPayload;
 
         // Dispatch events
-
         public event Action<ReadyEvent> Ready;
+        public event Action Resumed;
         public event Action<GatewayGuild> GuildCreate;
         public event Action<Guild> GuildUpdate;
         public event Action<UnavailableGuild> GuildDelete;
@@ -85,55 +88,19 @@ namespace Wumpus
             IRateLimiter restRateLimiter = null, 
             LogManager logManager = null, bool logLibraryInfo = true)
         {
-            Rest = new WumpusRestClient(jsonSerializer, restRateLimiter);
-            Gateway = new WumpusGatewayClient(etfSerializer);
             _runLock = new SemaphoreSlim(1, 1);
 
-            if (logManager != null)
-            {
-                _logManager = logManager;
-                _logger = _logManager?.CreateLogger("Wumpus.Net") ?? new NullLogger();
-                _wroteInitialLog = !logLibraryInfo;
-                if (logManager.MinSeverity >= LogSeverity.Info)
-                {
-                    Gateway.Connected += () => _logger.Info("Connected to gateway");
-                    Gateway.Disconnected += ex => _logger.Info("Disconnected to gateway", ex);
-                }
-                if (logManager.MinSeverity >= LogSeverity.Verbose)
-                {
-                    Rest.JsonSerializer.UnknownProperty += path => _logger.Verbose($"Unknown JSON property \"{path}\"");
-                    Rest.JsonSerializer.FailedProperty += path => _logger.Verbose($"Failed to deserialize JSON \"{path}\"");
-                    Gateway.EtfSerializer.UnknownProperty += path => _logger.Verbose($"Unknown ETF property \"{path}\"");
-                    Gateway.EtfSerializer.FailedProperty += path => _logger.Verbose($"Failed to deserialize ETF \"{path}\"");
-                }
-                if (logManager.MinSeverity >= LogSeverity.Debug)
-                {
-                    Gateway.ReceivedPayload += (payload, bytes) =>
-                    {
-                        if (payload.Operation == GatewayOperation.Dispatch)
-                            _logger.Debug($"<~ {payload.DispatchType.Value} ({bytes.Length} bytes)");
-                        else
-                            _logger.Debug($"<~ {payload.Operation} ({bytes.Length} bytes)");
-                    };
-                    Gateway.SentPayload += (payload, bytes) =>
-                    {
-                        if (payload.Operation == GatewayOperation.Dispatch)
-                            _logger.Debug($"~> {payload.DispatchType.Value} ({bytes.Length} bytes)");
-                        else
-                            _logger.Debug($"~> {payload.Operation} ({bytes.Length} bytes)");
-                    };
-                }
-            }
-            else
-            {
-                _logger = new NullLogger();
-                _wroteInitialLog = true;
-            }
+            Rest = new WumpusRestClient(jsonSerializer, restRateLimiter);
+
+            Gateway = new WumpusGatewayClient(etfSerializer);
+            Gateway.Connected += () => Connected?.Invoke();
+            Gateway.Disconnected += ex => Disconnected?.Invoke(ex);
 
             Gateway.ReceivedPayload += (msg, data) => ReceivedPayload?.Invoke(msg, data);
             Gateway.SentPayload += (msg, data) => SentPayload?.Invoke(msg, data);
 
             Gateway.Ready += d => Ready?.Invoke(d);
+            Gateway.Resumed += () => Resumed?.Invoke();
             Gateway.GuildCreate += d => GuildCreate?.Invoke(d);
             Gateway.GuildUpdate += d => GuildUpdate?.Invoke(d);
             Gateway.GuildDelete += d => GuildDelete?.Invoke(d);
@@ -166,6 +133,48 @@ namespace Wumpus
             Gateway.VoiceServerUpdate += d => VoiceServerUpdate?.Invoke(d);
             Gateway.WebhooksUpdate += d => WebhooksUpdate?.Invoke(d);
             Gateway.SentPayload += (msg, data) => SentPayload?.Invoke(msg, data);
+
+            if (logManager != null)
+            {
+                _logManager = logManager;
+                _logger = _logManager?.CreateLogger("Wumpus.Net") ?? new NullLogger();
+                _wroteInitialLog = !logLibraryInfo;
+                if (logManager.MinSeverity >= LogSeverity.Info)
+                {
+                    Gateway.Connected += () => _logger.Info("Connected to gateway");
+                    Gateway.Disconnected += ex => _logger.Info("Disconnected to gateway", ex);
+                    Gateway.Resumed += () => _logger.Info("Resumed previous session");
+                }
+                if (logManager.MinSeverity >= LogSeverity.Verbose)
+                {
+                    Rest.JsonSerializer.UnknownProperty += path => _logger.Verbose($"Unknown JSON property \"{path}\"");
+                    Rest.JsonSerializer.FailedProperty += path => _logger.Verbose($"Failed to deserialize JSON \"{path}\"");
+                    Gateway.EtfSerializer.UnknownProperty += path => _logger.Verbose($"Unknown ETF property \"{path}\"");
+                    Gateway.EtfSerializer.FailedProperty += path => _logger.Verbose($"Failed to deserialize ETF \"{path}\"");
+                }
+                if (logManager.MinSeverity >= LogSeverity.Debug)
+                {
+                    Gateway.ReceivedPayload += (payload, bytes) =>
+                    {
+                        if (payload.Operation == GatewayOperation.Dispatch)
+                            _logger.Debug($"<~ {payload.DispatchType.Value} ({bytes.Length} bytes)");
+                        else
+                            _logger.Debug($"<~ {payload.Operation} ({bytes.Length} bytes)");
+                    };
+                    Gateway.SentPayload += (payload, bytes) =>
+                    {
+                        if (payload.Operation == GatewayOperation.Dispatch)
+                            _logger.Debug($"~> {payload.DispatchType.Value} ({bytes.Length} bytes)");
+                        else
+                            _logger.Debug($"~> {payload.Operation} ({bytes.Length} bytes)");
+                    };
+                }
+            }
+            else
+            {
+                _logger = new NullLogger();
+                _wroteInitialLog = true;
+            }
         }
 
         public void Run(string url = null, int? shardId = null, int? totalShards = null, UpdateStatusParams initialPresence = null)
