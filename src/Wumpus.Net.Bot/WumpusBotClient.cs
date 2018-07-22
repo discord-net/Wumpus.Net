@@ -88,7 +88,10 @@ namespace Wumpus
             }
         }
 
-        public WumpusBotClient(WumpusJsonSerializer jsonSerializer = null, WumpusEtfSerializer etfSerializer = null, IRateLimiter restRateLimiter = null, LogManager logManager = null)
+        public WumpusBotClient(
+            WumpusJsonSerializer jsonSerializer = null, WumpusEtfSerializer etfSerializer = null, 
+            IRateLimiter restRateLimiter = null, 
+            LogManager logManager = null, bool logLibraryInfo = true)
         {
             Rest = new WumpusRestClient(jsonSerializer, restRateLimiter);
             Gateway = new WumpusGatewayClient(etfSerializer);
@@ -98,6 +101,7 @@ namespace Wumpus
             {
                 _logManager = logManager;
                 _logger = _logManager?.CreateLogger("Wumpus.Net") ?? new NullLogger();
+                _wroteInitialLog = !logLibraryInfo;
                 if (logManager.MinSeverity >= LogSeverity.Info)
                 {
                     Gateway.Connected += () => _logger.Info("Connected to gateway");
@@ -129,7 +133,10 @@ namespace Wumpus
                 }
             }
             else
+            {
                 _logger = new NullLogger();
+                _wroteInitialLog = true;
+            }
 
             Gateway.ReceivedPayload += (msg, data) =>
             {
