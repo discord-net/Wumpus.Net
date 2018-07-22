@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.WebSockets;
 using System.Runtime.InteropServices;
@@ -124,14 +125,7 @@ namespace Wumpus
                     State = ConnectionState.Connecting;
 
                     var uri = new Uri(_url + $"?v={DiscordGatewayConstants.APIVersion}&encoding=etf");// &compress=zlib-stream"); // TODO: Enable
-                    try
-                    {
-                        await _client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);
-                    }
-                    catch
-                    {
-                        throw;
-                    }
+                    await _client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);
 
                     // Receive HELLO
                     var evnt = await ReceiveAsync(cancelToken); // We should not timeout on receiving HELLO
@@ -153,8 +147,12 @@ namespace Wumpus
                     // Send IDENTIFY/RESUME
                     SendIdentify(initialPresence);
                     var timeoutTask = Task.Delay(ConnectionTimeoutMillis);
-                    if (await Task.WhenAny(timeoutTask, readySignal.Task).ConfigureAwait(false) == timeoutTask)
+                    // If anything in tasks fails, it'll throw an exception
+                    var task = await Task.WhenAny(tasks.Append(timeoutTask).Append(readySignal.Task)).ConfigureAwait(false);
+                    if (task == timeoutTask)
                         throw new TimeoutException("Timed out waiting for READY or InvalidSession");
+                    else if (task.IsFaulted)
+                        await task.ConfigureAwait(false);
 
                     // Success
                     _lastSeq = 0;
@@ -162,7 +160,9 @@ namespace Wumpus
                     State = ConnectionState.Connected;
                     Connected?.Invoke();
 
-                    await Task.WhenAny(tasks).ConfigureAwait(false);
+                    task = await Task.WhenAny(tasks).ConfigureAwait(false);
+                    if (task.IsFaulted)
+                        await task.ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -180,16 +180,16 @@ namespace Wumpus
                     _connectionCts?.Cancel();
                     if (tasks != null)
                     {
-                        for (int i = 0; i < tasks.Length; i++)
-                        {
-                            try { await tasks[i].ConfigureAwait(false); }
-                            catch (OperationCanceledException) { }
-                        }
+                        try { await Task.WhenAll(tasks).ConfigureAwait(false); }
+                        catch { } // We already captured the root exception
                     }
 
                     // receiveTask and sendTask must have completed before we can send/receive from a different thread
-                    try { await _client.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None).ConfigureAwait(false); }
-                    catch { } // We don't actually care if sending a close msg fails // TODO: Maybe log it?
+                    if (_client.State == WebSocketState.Open)
+                    {
+                        try { await _client.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None).ConfigureAwait(false); }
+                        catch { } // We don't actually care if sending a close msg fails
+                    }
 
                     _sessionId = null;
                     ServerNames = null;
@@ -199,7 +199,7 @@ namespace Wumpus
 
                     if (isRecoverable)
                     {
-                        await Task.Delay(backoffMillis);
+                        await Task.Delay(backoffMillis).ConfigureAwait(false);
                         backoffMillis = (int)(backoffMillis * (BackoffMultiplier + (jitter.NextDouble() * BackoffJitter * 2.0 - BackoffJitter)));
                         if (backoffMillis > MaxBackoffMillis)
                             backoffMillis = MaxBackoffMillis;
@@ -211,8 +211,11 @@ namespace Wumpus
         {
             return Task.Run(async () =>
             {
-                while (!cancelToken.IsCancellationRequested)
+                while (true)
+                {
+                    cancelToken.ThrowIfCancellationRequested();
                     HandleEvent(await ReceiveAsync(cancelToken).ConfigureAwait(false), readySignal);
+                }
             });
         }
         private Task RunSendAsync(CancellationToken cancelToken)
@@ -222,8 +225,9 @@ namespace Wumpus
                 try
                 {
                     _sendQueue = new BlockingCollection<GatewayPayload>();
-                    while (!cancelToken.IsCancellationRequested)
+                    while (true)
                     {
+                        cancelToken.ThrowIfCancellationRequested();
                         var payload = _sendQueue.Take(cancelToken);
                         var writer = _serializer.Write(payload);
                         await _client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
@@ -240,8 +244,9 @@ namespace Wumpus
         {
             return Task.Run(async () =>
             {
-                while (!cancelToken.IsCancellationRequested)
+                while (true)
                 {
+                    cancelToken.ThrowIfCancellationRequested();
                     SendHeartbeat();
                     await Task.Delay(rate, cancelToken).ConfigureAwait(false);
                 }
@@ -253,7 +258,33 @@ namespace Wumpus
             switch (ex)
             {
                 case WebSocketException wsEx:
-                    return wsEx.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely;
+                    if (wsEx.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
+                        return true;
+                    break;
+                case WebSocketClosedException wscEx:
+                    if (wscEx.CloseStatus.HasValue)
+                    {
+                        switch (wscEx.CloseStatus.Value)
+                        {
+                            case WebSocketCloseStatus.Empty:
+                            case WebSocketCloseStatus.NormalClosure:
+                            case WebSocketCloseStatus.InternalServerError:
+                            case WebSocketCloseStatus.ProtocolError:
+                                return true;
+                        }
+                    }
+                    else
+                    {
+                        // https://discordapp.com/developers/docs/topics/opcodes-and-status-codes#gateway-gateway-close-event-codes
+                        switch (wscEx.Code)
+                        {
+                            case 4000: // Unknown Error
+                            case 4008: // Rate Limited // TODO: Handle this better
+                            case 4009: // Session timeout
+                                return true;
+                        }
+                    }
+                    break;
             }
             return false;
         }
@@ -303,12 +334,7 @@ namespace Wumpus
                 _receiveBuffer.Advance(result.Count);
 
                 if (result.CloseStatus != null)
-                {
-                    if (!string.IsNullOrEmpty(result.CloseStatusDescription))
-                        throw new Exception($"WebSocket was closed: {result.CloseStatus.Value} ({result.CloseStatusDescription})"); // TODO: Exception type?
-                    else
-                        throw new Exception($"WebSocket was closed: {result.CloseStatus.Value}"); // TODO: Exception type?
-                }
+                    throw new WebSocketClosedException(result.CloseStatus.Value, result.CloseStatusDescription); // TODO: Exception type?
             }
             while (!result.EndOfMessage);
 
