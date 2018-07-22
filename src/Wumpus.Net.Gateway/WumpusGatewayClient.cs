@@ -203,10 +203,10 @@ namespace Wumpus
 
                         if (isRecoverable)
                         {
-                            await Task.Delay(backoffMillis).ConfigureAwait(false);
                             backoffMillis = (int)(backoffMillis * (BackoffMultiplier + (jitter.NextDouble() * BackoffJitter * 2.0 - BackoffJitter)));
                             if (backoffMillis > MaxBackoffMillis)
                                 backoffMillis = MaxBackoffMillis;
+                            await Task.Delay(backoffMillis).ConfigureAwait(false);
                         }
                     }
                 }
