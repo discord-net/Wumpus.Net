@@ -8,6 +8,9 @@ namespace Wumpus.Events
     /// </summary>
     public class MessageReactionRemoveAllEvent
     {
+        // TODO: Undocumented (https://github.com/discordapp/discord-api-docs/issues/582)
+        [ModelProperty("guild_id")]
+        public Snowflake GuildId { get; set; }
         /// <summary> The id of the <see cref="Entities.Channel"/>. </summary>
         [ModelProperty("channel_id")]
         public Snowflake ChannelId { get; set; }

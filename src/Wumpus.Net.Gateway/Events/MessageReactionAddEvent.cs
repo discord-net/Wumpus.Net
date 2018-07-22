@@ -13,11 +13,14 @@ namespace Wumpus.Events
         /// <summary> The id of the <see cref="User"/>. </summary>
         [ModelProperty("user_id")]
         public Snowflake UserId { get; set; }
+        // TODO: Undocumented (https://github.com/discordapp/discord-api-docs/issues/582)
+        [ModelProperty("guild_id")]
+        public Snowflake GuildId { get; set; }
         /// <summary> The id of the <see cref="Channel"/>. </summary>
         [ModelProperty("channel_id")]
         public Snowflake ChannelId { get; set; }
         /// <summary> The id of the <see cref="Message"/>. </summary>
-        [ModelProperty("message_Id")]
+        [ModelProperty("message_id")]
         public Snowflake MessageId { get; set; }
         /// <summary> A partial <see cref="Emoji"/> object used to react. </summary>
         [ModelProperty("emoji")]
