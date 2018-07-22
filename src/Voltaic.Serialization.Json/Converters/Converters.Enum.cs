@@ -31,15 +31,13 @@ namespace Voltaic.Serialization.Json
             {
                 if (!_keyConverter.TryRead(ref remaining, out var keyValue, propMap))
                     return false;
-                result = _map.FromKey(keyValue);
-                return true;
+                return _map.TryFromKey(keyValue, out result);
             }
             else
             {
                 if (!_valueConverter.TryRead(ref remaining, out var longValue, propMap))
                     return false;
-                result = _map.FromValue(longValue);
-                return true;
+                return _map.TryFromValue(longValue, out result);
             }
         }
 
@@ -80,15 +78,13 @@ namespace Voltaic.Serialization.Json
             {
                 if (!_keyConverter.TryRead(ref remaining, out var keyValue, propMap))
                     return false;
-                result = _map.FromKey(keyValue);
-                return true;
+                return _map.TryFromKey(keyValue, out result);
             }
             else
             {
                 if (!_valueConverter.TryRead(ref remaining, out var longValue, propMap))
                     return false;
-                result = _map.FromValue(longValue);
-                return true;
+                return _map.TryFromValue(longValue, out result);
             }
         }
 
