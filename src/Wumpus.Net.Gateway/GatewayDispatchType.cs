@@ -22,9 +22,11 @@ namespace Wumpus.Events
         [ModelEnumValue("CHANNEL_UPDATE")] ChannelUpdate,
         /// <summary> <see cref="Entities.Channel"/> was deleted. </summary>
         [ModelEnumValue("CHANNEL_DELETE")] ChannelDelete,
+        /// <summary> <see cref="Entities.Message"/> was pinned or unpinned. </summary>
+        [ModelEnumValue("CHANNEL_PINS_UPDATE")] ChannelPinsUpdate,
         /// <summary> New <see cref="Entities.User"/> joined <see cref="Entities.Guild"/>. </summary>
         [ModelEnumValue("GUILD_MEMBER_ADD")] GuildMemberAdd,
-        /// <summary> <see cref="Entities.GuildMember"/> was updated. </summary>
+        /// <summary> <see cref="Entities.User"/> was updated. </summary>
         [ModelEnumValue("GUILD_MEMBER_UPDATE")] GuildMemberUpdate,
         /// <summary> <see cref="Entities.User"/> was removed from a <see cref="Entities.Guild"/>. </summary>
         [ModelEnumValue("GUILD_MEMBER_REMOVE")] GuildMemberRemove,
@@ -40,6 +42,8 @@ namespace Wumpus.Events
         [ModelEnumValue("GUILD_BAN_ADD")] GuildBanAdd,
         /// <summary> <see cref="Entities.User"/> was unbanned from a <see cref="Entities.Guild"/>. </summary>
         [ModelEnumValue("GUILD_BAN_REMOVE")] GuildBanRemove,
+        /// <summary> Send when a <see cref="Entities.Guild"/> integration is updated. </summary>
+        [ModelEnumValue("GUILD_INTEGRATIONS_UPDATE")] GuildIntegrationsUpdate,
         /// <summary> <see cref="Entities.Message"/> was created. </summary>
         [ModelEnumValue("MESSAGE_CREATE")] MessageCreate,
         /// <summary> <see cref="Entities.Message"/> was updated. </summary>

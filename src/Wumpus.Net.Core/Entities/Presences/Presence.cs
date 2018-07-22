@@ -5,6 +5,7 @@ namespace Wumpus.Entities
 {
     /// <summary> https://discordapp.com/developers/docs/topics/gateway#presence-update-presence-update-event-fields </summary>
     [IgnoreErrors]
+    [IgnorePropertiesAttribute("nick")]
     public class Presence
     {
         /// <summary> The <see cref="User"/> presence is being updated for. </summary>

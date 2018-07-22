@@ -5,10 +5,10 @@ using Wumpus.Entities;
 namespace Wumpus.Events
 {
     /// <summary>
-    ///     Sent when a user removes a reaction from a message.
-    ///     https://discordapp.com/developers/docs/topics/gateway#message-reaction-remove
+    ///     Sent when a user adds a reaction to a message.
+    ///     https://discordapp.com/developers/docs/topics/gateway#message-reaction-add
     /// </summary>
-    public class MessageReactionRemoveEvent
+    public class MessageReactionAddEvent
     {
         /// <summary> The id of the <see cref="User"/>. </summary>
         [ModelProperty("user_id")]

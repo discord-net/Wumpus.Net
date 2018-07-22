@@ -43,7 +43,7 @@ namespace Wumpus.Entities
         [ModelEnumValue("$add")] AddRole,
         /// <summary> <see cref="Role"/> removed. </summary>
         [ModelEnumValue("$remove")] RemoveRole,
-        /// <summary> Change in number of days after which inactive and <see cref="Role"/>-unassigned <see cref="GuildMember"/>s are kicked. </summary>
+        /// <summary> Change in number of days after which inactive and <see cref="Role"/>-unassigned <see cref="User"/>s are kicked. </summary>
         [ModelEnumValue("prune_delete_days")] PruneDeleteDays,
         /// <summary> <see cref="Guild"/> widget enable/disable. </summary>
         [ModelEnumValue("widget_enabled")] WidgetEnabled,
@@ -71,7 +71,7 @@ namespace Wumpus.Entities
         [ModelEnumValue("permissions")] Permissions,
         /// <summary> <see cref="Role"/> color changed. </summary>
         [ModelEnumValue("color")] Color,
-        /// <summary> <see cref="Role"/> is now displayed/no longer displayed separate from other online <see cref="GuildMember"/>s. </summary>
+        /// <summary> <see cref="Role"/> is now displayed/no longer displayed separate from other online <see cref="User"/>s. </summary>
         [ModelEnumValue("hoist")] Hoist,
         /// <summary> <see cref="Role"/> is now mentionable/unmentionable. </summary>
         [ModelEnumValue("mentionable")] Mentionable,
@@ -86,7 +86,7 @@ namespace Wumpus.Entities
         [ModelEnumValue("code")] Code,
         /// <summary> <see cref="Channel"/> for <see cref="Invite"/> code changed. </summary>
         [ModelEnumValue("channel_id")] ChannelId,
-        /// <summary> <see cref="GuildMember"/> who created <see cref="Invite"/> code changed. </summary>
+        /// <summary> <see cref="User"/> who created <see cref="Invite"/> code changed. </summary>
         [ModelEnumValue("inviter_id")] InviterId,
         /// <summary> Change to the max number of times <see cref="Invite"/> code can be used. </summary>
         [ModelEnumValue("max_uses")] MaxUses,
@@ -99,13 +99,13 @@ namespace Wumpus.Entities
 
         // User 
 
-        /// <summary> <see cref="GuildMember"/> server deafened/undeafened. </summary>
+        /// <summary> <see cref="User"/> server deafened/undeafened. </summary>
         [ModelEnumValue("deaf")] Deaf,
-        /// <summary> <see cref="GuildMember"/> server muted/unmuted. </summary>
+        /// <summary> <see cref="User"/> server muted/unmuted. </summary>
         [ModelEnumValue("mute")] Mute,
-        /// <summary> <see cref="GuildMember"/> nickname changed. </summary>
+        /// <summary> <see cref="User"/> nickname changed. </summary>
         [ModelEnumValue("nick")] Nick,
-        /// <summary> <see cref="GuildMember"/> avatar changed. </summary>
+        /// <summary> <see cref="User"/> avatar changed. </summary>
         [ModelEnumValue("avatar_hash")] AvatarHash
     }
 }

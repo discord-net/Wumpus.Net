@@ -40,14 +40,14 @@ namespace Wumpus.Events
 
         private static Dictionary<GatewayDispatchType?, Type> DispatchTypeSelector => new Dictionary<GatewayDispatchType?, Type>()
         {
-            [GatewayDispatchType.Ready] = typeof(GatewayReadyEvent),
+            [GatewayDispatchType.Ready] = typeof(ReadyEvent),
             [GatewayDispatchType.GuildCreate] = typeof(GatewayGuild),
             [GatewayDispatchType.GuildUpdate] = typeof(Guild),
-            [GatewayDispatchType.GuildDelete] = typeof(GatewayGuild),
-            [GatewayDispatchType.GuildEmojisUpdate] = typeof(GuildEmojiUpdateEvent),
+            [GatewayDispatchType.GuildDelete] = typeof(UnavailableGuild),
             [GatewayDispatchType.ChannelCreate] = typeof(Channel),
             [GatewayDispatchType.ChannelUpdate] = typeof(Channel),
             [GatewayDispatchType.ChannelDelete] = typeof(Channel),
+            [GatewayDispatchType.ChannelPinsUpdate] = typeof(ChannelPinsUpdateEvent),
             [GatewayDispatchType.GuildMemberAdd] = typeof(GuildMemberAddEvent),
             [GatewayDispatchType.GuildMemberUpdate] = typeof(GuildMemberUpdateEvent),
             [GatewayDispatchType.GuildMemberRemove] = typeof(GuildMemberRemoveEvent),
@@ -55,13 +55,15 @@ namespace Wumpus.Events
             [GatewayDispatchType.GuildRoleCreate] = typeof(GuildRoleCreateEvent),
             [GatewayDispatchType.GuildRoleUpdate] = typeof(GuildRoleUpdateEvent),
             [GatewayDispatchType.GuildRoleDelete] = typeof(GuildRoleDeleteEvent),
-            [GatewayDispatchType.GuildBanAdd] = typeof(GuildBanEvent),
-            [GatewayDispatchType.GuildBanRemove] = typeof(GuildBanEvent),
+            [GatewayDispatchType.GuildBanAdd] = typeof(GuildBanAddEvent),
+            [GatewayDispatchType.GuildBanRemove] = typeof(GuildBanRemoveEvent),
+            [GatewayDispatchType.GuildEmojisUpdate] = typeof(GuildEmojiUpdateEvent),
+            [GatewayDispatchType.GuildIntegrationsUpdate] = typeof(GuildIntegrationsUpdateEvent),
             [GatewayDispatchType.MessageCreate] = typeof(Message),
             [GatewayDispatchType.MessageUpdate] = typeof(Message),
-            [GatewayDispatchType.MessageDelete] = typeof(Message),
+            [GatewayDispatchType.MessageDelete] = typeof(MessageDeleteEvent),
             [GatewayDispatchType.MessageDeleteBulk] = typeof(MessageDeleteBulkEvent),
-            [GatewayDispatchType.MessageReactionAdd] = typeof(GatewayReaction),
+            [GatewayDispatchType.MessageReactionAdd] = typeof(MessageReactionAddEvent),
             [GatewayDispatchType.MessageReactionRemove] = typeof(MessageReactionRemoveEvent),
             [GatewayDispatchType.MessageReactionRemoveAll] = typeof(MessageReactionRemoveAllEvent),
             [GatewayDispatchType.PresenceUpdate] = typeof(Presence),
@@ -69,7 +71,7 @@ namespace Wumpus.Events
             [GatewayDispatchType.TypingStart] = typeof(TypingStartEvent),
             [GatewayDispatchType.VoiceStateUpdate] = typeof(VoiceState),
             [GatewayDispatchType.VoiceServerUpdate] = typeof(VoiceServerUpdateEvent),
-            [GatewayDispatchType.WebhooksUpdate] = typeof(WebhookUpdateEvent)
+            [GatewayDispatchType.WebhooksUpdate] = typeof(WebhooksUpdateEvent)
         };
     }
 }

@@ -15,6 +15,9 @@ namespace Wumpus.Entities
         /// <summary> The <see cref="User"/> id this <see cref="VoiceState"/> is for. </summary>
         [ModelProperty("user_id")]
         public Snowflake UserId { get; set; }
+        // TODO: Undocumented (https://github.com/discordapp/discord-api-docs/issues/582)
+        [ModelProperty("member")]
+        public Optional<GuildMember> Member { get; set; }
         /// <summary> The session id for this <see cref="VoiceState"/>. </summary>
         [ModelProperty("session_id")]
         public Utf8String SessionId { get; set; }
@@ -30,6 +33,9 @@ namespace Wumpus.Entities
         /// <summary> Whether this <see cref="User"/> is locally muted. </summary>
         [ModelProperty("self_mute")]
         public bool SelfMute { get; set; }
+        // Undocumented
+        [ModelProperty("self_video")]
+        public bool SelfVideo { get; set; }
         /// <summary> Whether this <see cref="User"/> is muted by the current <see cref="User"/>. </summary>
         [ModelProperty("suppress")]
         public bool Suppress { get; set; }

@@ -6,7 +6,7 @@ namespace Wumpus.Events
     ///     Sent when a <see cref="Entities.Guild"/> <see cref="Entities.Channel"/>'s <see cref="Entities.Webhook"/> is created, updated, or deleted.
     ///     https://discordapp.com/developers/docs/topics/gateway#webhooks-update
     /// </summary>
-    public class WebhookUpdateEvent
+    public class WebhooksUpdateEvent
     {
         /// <summary> Id of the <see cref="Entities.Guild"/>. </summary>
         [ModelProperty("guild_id")]

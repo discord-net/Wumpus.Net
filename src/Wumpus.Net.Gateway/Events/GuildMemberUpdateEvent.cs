@@ -1,5 +1,6 @@
 ﻿using Wumpus.Entities;
 using Voltaic.Serialization;
+using Voltaic;
 
 namespace Wumpus.Events
 {
@@ -9,7 +10,7 @@ namespace Wumpus.Events
     /// </summary>
     public class GuildMemberUpdateEvent : GuildMember
     {
-        /// <summary> xxx </summary>
+        /// <summary> The id of the <see cref="Guild"/>. </summary>
         [ModelProperty("guild_id")]
         public Snowflake GuildId { get; set; }
     }

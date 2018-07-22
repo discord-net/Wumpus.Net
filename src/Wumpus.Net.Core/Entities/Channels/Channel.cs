@@ -45,7 +45,7 @@ namespace Wumpus.Entities
         /// <summary> Id of the parent category for a <see cref="Channel"/>. </summary>
         [ModelProperty("parent_id")]
         public Optional<Snowflake?> ParentId { get; set; }
-        /// <summary> Explicit <see cref="Overwrite"/>s for <see cref="GuildMember"/>s and <see cref="Role"/>s. </summary>
+        /// <summary> Explicit <see cref="Overwrite"/>s for <see cref="User"/>s and <see cref="Role"/>s. </summary>
         [ModelProperty("permission_overwrites")]
         public Optional<Overwrite[]> PermissionOverwrites { get; set; }
         /// <summary> The name of the <see cref="Channel"/>. </summary>
@@ -78,7 +78,7 @@ namespace Wumpus.Entities
         /// <summary> The bitrate (in bits) of the voice <see cref="Channel"/>. </summary>
         [ModelProperty("bitrate")]
         public Optional<int> Bitrate { get; set; }
-        /// <summary> The <see cref="GuildMember"/> limit of the voice <see cref="Channel"/>. </summary>
+        /// <summary> The <see cref="User"/> limit of the voice <see cref="Channel"/>. </summary>
         [ModelProperty("user_limit")]
         public Optional<int> UserLimit { get; set; }
 

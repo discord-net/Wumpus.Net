@@ -9,11 +9,7 @@ namespace Wumpus.Events
     /// </summary>
     public class ResumedEvent
     {
-        /// <summary> xxx </summary>
-        [ModelProperty("heartbeat_interval")]
-        public int HeartbeatInterval { get; set; }
-
-        /// <summary> Used for debugging - the guilds the user is in. </summary>
+        /// <summary> Used for debugging - the <see cref="Entities.Guild"/>s the <see cref="Entities.User"/> is in. </summary>
         [ModelProperty("_trace")]
         public Utf8String[] Trace { get; set; }
     }

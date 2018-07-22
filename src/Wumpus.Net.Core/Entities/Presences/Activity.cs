@@ -6,6 +6,7 @@ namespace Wumpus.Entities
 {
     /// <summary> https://discordapp.com/developers/docs/topics/gateway#activity-object </summary>
     [IgnoreErrors]
+    [IgnoreProperties("flags", "session_id", "sync_id")] // https://github.com/discordapp/discord-api-docs/issues/545
     public class Activity
     {
         /// <summary> The <see cref="Activity"/>'s name </summary>
@@ -20,6 +21,9 @@ namespace Wumpus.Entities
         /// <summary> Unix timestamps for start and/or end of the game. </summary>
         [ModelProperty("timestamps")]
         public Optional<ActivityTimestamps> Timestamps { get; set; }
+        /// <summary> Application id for the game. </summary>
+        [ModelProperty("application_id")]
+        public Optional<Snowflake> ApplicationId { get; set; }
         /// <summary> What the player is currently doing. </summary>
         [ModelProperty("details")]
         public Optional<Utf8String> Details { get; set; }

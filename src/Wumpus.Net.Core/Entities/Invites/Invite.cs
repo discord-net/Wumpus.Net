@@ -16,10 +16,10 @@ namespace Wumpus.Entities
         /// <summary> The (partial) <see cref="InviteChannel"/> this <see cref="Invite"/> is for. </summary>
         [ModelProperty("channel")]
         public InviteChannel Channel { get; set; }
-        /// <summary> Approxmiate count of online <see cref="GuildMember"/>s. </summary>
+        /// <summary> Approxmiate count of online <see cref="User"/>s. </summary>
         [ModelProperty("approximate_presence_count")]
         public Optional<int> ApproximatePresenceCount { get; set; }
-        /// <summary> Approxmiate count of total <see cref="GuildMember"/>s. </summary>
+        /// <summary> Approxmiate count of total <see cref="User"/>s. </summary>
         [ModelProperty("approximate_member_count")]
         public Optional<int> ApproximateMemberCount { get; set; }
     }

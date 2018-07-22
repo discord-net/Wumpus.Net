@@ -4,14 +4,14 @@ using Voltaic.Serialization;
 namespace Wumpus.Events
 {
     /// <summary> 
-    ///     Sent when multiple <see cref="Entities.Message"/>s are deleted at once.
-    ///     https://discordapp.com/developers/docs/topics/gateway#message-delete-bulk
+    ///     Sent when a <see cref="Entities.Message"/> is deleted.
+    ///     https://discordapp.com/developers/docs/topics/gateway#message-delete
     /// </summary>
-    public class MessageDeleteBulkEvent
+    public class MessageDeleteEvent
     {
-        /// <summary> The ids of the <see cref="Entities.Message"/>s. </summary>
-        [ModelProperty("ids")]
-        public Snowflake[] Ids { get; set; }
+        /// <summary> The id of the <see cref="Entities.Message"/>. </summary>
+        [ModelProperty("id")]
+        public Snowflake Id { get; set; }
         // TODO: Undocumented (https://github.com/discordapp/discord-api-docs/issues/582)
         [ModelProperty("guild_id")]
         public Optional<Snowflake> GuildId { get; set; }

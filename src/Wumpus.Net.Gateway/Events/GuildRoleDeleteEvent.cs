@@ -4,6 +4,7 @@ namespace Wumpus.Events
 {
     /// <summary> 
     ///     Sent when a <see cref="Entities.Guild"/> <see cref="Entities.Role"/> is deleted.
+    ///     https://discordapp.com/developers/docs/topics/gateway#guild-role-delete
     /// </summary>
     public class GuildRoleDeleteEvent
     {

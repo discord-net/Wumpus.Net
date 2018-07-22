@@ -13,6 +13,9 @@ namespace Wumpus.Entities
         /// <summary> Id of the <see cref="Message"/>. </summary>
         [ModelProperty("id")]
         public Snowflake Id { get; set; }
+        // TODO: Undocumented (https://github.com/discordapp/discord-api-docs/issues/582)
+        [ModelProperty("guild_id")]
+        public Optional<Snowflake> GuildId { get; set; }
         /// <summary> Id of the <see cref="Channel"/> the <see cref="Message"/> was in. </summary>
         [ModelProperty("channel_id")]
         public Snowflake ChannelId { get; set; }
@@ -27,6 +30,9 @@ namespace Wumpus.Entities
         /// </remarks>
         [ModelProperty("author")]
         public User Author { get; set; }
+        // TODO: Undocumented (https://github.com/discordapp/discord-api-docs/issues/582)
+        [ModelProperty("member")]
+        public Optional<Member> Member { get; set; }
         /// <summary> Contents of the <see cref="Message"/>. </summary>
         [ModelProperty("content")]
         public Utf8String Content { get; set; }
