@@ -2,8 +2,8 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Net.Http.Headers;
-using System.Net.Sockets;
 using System.Net.WebSockets;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,12 +35,18 @@ namespace Wumpus
 
     public class WumpusGatewayClient : IDisposable
     {
-        public const int InitialBackoffMillis = 1000; // 1 second
-        public const int MaxBackoffMillis = 60000; // 1 min
-        public const double BackoffMultiplier = 1.75; // 1.75x
-        public const double BackoffJitter = 0.25; // 1.5x to 2.0x
-        public const int ConnectionTimeoutMillis = 30000; // 30 sec
-        public const int IdentifyTimeoutMillis = 60000; // 1 min
+        public const int ApiVersion = 6;
+        public static string Version { get; } =
+            typeof(WumpusGatewayClient).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ??
+            typeof(WumpusGatewayClient).GetTypeInfo().Assembly.GetName().Version.ToString(3) ??
+            "Unknown";
+
+        private const int InitialBackoffMillis = 1000; // 1 second
+        private const int MaxBackoffMillis = 60000; // 1 min
+        private const double BackoffMultiplier = 1.75; // 1.75x
+        private const double BackoffJitter = 0.25; // 1.5x to 2.0x
+        private const int ConnectionTimeoutMillis = 30000; // 30 sec
+        private const int IdentifyTimeoutMillis = 60000; // 1 min
         // Typical Backoff: 1.75s, 3.06s, 5.36s, 9.38s, 16.41s, 28.72s, 50.27s, 60s, 60s...
         
         public event Action Connected;
@@ -55,7 +61,6 @@ namespace Wumpus
             RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? new Utf8String("OSX") :
             new Utf8String("Unknown");
 
-        private readonly WumpusEtfSerializer _serializer;
         private readonly SemaphoreSlim _stateLock;
 
         // Instance
@@ -76,10 +81,11 @@ namespace Wumpus
         public AuthenticationHeaderValue Authorization { get; set; }
         public ConnectionState State { get; private set; }
         public Utf8String[] ServerNames { get; private set; }
+        public WumpusEtfSerializer EtfSerializer { get; }
 
         public WumpusGatewayClient(WumpusEtfSerializer serializer = null)
         {
-            _serializer = serializer ?? new WumpusEtfSerializer();
+            EtfSerializer = serializer ?? new WumpusEtfSerializer();
             _receiveBuffer = new ResizableMemory<byte>(10 * 1024); // 10 KB
             _stateLock = new SemaphoreSlim(1, 1);
             _connectionTask = Task.CompletedTask;
@@ -88,7 +94,7 @@ namespace Wumpus
         }
 
         public void Run(string url, int? shardId = null, int? totalShards = null, UpdateStatusParams initialPresence = null)
-            => RunAsync(url, shardId, totalShards, initialPresence).GetAwaiter().GetResult();
+            => RunAsync(url, shardId, totalShards, initialPresence).ConfigureAwait(false).GetAwaiter().GetResult();
         public async Task RunAsync(string url, int? shardId = null, int? totalShards = null, UpdateStatusParams initialPresence = null)
         {
             Task exceptionSignal;
@@ -132,7 +138,7 @@ namespace Wumpus
 
                         // Connect
                         State = ConnectionState.Connecting;
-                        var uri = new Uri(_url + $"?v={DiscordGatewayConstants.APIVersion}&encoding=etf");// &compress=zlib-stream"); // TODO: Enable
+                        var uri = new Uri(_url + $"?v={ApiVersion}&encoding=etf");// &compress=zlib-stream"); // TODO: Enable
                         await client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);
 
                         // Receive HELLO (timeout = ConnectionTimeoutMillis)
@@ -243,7 +249,7 @@ namespace Wumpus
                     {
                         cancelToken.ThrowIfCancellationRequested();
                         var payload = _sendQueue.Take(cancelToken);
-                        var writer = _serializer.Write(payload);
+                        var writer = EtfSerializer.Write(payload);
                         await client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
                         SentPayload?.Invoke(payload, writer.AsReadOnlyMemory());
                     }
@@ -304,7 +310,7 @@ namespace Wumpus
         }
 
         public void Stop()
-            => StopAsync().GetAwaiter().GetResult();
+            => StopAsync().ConfigureAwait(false).GetAwaiter().GetResult();
         public async Task StopAsync()
         {
             await _stateLock.WaitAsync().ConfigureAwait(false);
@@ -351,7 +357,7 @@ namespace Wumpus
             }
             while (!result.EndOfMessage);
 
-            var payload = _serializer.Read<GatewayPayload>(_receiveBuffer.AsReadOnlySpan());
+            var payload = EtfSerializer.Read<GatewayPayload>(_receiveBuffer.AsReadOnlySpan());
 
             if (payload.Sequence.HasValue)
                 _lastSeq = payload.Sequence.Value;
