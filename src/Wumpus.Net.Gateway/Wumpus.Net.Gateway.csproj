@@ -1,12 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../Voltaic.targets" />
+  <Import Project="../Wumpus.targets" />
   <PropertyGroup>
     <RootNamespace>Wumpus</RootNamespace>
     <AssemblyName>Wumpus.Net.Gateway</AssemblyName>
-    <VersionPrefix>0.1.0</VersionPrefix>
     <PackageTags>discord;discordapp;wumpus;gateway;websocket;api;rogueexception</PackageTags>
-    <PackageProjectUrl>https://github.com/RogueException/Wumpus.Net</PackageProjectUrl>
-    <RepositoryUrl>git://github.com/RogueException/Wumpus.Net</RepositoryUrl>
     <Description>Provides a low-level gateway client for the Discord API</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>

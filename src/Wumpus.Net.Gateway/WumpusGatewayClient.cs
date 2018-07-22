@@ -171,6 +171,7 @@ namespace Wumpus
                         State = ConnectionState.Connected;
                         Connected?.Invoke();
 
+                        // Wait until an exception occurs (due to cancellation or failure)
                         task = await Task.WhenAny(tasks).ConfigureAwait(false);
                         if (task.IsFaulted)
                             await task.ConfigureAwait(false);

@@ -3,10 +3,7 @@
   <PropertyGroup>
     <RootNamespace>Voltaic.Serialization</RootNamespace>
     <AssemblyName>Voltaic.Serialization</AssemblyName>
-    <VersionPrefix>0.1.0</VersionPrefix>
     <PackageTags>voltaic;serialization;rogueexception</PackageTags>
-    <PackageProjectUrl>https://github.com/RogueException/Wumpus.Net</PackageProjectUrl>
-    <RepositoryUrl>git://github.com/RogueException/Wumpus.Net</RepositoryUrl>
     <Description>A low-alloc (de)serialization library</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
