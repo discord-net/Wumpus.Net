@@ -41,7 +41,6 @@ namespace Wumpus
         
         public event Action Connected;
         public event Action<Exception> Disconnected;
-        public event Action<StopReason, Exception> Stopped;
         public event Action<GatewayPayload, ReadOnlyMemory<byte>> ReceivedPayload;
         public event Action<GatewayPayload, ReadOnlyMemory<byte>> SentPayload;
 
@@ -58,7 +57,6 @@ namespace Wumpus
 
         // Instance
         private ResizableMemory<byte> _receiveBuffer;
-        private ConnectionState _state;
         private Task _connectionTask;
         private CancellationTokenSource _connectionCts;
         private Utf8String _sessionId;
@@ -73,6 +71,8 @@ namespace Wumpus
         private BlockingCollection<GatewayPayload> _sendQueue;
 
         public AuthenticationHeaderValue Authorization { get; set; }
+        public ConnectionState State { get; private set; }
+        public Utf8String[] ServerNames { get; private set; }
 
         public WumpusGatewayClient(WumpusEtfSerializer serializer = null)
         {
@@ -121,7 +121,7 @@ namespace Wumpus
                 try
                 {
                     cancelToken.ThrowIfCancellationRequested();
-                    _state = ConnectionState.Connecting;
+                    State = ConnectionState.Connecting;
 
                     var uri = new Uri(_url + $"?v={DiscordGatewayConstants.APIVersion}&encoding=etf");// &compress=zlib-stream"); // TODO: Enable
                     try
@@ -138,6 +138,7 @@ namespace Wumpus
                     if (!(evnt.Data is HelloEvent helloEvent))
                         throw new Exception("First event was not a HELLO event");
                     int heartbeatRate = helloEvent.HeartbeatInterval;
+                    ServerNames = helloEvent.Trace;
 
                     var readySignal = new TaskCompletionSource<bool>();
 
@@ -158,7 +159,7 @@ namespace Wumpus
                     // Success
                     _lastSeq = 0;
                     backoffMillis = InitialBackoffMillis;
-                    _state = ConnectionState.Connected;
+                    State = ConnectionState.Connected;
                     Connected?.Invoke();
 
                     await Task.WhenAny(tasks).ConfigureAwait(false);
@@ -172,8 +173,8 @@ namespace Wumpus
                 } 
                 finally
                 {
-                    var oldState = _state;
-                    _state = ConnectionState.Disconnecting;
+                    var oldState = State;
+                    State = ConnectionState.Disconnecting;
 
                     // Wait for the other task to complete
                     _connectionCts?.Cancel();
@@ -191,7 +192,8 @@ namespace Wumpus
                     catch { } // We don't actually care if sending a close msg fails // TODO: Maybe log it?
 
                     _sessionId = null;
-                    _state = ConnectionState.Disconnected;
+                    ServerNames = null;
+                    State = ConnectionState.Disconnected;
                     if (oldState == ConnectionState.Connected)
                         Disconnected?.Invoke(disconnectEx);
 
@@ -210,7 +212,7 @@ namespace Wumpus
             return Task.Run(async () =>
             {
                 while (!cancelToken.IsCancellationRequested)
-                    HandleEvent(await ReceiveAsync(cancelToken).ConfigureAwait(false));
+                    HandleEvent(await ReceiveAsync(cancelToken).ConfigureAwait(false), readySignal);
             });
         }
         private Task RunSendAsync(CancellationToken cancelToken)
@@ -278,7 +280,7 @@ namespace Wumpus
             _connectionTask = Task.CompletedTask;
 
             // Double check that the connection task terminated successfully
-            var state = _state;
+            var state = State;
             if (state != ConnectionState.Disconnected)
                 throw new InvalidOperationException($"Client did not successfully disconnect (State = {state}).");
         }
@@ -318,26 +320,32 @@ namespace Wumpus
             ReceivedPayload?.Invoke(payload, _receiveBuffer.AsReadOnlyMemory());
             return payload;
         }
-        private void HandleEvent(GatewayPayload evnt)
+        private void HandleEvent(GatewayPayload evnt, TaskCompletionSource<bool> readySignal)
         {
             switch (evnt.Operation)
             {
                 case GatewayOperation.Dispatch:
-                    HandleDispatchEvent(evnt);
+                    HandleDispatchEvent(evnt, readySignal);
                     break;
                 case GatewayOperation.InvalidSession:
-                    _sessionId = null;
+                    if ((bool)evnt.Data != true) // Is resumable
+                        _sessionId = null;
+                    readySignal.TrySetResult(false);
+                    break;
+                case GatewayOperation.Heartbeat:
+                    SendHeartbeatAck();
                     break;
             }
         }
-        private void HandleDispatchEvent(GatewayPayload evnt)
+        private void HandleDispatchEvent(GatewayPayload evnt, TaskCompletionSource<bool> readySignal)
         {
             switch (evnt.DispatchType)
             {
                 case GatewayDispatchType.Ready:
-                    if (!(evnt.Data is GatewayReadyEvent readyEvent))
+                    if (!(evnt.Data is ReadyEvent readyEvent))
                         throw new Exception("Failed to deserialize READY event"); // TODO: Exception type?
                     _sessionId = readyEvent.SessionId;
+                    readySignal.TrySetResult(true);
                     break;
             }
         }
@@ -383,10 +391,14 @@ namespace Wumpus
                 });
             }
         }
-        public void SendHeartbeat() => Send(new GatewayPayload
+        private void SendHeartbeat() => Send(new GatewayPayload
         {
             Operation = GatewayOperation.Heartbeat,
             Data = _lastSeq == 0 ? (int?)null : _lastSeq
+        });
+        private void SendHeartbeatAck() => Send(new GatewayPayload
+        {
+            Operation = GatewayOperation.HeartbeatAck
         });
     }
 }
