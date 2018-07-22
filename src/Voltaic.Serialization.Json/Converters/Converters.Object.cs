@@ -75,9 +75,10 @@ namespace Voltaic.Serialization.Json
                 remaining = remaining.Slice(1);
 
                 // Unknown Property
-                if (!_map.TryGetProperty(key, out var innerPropMap))
+                if (!_map.TryGetProperty(key, out var innerPropMap, out bool isIgnored))
                 {
-                    _serializer.RaiseUnknownProperty(_map, key);
+                    if (!isIgnored)
+                        _serializer.RaiseUnknownProperty(_map, key);
                     if (!JsonReader.Skip(ref remaining, out _))
                         return false;
                     continue;
@@ -118,7 +119,7 @@ namespace Voltaic.Serialization.Json
             // Process all deferred properties
             for (int i = 0; i < deferred.Count; i++)
             {
-                if (!_map.TryGetProperty(deferred.GetKey(i), out var innerPropMap))
+                if (!_map.TryGetProperty(deferred.GetKey(i), out var innerPropMap, out bool isIgnored))
                     return false;
                 var value = deferred.GetValue(i);
                 if (!innerPropMap.TryRead(result, ref value, dependencies))

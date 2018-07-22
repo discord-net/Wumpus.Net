@@ -38,23 +38,37 @@ namespace Voltaic.Serialization
             var type = typeof(T).GetTypeInfo();
             var normalProps = new Dictionary<string, PropertyMap<T>>();
 
-            // Normal props
+            // Ignored props
             var currentType = type;
             while (currentType != null)
             {
-                foreach (var itemPropInfo in currentType.DeclaredProperties)
+                var ignoredProps = currentType.GetCustomAttribute<IgnorePropertiesAttribute>();
+                if (ignoredProps != null)
                 {
-                    var propAttr = itemPropInfo.GetCustomAttribute<ModelPropertyAttribute>();
-                    if (propAttr != null && itemPropInfo.GetCustomAttributes<ModelTypeSelectorAttribute>().Count() == 0)
+                    for (int i = 0; i < ignoredProps.PropertyNames.Length; i++)
+                        _propDict.Add(new Utf8String(ignoredProps.PropertyNames[i]), null);
+                    currentType = currentType.BaseType?.GetTypeInfo();
+                }
+                currentType = currentType.BaseType?.GetTypeInfo();
+            }
+
+            // Normal props
+            currentType = type;
+            while (currentType != null)
+            {
+                foreach (var propInfo in currentType.DeclaredProperties)
+                {
+                    var propAttr = propInfo.GetCustomAttribute<ModelPropertyAttribute>();
+                    if (propAttr != null && propInfo.GetCustomAttributes<ModelTypeSelectorAttribute>().Count() == 0)
                     {
-                        var propMapType = typeof(PropertyMap<,>).MakeGenericType(typeof(T), itemPropInfo.PropertyType).GetTypeInfo();
+                        var propMapType = typeof(PropertyMap<,>).MakeGenericType(typeof(T), propInfo.PropertyType).GetTypeInfo();
                         var constructor = propMapType.DeclaredConstructors.Single();
-                        var converter = serializer.GetConverter(itemPropInfo, true);
-                        var propMap = constructor.Invoke(new object[] { serializer, this, itemPropInfo, propAttr, converter }) as PropertyMap<T>;
+                        var converter = serializer.GetConverter(propInfo, true);
+                        var propMap = constructor.Invoke(new object[] { serializer, this, propInfo, propAttr, converter }) as PropertyMap<T>;
 
                         _propDict.Add(propMap.Key, propMap);
                         _propList.Add(new KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>(propMap.Key, propMap));
-                        normalProps.Add(itemPropInfo.Name, propMap);
+                        normalProps.Add(propInfo.Name, propMap);
                     }
                 }
                 currentType = currentType.BaseType?.GetTypeInfo();
@@ -64,15 +78,15 @@ namespace Voltaic.Serialization
             currentType = type;
             while (currentType != null)
             {
-                foreach (var itemPropInfo in currentType.DeclaredProperties)
+                foreach (var propInfo in currentType.DeclaredProperties)
                 {
-                    var propAttr = itemPropInfo.GetCustomAttribute<ModelPropertyAttribute>();
-                    var typeSelectorAttrs = itemPropInfo.GetCustomAttributes<ModelTypeSelectorAttribute>().ToList();
+                    var propAttr = propInfo.GetCustomAttribute<ModelPropertyAttribute>();
+                    var typeSelectorAttrs = propInfo.GetCustomAttributes<ModelTypeSelectorAttribute>().ToList();
                     if (propAttr != null && typeSelectorAttrs.Count > 0)
                     {
-                        var propMapType = typeof(DependentPropertyMap<,>).MakeGenericType(typeof(T), itemPropInfo.PropertyType).GetTypeInfo();
+                        var propMapType = typeof(DependentPropertyMap<,>).MakeGenericType(typeof(T), propInfo.PropertyType).GetTypeInfo();
                         var constructor = propMapType.DeclaredConstructors.Single();
-                        var propMap = constructor.Invoke(new object[] { serializer, this, itemPropInfo, propAttr, typeSelectorAttrs, normalProps }) as PropertyMap<T>;
+                        var propMap = constructor.Invoke(new object[] { serializer, this, propInfo, propAttr, typeSelectorAttrs, normalProps }) as PropertyMap<T>;
 
                         _propDict.Add(propMap.Key, propMap);
                         _propList.Add(new KeyValuePair<ReadOnlyMemory<byte>, PropertyMap>(propMap.Key, propMap));
@@ -82,11 +96,16 @@ namespace Voltaic.Serialization
             }
         }
 
-        public bool TryGetProperty(ReadOnlySpan<byte> key, out PropertyMap<T> value)
+        public bool TryGetProperty(ReadOnlySpan<byte> key, out PropertyMap<T> value, out bool isIgnored)
         {
+            value = default;
+            isIgnored = false;
+
             if (!_propDict.TryGetValue(key, out var untypedValue))
+                return false;
+            if (untypedValue == null)
             {
-                value = default;
+                isIgnored = true;
                 return false;
             }
             value = untypedValue as PropertyMap<T>;

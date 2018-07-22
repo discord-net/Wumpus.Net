@@ -49,9 +49,10 @@ namespace Voltaic.Serialization.Etf
                             return false;
 
                         // Unknown Property
-                        if (!_map.TryGetProperty(key, out var innerPropMap))
+                        if (!_map.TryGetProperty(key, out var innerPropMap, out bool isIgnored))
                         {
-                            _serializer.RaiseUnknownProperty(_map, key);
+                            if (!isIgnored)
+                                _serializer.RaiseUnknownProperty(_map, key);
                             if (!EtfReader.Skip(ref remaining, out _))
                                 return false;
                             continue;
@@ -91,7 +92,7 @@ namespace Voltaic.Serialization.Etf
                     // Process all deferred properties
                     for (int i = 0; i < deferred.Count; i++)
                     {
-                        if (!_map.TryGetProperty(deferred.GetKey(i), out var innerPropMap))
+                        if (!_map.TryGetProperty(deferred.GetKey(i), out var innerPropMap, out _))
                             return false;
                         var value = deferred.GetValue(i);
 
