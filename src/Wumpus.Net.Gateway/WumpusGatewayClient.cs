@@ -36,10 +36,12 @@ namespace Wumpus
     public class WumpusGatewayClient : IDisposable
     {
         public const int InitialBackoffMillis = 1000; // 1 second
-        public const int MaxBackoffMillis = 120000; // 2 mins
+        public const int MaxBackoffMillis = 60000; // 1 min
         public const double BackoffMultiplier = 1.75; // 1.75x
         public const double BackoffJitter = 0.25; // 1.5x to 2.0x
-        public const int ConnectionTimeoutMillis = 20000; // 20 seconds
+        public const int ConnectionTimeoutMillis = 30000; // 30 sec
+        public const int IdentifyTimeoutMillis = 60000; // 1 min
+        // Typical Backoff: 1.75s, 3.06s, 5.36s, 9.38s, 16.41s, 28.72s, 50.27s, 60s, 60s...
         
         public event Action Connected;
         public event Action<Exception> Disconnected;
@@ -126,20 +128,25 @@ namespace Wumpus
                     try
                     {
                         runCancelToken.ThrowIfCancellationRequested();
-                        State = ConnectionState.Connecting;
+                        var readySignal = new TaskCompletionSource<bool>();
 
+                        // Connect
+                        State = ConnectionState.Connecting;
                         var uri = new Uri(_url + $"?v={DiscordGatewayConstants.APIVersion}&encoding=etf");// &compress=zlib-stream"); // TODO: Enable
                         await client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);
 
-                        // Receive HELLO
-                        var evnt = await ReceiveAsync(client, cancelToken); // We should not timeout on receiving HELLO
+                        // Receive HELLO (timeout = ConnectionTimeoutMillis)
+                        var timeoutTask = Task.Delay(ConnectionTimeoutMillis);
+                        var receiveTask = ReceiveAsync(client, readySignal, cancelToken);
+                        if (await Task.WhenAny(timeoutTask, receiveTask).ConfigureAwait(false) == timeoutTask)
+                            throw new TimeoutException("Timed out waiting for HELLO");
+
+                        var evnt = await receiveTask.ConfigureAwait(false);
                         if (!(evnt.Data is HelloEvent helloEvent))
                             throw new Exception("First event was not a HELLO event");
                         int heartbeatRate = helloEvent.HeartbeatInterval;
                         ServerNames = helloEvent.Trace;
-
-                        var readySignal = new TaskCompletionSource<bool>();
-
+                        
                         // Start async loops
                         tasks = new[]
                         {
@@ -148,9 +155,9 @@ namespace Wumpus
                             RunReceiveAsync(client, readySignal, cancelToken)
                         };
 
-                        // Send IDENTIFY/RESUME
+                        // Send IDENTIFY/RESUME (timeout = IdentifyTimeoutMillis)
                         SendIdentify(initialPresence);
-                        var timeoutTask = Task.Delay(ConnectionTimeoutMillis);
+                        timeoutTask = Task.Delay(IdentifyTimeoutMillis);
                         // If anything in tasks fails, it'll throw an exception
                         var task = await Task.WhenAny(tasks.Append(timeoutTask).Append(readySignal.Task)).ConfigureAwait(false);
                         if (task == timeoutTask)
@@ -180,8 +187,8 @@ namespace Wumpus
                         var oldState = State;
                         State = ConnectionState.Disconnecting;
 
-                        // Wait for the other task to complete
-                        connectionCts?.Cancel();
+                        // Wait for the other tasks to complete
+                        connectionCts.Cancel();
                         if (tasks != null)
                         {
                             try { await Task.WhenAll(tasks).ConfigureAwait(false); }
@@ -220,7 +227,7 @@ namespace Wumpus
                 while (true)
                 {
                     cancelToken.ThrowIfCancellationRequested();
-                    HandleEvent(await ReceiveAsync(client, cancelToken).ConfigureAwait(false), readySignal);
+                    await ReceiveAsync(client, readySignal, cancelToken).ConfigureAwait(false);
                 }
             });
         }
@@ -327,7 +334,7 @@ namespace Wumpus
             Stop();
         }
 
-        private async Task<GatewayPayload> ReceiveAsync(ClientWebSocket client, CancellationToken cancelToken)
+        private async Task<GatewayPayload> ReceiveAsync(ClientWebSocket client, TaskCompletionSource<bool> readySignal, CancellationToken cancelToken)
         {
             _receiveBuffer.Clear();
 
@@ -348,6 +355,7 @@ namespace Wumpus
             if (payload.Sequence.HasValue)
                 _lastSeq = payload.Sequence.Value;
 
+            HandleEvent(payload, readySignal); // Must be before event so slow user handling can't trigger our timeouts
             ReceivedPayload?.Invoke(payload, _receiveBuffer.AsReadOnlyMemory());
             return payload;
         }
