@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -53,13 +54,12 @@ namespace Wumpus
             new Utf8String("Unknown");
 
         private readonly WumpusEtfSerializer _serializer;
-        private readonly ClientWebSocket _client;
         private readonly SemaphoreSlim _stateLock;
 
         // Instance
         private ResizableMemory<byte> _receiveBuffer;
         private Task _connectionTask;
-        private CancellationTokenSource _connectionCts;
+        private CancellationTokenSource _runCts;
         private Utf8String _sessionId;
 
         // Run (Start/Stop)
@@ -79,10 +79,10 @@ namespace Wumpus
         {
             _serializer = serializer ?? new WumpusEtfSerializer();
             _receiveBuffer = new ResizableMemory<byte>(10 * 1024); // 10 KB
-            _client = new ClientWebSocket();
             _stateLock = new SemaphoreSlim(1, 1);
             _connectionTask = Task.CompletedTask;
-            _connectionCts = new CancellationTokenSource();
+            _runCts = new CancellationTokenSource();
+            _runCts.Cancel(); // Start canceled
         }
 
         public void Run(string url, int? shardId = null, int? totalShards = null, UpdateStatusParams initialPresence = null)
@@ -98,9 +98,9 @@ namespace Wumpus
                 _url = url;
                 _shardId = shardId;
                 _totalShards = totalShards;
-                _connectionCts = new CancellationTokenSource();
+                _runCts = new CancellationTokenSource();
                 
-                _connectionTask = RunTaskAsync(initialPresence, _connectionCts.Token);
+                _connectionTask = RunTaskAsync(initialPresence, _runCts.Token);
                 exceptionSignal = _connectionTask;
             }
             finally
@@ -109,7 +109,7 @@ namespace Wumpus
             }
             await exceptionSignal.ConfigureAwait(false);
         }
-        private async Task RunTaskAsync(UpdateStatusParams initialPresence, CancellationToken cancelToken)
+        private async Task RunTaskAsync(UpdateStatusParams initialPresence, CancellationToken runCancelToken)
         {
             Task[] tasks = null;
             bool isRecoverable = true;
@@ -119,106 +119,112 @@ namespace Wumpus
             while (isRecoverable)
             {
                 Exception disconnectEx = null;
-                try
+                var connectionCts = new CancellationTokenSource();
+                var cancelToken = CancellationTokenSource.CreateLinkedTokenSource(runCancelToken, connectionCts.Token).Token;
+                using (var client = new ClientWebSocket())
                 {
-                    cancelToken.ThrowIfCancellationRequested();
-                    State = ConnectionState.Connecting;
-
-                    var uri = new Uri(_url + $"?v={DiscordGatewayConstants.APIVersion}&encoding=etf");// &compress=zlib-stream"); // TODO: Enable
-                    await _client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);
-
-                    // Receive HELLO
-                    var evnt = await ReceiveAsync(cancelToken); // We should not timeout on receiving HELLO
-                    if (!(evnt.Data is HelloEvent helloEvent))
-                        throw new Exception("First event was not a HELLO event");
-                    int heartbeatRate = helloEvent.HeartbeatInterval;
-                    ServerNames = helloEvent.Trace;
-
-                    var readySignal = new TaskCompletionSource<bool>();
-
-                    // Start async loops
-                    tasks = new[]
+                    try
                     {
-                        RunSendAsync(cancelToken),
-                        RunHeartbeatAsync(heartbeatRate, cancelToken),
-                        RunReceiveAsync(readySignal, cancelToken)
-                    };
+                        runCancelToken.ThrowIfCancellationRequested();
+                        State = ConnectionState.Connecting;
 
-                    // Send IDENTIFY/RESUME
-                    SendIdentify(initialPresence);
-                    var timeoutTask = Task.Delay(ConnectionTimeoutMillis);
-                    // If anything in tasks fails, it'll throw an exception
-                    var task = await Task.WhenAny(tasks.Append(timeoutTask).Append(readySignal.Task)).ConfigureAwait(false);
-                    if (task == timeoutTask)
-                        throw new TimeoutException("Timed out waiting for READY or InvalidSession");
-                    else if (task.IsFaulted)
-                        await task.ConfigureAwait(false);
+                        var uri = new Uri(_url + $"?v={DiscordGatewayConstants.APIVersion}&encoding=etf");// &compress=zlib-stream"); // TODO: Enable
+                        await client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);
 
-                    // Success
-                    _lastSeq = 0;
-                    backoffMillis = InitialBackoffMillis;
-                    State = ConnectionState.Connected;
-                    Connected?.Invoke();
+                        // Receive HELLO
+                        var evnt = await ReceiveAsync(client, cancelToken); // We should not timeout on receiving HELLO
+                        if (!(evnt.Data is HelloEvent helloEvent))
+                            throw new Exception("First event was not a HELLO event");
+                        int heartbeatRate = helloEvent.HeartbeatInterval;
+                        ServerNames = helloEvent.Trace;
 
-                    task = await Task.WhenAny(tasks).ConfigureAwait(false);
-                    if (task.IsFaulted)
-                        await task.ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    disconnectEx = ex;
-                    isRecoverable = IsRecoverable(ex);
-                    if (!isRecoverable)
-                        throw;
-                } 
-                finally
-                {
-                    var oldState = State;
-                    State = ConnectionState.Disconnecting;
+                        var readySignal = new TaskCompletionSource<bool>();
 
-                    // Wait for the other task to complete
-                    _connectionCts?.Cancel();
-                    if (tasks != null)
-                    {
-                        try { await Task.WhenAll(tasks).ConfigureAwait(false); }
-                        catch { } // We already captured the root exception
+                        // Start async loops
+                        tasks = new[]
+                        {
+                            RunSendAsync(client, cancelToken),
+                            RunHeartbeatAsync(heartbeatRate, cancelToken),
+                            RunReceiveAsync(client, readySignal, cancelToken)
+                        };
+
+                        // Send IDENTIFY/RESUME
+                        SendIdentify(initialPresence);
+                        var timeoutTask = Task.Delay(ConnectionTimeoutMillis);
+                        // If anything in tasks fails, it'll throw an exception
+                        var task = await Task.WhenAny(tasks.Append(timeoutTask).Append(readySignal.Task)).ConfigureAwait(false);
+                        if (task == timeoutTask)
+                            throw new TimeoutException("Timed out waiting for READY or InvalidSession");
+                        else if (task.IsFaulted)
+                            await task.ConfigureAwait(false);
+
+                        // Success
+                        _lastSeq = 0;
+                        backoffMillis = InitialBackoffMillis;
+                        State = ConnectionState.Connected;
+                        Connected?.Invoke();
+
+                        task = await Task.WhenAny(tasks).ConfigureAwait(false);
+                        if (task.IsFaulted)
+                            await task.ConfigureAwait(false);
                     }
-
-                    // receiveTask and sendTask must have completed before we can send/receive from a different thread
-                    if (_client.State == WebSocketState.Open)
+                    catch (Exception ex)
                     {
-                        try { await _client.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None).ConfigureAwait(false); }
-                        catch { } // We don't actually care if sending a close msg fails
+                        disconnectEx = ex;
+                        isRecoverable = IsRecoverable(ex);
+                        if (!isRecoverable)
+                            throw;
                     }
-
-                    _sessionId = null;
-                    ServerNames = null;
-                    State = ConnectionState.Disconnected;
-                    if (oldState == ConnectionState.Connected)
-                        Disconnected?.Invoke(disconnectEx);
-
-                    if (isRecoverable)
+                    finally
                     {
-                        await Task.Delay(backoffMillis).ConfigureAwait(false);
-                        backoffMillis = (int)(backoffMillis * (BackoffMultiplier + (jitter.NextDouble() * BackoffJitter * 2.0 - BackoffJitter)));
-                        if (backoffMillis > MaxBackoffMillis)
-                            backoffMillis = MaxBackoffMillis;
+                        var oldState = State;
+                        State = ConnectionState.Disconnecting;
+
+                        // Wait for the other task to complete
+                        connectionCts?.Cancel();
+                        if (tasks != null)
+                        {
+                            try { await Task.WhenAll(tasks).ConfigureAwait(false); }
+                            catch { } // We already captured the root exception
+                        }
+
+                        // receiveTask and sendTask must have completed before we can send/receive from a different thread
+                        if (client.State == WebSocketState.Open)
+                        {
+                            try { await client.CloseAsync(WebSocketCloseStatus.NormalClosure, "", CancellationToken.None).ConfigureAwait(false); }
+                            catch { } // We don't actually care if sending a close msg fails
+                        }
+
+                        _sessionId = null;
+                        ServerNames = null;
+                        State = ConnectionState.Disconnected;
+                        if (oldState == ConnectionState.Connected)
+                            Disconnected?.Invoke(disconnectEx);
+
+                        if (isRecoverable)
+                        {
+                            await Task.Delay(backoffMillis).ConfigureAwait(false);
+                            backoffMillis = (int)(backoffMillis * (BackoffMultiplier + (jitter.NextDouble() * BackoffJitter * 2.0 - BackoffJitter)));
+                            if (backoffMillis > MaxBackoffMillis)
+                                backoffMillis = MaxBackoffMillis;
+                        }
                     }
                 }
             }
+            _runCts.Cancel(); // Reset to initial canceled state
         }
-        private Task RunReceiveAsync(TaskCompletionSource<bool> readySignal, CancellationToken cancelToken)
+        private Task RunReceiveAsync(ClientWebSocket client, TaskCompletionSource<bool> readySignal, CancellationToken cancelToken)
         {
             return Task.Run(async () =>
             {
                 while (true)
                 {
                     cancelToken.ThrowIfCancellationRequested();
-                    HandleEvent(await ReceiveAsync(cancelToken).ConfigureAwait(false), readySignal);
+                    HandleEvent(await ReceiveAsync(client, cancelToken).ConfigureAwait(false), readySignal);
                 }
             });
         }
-        private Task RunSendAsync(CancellationToken cancelToken)
+        private Task RunSendAsync(ClientWebSocket client, CancellationToken cancelToken)
         {
             return Task.Run(async () =>
             {
@@ -230,7 +236,7 @@ namespace Wumpus
                         cancelToken.ThrowIfCancellationRequested();
                         var payload = _sendQueue.Take(cancelToken);
                         var writer = _serializer.Write(payload);
-                        await _client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
+                        await client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
                         SentPayload?.Invoke(payload, writer.AsReadOnlyMemory());
                     }
                 }
@@ -305,9 +311,9 @@ namespace Wumpus
         }
         private async Task StopAsyncInternal()
         {
-            _connectionCts?.Cancel(); // Cancel any connection attempts or active connections
+            _runCts?.Cancel(); // Cancel any connection attempts or active connections
 
-            await _connectionTask.ConfigureAwait(false); // Wait for current connection to complete
+            try { await _connectionTask.ConfigureAwait(false); } catch { } // Wait for current connection to complete
             _connectionTask = Task.CompletedTask;
 
             // Double check that the connection task terminated successfully
@@ -319,10 +325,9 @@ namespace Wumpus
         public void Dispose()
         {
             Stop();
-            _client.Dispose();
         }
 
-        private async Task<GatewayPayload> ReceiveAsync(CancellationToken cancelToken)
+        private async Task<GatewayPayload> ReceiveAsync(ClientWebSocket client, CancellationToken cancelToken)
         {
             _receiveBuffer.Clear();
 
@@ -330,7 +335,7 @@ namespace Wumpus
             do
             {
                 var buffer = _receiveBuffer.GetSegment(10 * 1024); // 10 KB
-                result = await _client.ReceiveAsync(buffer, cancelToken).ConfigureAwait(false);
+                result = await client.ReceiveAsync(buffer, cancelToken).ConfigureAwait(false);
                 _receiveBuffer.Advance(result.Count);
 
                 if (result.CloseStatus != null)
@@ -378,7 +383,7 @@ namespace Wumpus
 
         public void Send(GatewayPayload payload)
         {
-            if (!_connectionCts.IsCancellationRequested)
+            if (!_runCts.IsCancellationRequested)
                 _sendQueue?.Add(payload);
         }
         private void SendIdentify(UpdateStatusParams initialPresence)
