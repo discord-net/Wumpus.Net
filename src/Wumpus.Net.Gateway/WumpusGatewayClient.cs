@@ -146,8 +146,8 @@ namespace Wumpus
                             throw new Exception("First event was not a HELLO event");
                         int heartbeatRate = helloEvent.HeartbeatInterval;
                         ServerNames = helloEvent.Trace;
-                        
-                        // Start async loops
+
+                        // Start tasks here since HELLO must be handled before another thread can send/receive
                         tasks = new[]
                         {
                             RunSendAsync(client, cancelToken),
