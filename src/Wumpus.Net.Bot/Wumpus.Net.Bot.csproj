@@ -12,4 +12,7 @@
     <ProjectReference Include="../Wumpus.Net.Rest/Wumpus.Net.Rest.csproj" />
     <ProjectReference Include="../Wumpus.Net.Gateway/Wumpus.Net.Gateway.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Entities\" />
+  </ItemGroup>
 </Project>

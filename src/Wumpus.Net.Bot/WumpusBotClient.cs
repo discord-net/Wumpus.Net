@@ -27,14 +27,6 @@ namespace Wumpus
         public event Action<GatewayPayload, ReadOnlyMemory<byte>> ReceivedPayload;
         public event Action<GatewayPayload, ReadOnlyMemory<byte>> SentPayload;
 
-        // Gateway events
-
-        public event Action<HelloEvent> GatewayHello;
-        public event Action<bool> GatewayInvalidSession;
-        public event Action GatewayHeartbeat;
-        public event Action GatewayHeartbeatAck;
-        public event Action GatewayReconnect;
-
         // Dispatch events
 
         public event Action<ReadyEvent> Ready;
@@ -138,55 +130,41 @@ namespace Wumpus
                 _wroteInitialLog = true;
             }
 
-            Gateway.ReceivedPayload += (msg, data) =>
-            {
-                ReceivedPayload?.Invoke(msg, data);
-                switch (msg.Operation)
-                {
-                    case GatewayOperation.Heartbeat: GatewayHeartbeat?.Invoke(); break;
-                    case GatewayOperation.HeartbeatAck: GatewayHeartbeatAck?.Invoke(); break;
-                    case GatewayOperation.Hello: GatewayHello?.Invoke(msg.Data as HelloEvent); break;
-                    case GatewayOperation.InvalidSession: GatewayInvalidSession?.Invoke((bool)msg.Data); break;
-                    case GatewayOperation.Reconnect: GatewayReconnect?.Invoke(); break;
-                    case GatewayOperation.Dispatch:
-                        switch (msg.DispatchType)
-                        {
-                            case GatewayDispatchType.Ready: Ready?.Invoke(msg.Data as ReadyEvent); break;
-                            case GatewayDispatchType.GuildCreate: GuildCreate?.Invoke(msg.Data as GatewayGuild); break;
-                            case GatewayDispatchType.GuildUpdate: GuildUpdate?.Invoke(msg.Data as Guild); break;
-                            case GatewayDispatchType.GuildDelete: GuildDelete?.Invoke(msg.Data as UnavailableGuild); break;
-                            case GatewayDispatchType.ChannelCreate: ChannelCreate?.Invoke(msg.Data as Channel); break;
-                            case GatewayDispatchType.ChannelUpdate: ChannelUpdate?.Invoke(msg.Data as Channel); break;
-                            case GatewayDispatchType.ChannelDelete: ChannelDelete?.Invoke(msg.Data as Channel); break;
-                            case GatewayDispatchType.ChannelPinsUpdate: ChannelPinsUpdate?.Invoke(msg.Data as ChannelPinsUpdateEvent); break;
-                            case GatewayDispatchType.GuildMemberAdd: GuildMemberAdd?.Invoke(msg.Data as GuildMemberAddEvent); break;
-                            case GatewayDispatchType.GuildMemberUpdate: GuildMemberUpdate?.Invoke(msg.Data as GuildMemberUpdateEvent); break;
-                            case GatewayDispatchType.GuildMemberRemove: GuildMemberRemove?.Invoke(msg.Data as GuildMemberRemoveEvent); break;
-                            case GatewayDispatchType.GuildMembersChunk: GuildMembersChunk?.Invoke(msg.Data as GuildMembersChunkEvent); break;
-                            case GatewayDispatchType.GuildRoleCreate: GuildRoleCreate?.Invoke(msg.Data as GuildRoleCreateEvent); break;
-                            case GatewayDispatchType.GuildRoleUpdate: GuildRoleUpdate?.Invoke(msg.Data as GuildRoleUpdateEvent); break;
-                            case GatewayDispatchType.GuildRoleDelete: GuildRoleDelete?.Invoke(msg.Data as GuildRoleDeleteEvent); break;
-                            case GatewayDispatchType.GuildBanAdd: GuildBanAdd?.Invoke(msg.Data as GuildBanAddEvent); break;
-                            case GatewayDispatchType.GuildBanRemove: GuildBanRemove?.Invoke(msg.Data as GuildBanRemoveEvent); break;
-                            case GatewayDispatchType.GuildEmojisUpdate: GuildEmojisUpdate?.Invoke(msg.Data as GuildEmojiUpdateEvent); break;
-                            case GatewayDispatchType.GuildIntegrationsUpdate: GuildIntegrationsUpdate?.Invoke(msg.Data as GuildIntegrationsUpdateEvent); break;
-                            case GatewayDispatchType.MessageCreate: MessageCreate?.Invoke(msg.Data as Message); break;
-                            case GatewayDispatchType.MessageUpdate: MessageUpdate?.Invoke(msg.Data as Message); break;
-                            case GatewayDispatchType.MessageDelete: MessageDelete?.Invoke(msg.Data as MessageDeleteEvent); break;
-                            case GatewayDispatchType.MessageDeleteBulk: MessageDeleteBulk?.Invoke(msg.Data as MessageDeleteBulkEvent); break;
-                            case GatewayDispatchType.MessageReactionAdd: MessageReactionAdd?.Invoke(msg.Data as MessageReactionAddEvent); break;
-                            case GatewayDispatchType.MessageReactionRemove: MessageReactionRemove?.Invoke(msg.Data as MessageReactionRemoveEvent); break;
-                            case GatewayDispatchType.MessageReactionRemoveAll: MessageReactionRemoveAll?.Invoke(msg.Data as MessageReactionRemoveAllEvent); break;
-                            case GatewayDispatchType.PresenceUpdate: PresenceUpdate?.Invoke(msg.Data as Presence); break;
-                            case GatewayDispatchType.UserUpdate: UserUpdate?.Invoke(msg.Data as User); break;
-                            case GatewayDispatchType.TypingStart: TypingStart?.Invoke(msg.Data as TypingStartEvent); break;
-                            case GatewayDispatchType.VoiceStateUpdate: VoiceStateUpdate?.Invoke(msg.Data as VoiceState); break;
-                            case GatewayDispatchType.VoiceServerUpdate: VoiceServerUpdate?.Invoke(msg.Data as VoiceServerUpdateEvent); break;
-                            case GatewayDispatchType.WebhooksUpdate: WebhooksUpdate?.Invoke(msg.Data as WebhooksUpdateEvent); break;
-                        }
-                        break;
-                }
-            };
+            Gateway.ReceivedPayload += (msg, data) => ReceivedPayload?.Invoke(msg, data);
+            Gateway.SentPayload += (msg, data) => SentPayload?.Invoke(msg, data);
+
+            Gateway.Ready += d => Ready?.Invoke(d);
+            Gateway.GuildCreate += d => GuildCreate?.Invoke(d);
+            Gateway.GuildUpdate += d => GuildUpdate?.Invoke(d);
+            Gateway.GuildDelete += d => GuildDelete?.Invoke(d);
+            Gateway.ChannelCreate += d => ChannelCreate?.Invoke(d);
+            Gateway.ChannelUpdate += d => ChannelUpdate?.Invoke(d);
+            Gateway.ChannelDelete += d => ChannelDelete?.Invoke(d);
+            Gateway.ChannelPinsUpdate += d => ChannelPinsUpdate?.Invoke(d);
+            Gateway.GuildMemberAdd += d => GuildMemberAdd?.Invoke(d);
+            Gateway.GuildMemberUpdate += d => GuildMemberUpdate?.Invoke(d);
+            Gateway.GuildMemberRemove += d => GuildMemberRemove?.Invoke(d);
+            Gateway.GuildMembersChunk += d => GuildMembersChunk?.Invoke(d);
+            Gateway.GuildRoleCreate += d => GuildRoleCreate?.Invoke(d);
+            Gateway.GuildRoleUpdate += d => GuildRoleUpdate?.Invoke(d);
+            Gateway.GuildRoleDelete += d => GuildRoleDelete?.Invoke(d);
+            Gateway.GuildBanAdd += d => GuildBanAdd?.Invoke(d);
+            Gateway.GuildBanRemove += d => GuildBanRemove?.Invoke(d);
+            Gateway.GuildEmojisUpdate += d => GuildEmojisUpdate?.Invoke(d);
+            Gateway.GuildIntegrationsUpdate += d => GuildIntegrationsUpdate?.Invoke(d);
+            Gateway.MessageCreate += d => MessageCreate?.Invoke(d);
+            Gateway.MessageUpdate += d => MessageUpdate?.Invoke(d);
+            Gateway.MessageDelete += d => MessageDelete?.Invoke(d);
+            Gateway.MessageDeleteBulk += d => MessageDeleteBulk?.Invoke(d);
+            Gateway.MessageReactionAdd += d => MessageReactionAdd?.Invoke(d);
+            Gateway.MessageReactionRemove += d => MessageReactionRemove?.Invoke(d);
+            Gateway.MessageReactionRemoveAll += d => MessageReactionRemoveAll?.Invoke(d);
+            Gateway.PresenceUpdate += d => PresenceUpdate?.Invoke(d);
+            Gateway.UserUpdate += d => UserUpdate?.Invoke(d);
+            Gateway.TypingStart += d => TypingStart?.Invoke(d);
+            Gateway.VoiceStateUpdate += d => VoiceStateUpdate?.Invoke(d);
+            Gateway.VoiceServerUpdate += d => VoiceServerUpdate?.Invoke(d);
+            Gateway.WebhooksUpdate += d => WebhooksUpdate?.Invoke(d);
             Gateway.SentPayload += (msg, data) => SentPayload?.Invoke(msg, data);
         }
 

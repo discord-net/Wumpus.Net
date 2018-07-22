@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Voltaic;
 using Voltaic.Serialization;
+using Wumpus.Entities;
 using Wumpus.Events;
 using Wumpus.Requests;
 using Wumpus.Serialization;
@@ -49,10 +50,54 @@ namespace Wumpus
         private const int IdentifyTimeoutMillis = 60000; // 1 min
         // Typical Backoff: 1.75s, 3.06s, 5.36s, 9.38s, 16.41s, 28.72s, 50.27s, 60s, 60s...
         
+        // Status events
         public event Action Connected;
         public event Action<Exception> Disconnected;
+
+        // Raw events
         public event Action<GatewayPayload, ReadOnlyMemory<byte>> ReceivedPayload;
         public event Action<GatewayPayload, ReadOnlyMemory<byte>> SentPayload;
+
+        // Gateway events
+        public event Action<HelloEvent> GatewayHello;
+        public event Action<bool> GatewayInvalidSession;
+        public event Action GatewayHeartbeat;
+        public event Action GatewayHeartbeatAck;
+        public event Action GatewayReconnect;
+
+        // Dispatch events
+        public event Action<ReadyEvent> Ready;
+        public event Action<GatewayGuild> GuildCreate;
+        public event Action<Guild> GuildUpdate;
+        public event Action<UnavailableGuild> GuildDelete;
+        public event Action<Channel> ChannelCreate;
+        public event Action<Channel> ChannelUpdate;
+        public event Action<Channel> ChannelDelete;
+        public event Action<ChannelPinsUpdateEvent> ChannelPinsUpdate;
+        public event Action<GuildMemberAddEvent> GuildMemberAdd;
+        public event Action<GuildMemberUpdateEvent> GuildMemberUpdate;
+        public event Action<GuildMemberRemoveEvent> GuildMemberRemove;
+        public event Action<GuildMembersChunkEvent> GuildMembersChunk;
+        public event Action<GuildRoleCreateEvent> GuildRoleCreate;
+        public event Action<GuildRoleUpdateEvent> GuildRoleUpdate;
+        public event Action<GuildRoleDeleteEvent> GuildRoleDelete;
+        public event Action<GuildBanAddEvent> GuildBanAdd;
+        public event Action<GuildBanRemoveEvent> GuildBanRemove;
+        public event Action<GuildEmojiUpdateEvent> GuildEmojisUpdate;
+        public event Action<GuildIntegrationsUpdateEvent> GuildIntegrationsUpdate;
+        public event Action<Message> MessageCreate;
+        public event Action<Message> MessageUpdate;
+        public event Action<MessageDeleteEvent> MessageDelete;
+        public event Action<MessageDeleteBulkEvent> MessageDeleteBulk;
+        public event Action<MessageReactionAddEvent> MessageReactionAdd;
+        public event Action<MessageReactionRemoveEvent> MessageReactionRemove;
+        public event Action<MessageReactionRemoveAllEvent> MessageReactionRemoveAll;
+        public event Action<Presence> PresenceUpdate;
+        public event Action<User> UserUpdate;
+        public event Action<TypingStartEvent> TypingStart;
+        public event Action<VoiceState> VoiceStateUpdate;
+        public event Action<VoiceServerUpdateEvent> VoiceServerUpdate;
+        public event Action<WebhooksUpdateEvent> WebhooksUpdate;
 
         private static Utf8String LibraryName { get; } = new Utf8String("Wumpus.Net");
         private static Utf8String OsName { get; } =
@@ -377,10 +422,15 @@ namespace Wumpus
                     if ((bool)evnt.Data != true) // Is resumable
                         _sessionId = null;
                     readySignal.TrySetResult(false);
+                    GatewayInvalidSession?.Invoke((bool)evnt.Data);
                     break;
                 case GatewayOperation.Heartbeat:
                     SendHeartbeatAck();
+                    GatewayHeartbeat?.Invoke();
                     break;
+                case GatewayOperation.HeartbeatAck: GatewayHeartbeatAck?.Invoke(); break;
+                case GatewayOperation.Hello: GatewayHello?.Invoke(evnt.Data as HelloEvent); break;
+                case GatewayOperation.Reconnect: GatewayReconnect?.Invoke(); break;
             }
         }
         private void HandleDispatchEvent(GatewayPayload evnt, TaskCompletionSource<bool> readySignal)
@@ -392,7 +442,39 @@ namespace Wumpus
                         throw new Exception("Failed to deserialize READY event"); // TODO: Exception type?
                     _sessionId = readyEvent.SessionId;
                     readySignal.TrySetResult(true);
+                    Ready?.Invoke(evnt.Data as ReadyEvent);
                     break;
+                case GatewayDispatchType.GuildCreate: GuildCreate?.Invoke(evnt.Data as GatewayGuild); break;
+                case GatewayDispatchType.GuildUpdate: GuildUpdate?.Invoke(evnt.Data as Guild); break;
+                case GatewayDispatchType.GuildDelete: GuildDelete?.Invoke(evnt.Data as UnavailableGuild); break;
+                case GatewayDispatchType.ChannelCreate: ChannelCreate?.Invoke(evnt.Data as Channel); break;
+                case GatewayDispatchType.ChannelUpdate: ChannelUpdate?.Invoke(evnt.Data as Channel); break;
+                case GatewayDispatchType.ChannelDelete: ChannelDelete?.Invoke(evnt.Data as Channel); break;
+                case GatewayDispatchType.ChannelPinsUpdate: ChannelPinsUpdate?.Invoke(evnt.Data as ChannelPinsUpdateEvent); break;
+                case GatewayDispatchType.GuildMemberAdd: GuildMemberAdd?.Invoke(evnt.Data as GuildMemberAddEvent); break;
+                case GatewayDispatchType.GuildMemberUpdate: GuildMemberUpdate?.Invoke(evnt.Data as GuildMemberUpdateEvent); break;
+                case GatewayDispatchType.GuildMemberRemove: GuildMemberRemove?.Invoke(evnt.Data as GuildMemberRemoveEvent); break;
+                case GatewayDispatchType.GuildMembersChunk: GuildMembersChunk?.Invoke(evnt.Data as GuildMembersChunkEvent); break;
+                case GatewayDispatchType.GuildRoleCreate: GuildRoleCreate?.Invoke(evnt.Data as GuildRoleCreateEvent); break;
+                case GatewayDispatchType.GuildRoleUpdate: GuildRoleUpdate?.Invoke(evnt.Data as GuildRoleUpdateEvent); break;
+                case GatewayDispatchType.GuildRoleDelete: GuildRoleDelete?.Invoke(evnt.Data as GuildRoleDeleteEvent); break;
+                case GatewayDispatchType.GuildBanAdd: GuildBanAdd?.Invoke(evnt.Data as GuildBanAddEvent); break;
+                case GatewayDispatchType.GuildBanRemove: GuildBanRemove?.Invoke(evnt.Data as GuildBanRemoveEvent); break;
+                case GatewayDispatchType.GuildEmojisUpdate: GuildEmojisUpdate?.Invoke(evnt.Data as GuildEmojiUpdateEvent); break;
+                case GatewayDispatchType.GuildIntegrationsUpdate: GuildIntegrationsUpdate?.Invoke(evnt.Data as GuildIntegrationsUpdateEvent); break;
+                case GatewayDispatchType.MessageCreate: MessageCreate?.Invoke(evnt.Data as Message); break;
+                case GatewayDispatchType.MessageUpdate: MessageUpdate?.Invoke(evnt.Data as Message); break;
+                case GatewayDispatchType.MessageDelete: MessageDelete?.Invoke(evnt.Data as MessageDeleteEvent); break;
+                case GatewayDispatchType.MessageDeleteBulk: MessageDeleteBulk?.Invoke(evnt.Data as MessageDeleteBulkEvent); break;
+                case GatewayDispatchType.MessageReactionAdd: MessageReactionAdd?.Invoke(evnt.Data as MessageReactionAddEvent); break;
+                case GatewayDispatchType.MessageReactionRemove: MessageReactionRemove?.Invoke(evnt.Data as MessageReactionRemoveEvent); break;
+                case GatewayDispatchType.MessageReactionRemoveAll: MessageReactionRemoveAll?.Invoke(evnt.Data as MessageReactionRemoveAllEvent); break;
+                case GatewayDispatchType.PresenceUpdate: PresenceUpdate?.Invoke(evnt.Data as Presence); break;
+                case GatewayDispatchType.UserUpdate: UserUpdate?.Invoke(evnt.Data as User); break;
+                case GatewayDispatchType.TypingStart: TypingStart?.Invoke(evnt.Data as TypingStartEvent); break;
+                case GatewayDispatchType.VoiceStateUpdate: VoiceStateUpdate?.Invoke(evnt.Data as VoiceState); break;
+                case GatewayDispatchType.VoiceServerUpdate: VoiceServerUpdate?.Invoke(evnt.Data as VoiceServerUpdateEvent); break;
+                case GatewayDispatchType.WebhooksUpdate: WebhooksUpdate?.Invoke(evnt.Data as WebhooksUpdateEvent); break;
             }
         }
 
