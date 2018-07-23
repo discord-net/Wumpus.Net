@@ -69,7 +69,7 @@ namespace Wumpus.Net
 
                             Utf8String msg = null;
                             try { msg = new Utf8String(bytes); } catch { }
-                            if (msg != (Utf8String)null)
+                            if (!(msg is null))
                                 throw new WumpusRestException(response.StatusCode, null, msg);
                         }
                         throw new WumpusRestException(response.StatusCode);

@@ -20,7 +20,7 @@ namespace Wumpus.Net
 
         private static string CreateMessage(HttpStatusCode httpCode, int? discordCode = null, Utf8String reason = null)
         {
-            if (reason != (Utf8String)null && reason.Bytes.Length > 0)
+            if (!(reason is null) && reason.Bytes.Length > 0)
                 return $"The server responded with error {discordCode ?? (int)httpCode}: {reason.ToString()}";
             else
                 return $"The server responded with error {discordCode ?? (int)httpCode}: {httpCode.ToString()}";
