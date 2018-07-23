@@ -4,7 +4,7 @@
     <RootNamespace>Wumpus.Bot</RootNamespace>
     <AssemblyName>Wumpus.Net.Bot</AssemblyName>
     <PackageTags>discord;discordapp;wumpus;gateway;websocket;rest;api;bot;rogueexception</PackageTags>
-    <Description>Provides a higher level wrapper around Wumpus.Net.Gateway and Wumpus.Net.Rest to aid in building bots</Description>
+    <Description>Provides a minimalistic stateful bot client using Wumpus.Net.Gateway and Wumpus.Net.Rest</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
