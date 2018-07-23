@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../Wumpus.targets" />
   <PropertyGroup>
-    <RootNamespace>Wumpus</RootNamespace>
+    <RootNamespace>Wumpus.Bot</RootNamespace>
     <AssemblyName>Wumpus.Net.Bot</AssemblyName>
     <PackageTags>discord;discordapp;wumpus;gateway;websocket;rest;api;bot;rogueexception</PackageTags>
     <Description>Provides a higher level wrapper around Wumpus.Net.Gateway and Wumpus.Net.Rest to aid in building bots</Description>
@@ -11,8 +11,5 @@
     <ProjectReference Include="../Voltaic.Logging/Voltaic.Logging.csproj" />
     <ProjectReference Include="../Wumpus.Net.Rest/Wumpus.Net.Rest.csproj" />
     <ProjectReference Include="../Wumpus.Net.Gateway/Wumpus.Net.Gateway.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Entities\" />
   </ItemGroup>
 </Project>
