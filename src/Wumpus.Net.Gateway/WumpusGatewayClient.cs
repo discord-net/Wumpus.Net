@@ -125,6 +125,7 @@ namespace Wumpus
 
         // Connection (For each WebSocket connection)
         private BlockingCollection<GatewayPayload> _sendQueue;
+        private bool _receivedData;
 
         public AuthenticationHeaderValue Authorization { get; set; }
         public ConnectionState State { get; private set; }
@@ -183,6 +184,7 @@ namespace Wumpus
                     {
                         runCancelToken.ThrowIfCancellationRequested();
                         var readySignal = new TaskCompletionSource<bool>();
+                        _receivedData = true;
 
                         // Connect
                         State = ConnectionState.Connecting;
@@ -316,6 +318,9 @@ namespace Wumpus
                 while (true)
                 {
                     cancelToken.ThrowIfCancellationRequested();
+                    if (!_receivedData)
+                        throw new TimeoutException("No data was received since the last heartbeat");
+                    _receivedData = false;
                     SendHeartbeat();
                     await Task.Delay(rate, cancelToken).ConfigureAwait(false);
                 }
@@ -400,6 +405,7 @@ namespace Wumpus
                 var buffer = _receiveBuffer.GetSegment(10 * 1024); // 10 KB
                 result = await client.ReceiveAsync(buffer, cancelToken).ConfigureAwait(false);
                 _receiveBuffer.Advance(result.Count);
+                _receivedData = true;
 
                 if (result.CloseStatus != null)
                     throw new WebSocketClosedException(result.CloseStatus.Value, result.CloseStatusDescription); // TODO: Exception type?
