@@ -60,6 +60,8 @@ namespace Wumpus.Bot
                 guild.Update(data);
                 _guilds[data.Id.RawValue] = guild;
                 Created?.Invoke(guild);
+
+                guild.Unavailable = data.Unavailable;
                 if (guild.Unavailable != true)
                     Available?.Invoke(guild);
             }
@@ -99,6 +101,7 @@ namespace Wumpus.Bot
 
             if (data.Unavailable == true)
             {
+                data.Unavailable = true;
                 Unavailable?.Invoke(guild);
             }
             else
@@ -108,6 +111,7 @@ namespace Wumpus.Bot
                     guild.Unavailable = true;
                     Unavailable?.Invoke(guild);
                 }
+                _guilds.TryRemove(data.Id.RawValue, out _);
                 Deleted?.Invoke(guild);
             }
         }

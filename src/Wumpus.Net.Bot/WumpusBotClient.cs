@@ -48,6 +48,9 @@ namespace Wumpus.Bot
             _runLock = new SemaphoreSlim(1, 1);
             State = state ?? new State(new StateOptions());
 
+            Rest = new WumpusRestClient(jsonSerializer, restRateLimiter);
+            Gateway = new WumpusGatewayClient(etfSerializer);
+
             if (logManager != null)
             {
                 _logManager = logManager;
@@ -103,8 +106,7 @@ namespace Wumpus.Bot
                 _wroteInitialLog = true;
             }
 
-            Rest = new WumpusRestClient(jsonSerializer, restRateLimiter);
-            Gateway = new WumpusGatewayClient(etfSerializer);
+            State.Attach(Gateway);
         }
 
         public void Run(string url = null, int? shardId = null, int? totalShards = null, UpdateStatusParams initialPresence = null)

@@ -41,7 +41,7 @@ namespace Wumpus.Events
         private static Dictionary<GatewayDispatchType?, Type> DispatchTypeSelector => new Dictionary<GatewayDispatchType?, Type>()
         {
             [GatewayDispatchType.Ready] = typeof(ReadyEvent),
-            [GatewayDispatchType.Resumed] = null,
+            [GatewayDispatchType.Resumed] = typeof(object),
             [GatewayDispatchType.GuildCreate] = typeof(GatewayGuild),
             [GatewayDispatchType.GuildUpdate] = typeof(Guild),
             [GatewayDispatchType.GuildDelete] = typeof(UnavailableGuild),
