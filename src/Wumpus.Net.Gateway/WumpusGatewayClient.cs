@@ -53,6 +53,8 @@ namespace Wumpus
         // Status events
         public event Action Connected;
         public event Action<Exception> Disconnected;
+        public event Action SessionCreated;
+        public event Action SessionLost;
 
         // Raw events
         public event Action<GatewayPayload, ReadOnlyMemory<byte>> ReceivedPayload;
@@ -86,6 +88,7 @@ namespace Wumpus
         public event Action<GuildBanRemoveEvent> GuildBanRemove;
         public event Action<GuildEmojiUpdateEvent> GuildEmojisUpdate;
         public event Action<GuildIntegrationsUpdateEvent> GuildIntegrationsUpdate;
+        public event Action<WebhooksUpdateEvent> WebhooksUpdate;
         public event Action<Message> MessageCreate;
         public event Action<Message> MessageUpdate;
         public event Action<MessageDeleteEvent> MessageDelete;
@@ -98,7 +101,6 @@ namespace Wumpus
         public event Action<TypingStartEvent> TypingStart;
         public event Action<VoiceState> VoiceStateUpdate;
         public event Action<VoiceServerUpdateEvent> VoiceServerUpdate;
-        public event Action<WebhooksUpdateEvent> WebhooksUpdate;
 
         private static Utf8String LibraryName { get; } = new Utf8String("Wumpus.Net");
         private static Utf8String OsName { get; } =
@@ -256,7 +258,7 @@ namespace Wumpus
                             catch { } // We don't actually care if sending a close msg fails
                         }
 
-                        _sessionId = null;
+                        SetSession(null);
                         ServerNames = null;
                         State = ConnectionState.Disconnected;
                         if (oldState == ConnectionState.Connected)
@@ -422,7 +424,7 @@ namespace Wumpus
                     break;
                 case GatewayOperation.InvalidSession:
                     if ((bool)evnt.Data != true) // Is resumable
-                        _sessionId = null;
+                        SetSession(null);
                     readySignal.TrySetResult(false);
                     GatewayInvalidSession?.Invoke((bool)evnt.Data);
                     break;
@@ -441,7 +443,7 @@ namespace Wumpus
             {
                 case GatewayDispatchType.Ready:
                     var readyEvent = evnt.Data as ReadyEvent;
-                    _sessionId = readyEvent.SessionId;
+                    SetSession(readyEvent.SessionId);
                     readySignal.TrySetResult(true);
                     Ready?.Invoke(readyEvent);
                     break;
@@ -490,7 +492,7 @@ namespace Wumpus
         }
         private void SendIdentify(UpdateStatusParams initialPresence)
         {
-            if (_sessionId == (Utf8String)null) // IDENTITY
+            if (_sessionId is null) // IDENTITY
             {
                 Send(new GatewayPayload
                 {
@@ -533,5 +535,23 @@ namespace Wumpus
         {
             Operation = GatewayOperation.HeartbeatAck
         });
+
+        private void SetSession(Utf8String sessionId)
+        {
+            if (_sessionId != sessionId)
+            {
+                if (!(_sessionId is null) && sessionId is null)
+                    SessionLost?.Invoke();
+                else if (_sessionId is null && !(sessionId is null))
+                    SessionCreated?.Invoke();
+                else
+                {
+                    SessionLost?.Invoke();
+                    SessionCreated?.Invoke();
+
+                }
+            }
+            _sessionId = sessionId;
+        }
     }
 }
