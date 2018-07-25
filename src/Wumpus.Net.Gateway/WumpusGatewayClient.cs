@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.WebSockets;
@@ -156,7 +157,8 @@ namespace Wumpus
                 _shardId = shardId;
                 _totalShards = totalShards;
                 _runCts = new CancellationTokenSource();
-                
+                _sessionId = null;
+
                 _connectionTask = RunTaskAsync(initialPresence, _runCts.Token);
                 exceptionSignal = _connectionTask;
             }
@@ -192,10 +194,9 @@ namespace Wumpus
                         await client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);
 
                         // Receive HELLO (timeout = ConnectionTimeoutMillis)
-                        var timeoutTask = Task.Delay(ConnectionTimeoutMillis);
                         var receiveTask = ReceiveAsync(client, readySignal, cancelToken);
-                        if (await Task.WhenAny(timeoutTask, receiveTask).ConfigureAwait(false) == timeoutTask)
-                            throw new TimeoutException("Timed out waiting for HELLO");
+                        await WhenAny(new Task[] { receiveTask }, ConnectionTimeoutMillis, 
+                            "Timed out waiting for HELLO").ConfigureAwait(false);
 
                         var evnt = await receiveTask.ConfigureAwait(false);
                         if (!(evnt.Data is HelloEvent helloEvent))
@@ -204,6 +205,7 @@ namespace Wumpus
                         ServerNames = helloEvent.Trace;
 
                         // Start tasks here since HELLO must be handled before another thread can send/receive
+                        _sendQueue = new BlockingCollection<GatewayPayload>();
                         tasks = new[]
                         {
                             RunSendAsync(client, cancelToken),
@@ -212,15 +214,11 @@ namespace Wumpus
                         };
 
                         // Send IDENTIFY/RESUME (timeout = IdentifyTimeoutMillis)
-                        // TODO: Test resume
                         SendIdentify(initialPresence);
-                        timeoutTask = Task.Delay(IdentifyTimeoutMillis);
-                        // If anything in tasks fails, it'll throw an exception
-                        var task = await Task.WhenAny(tasks.Append(timeoutTask).Append(readySignal.Task)).ConfigureAwait(false);
-                        if (task == timeoutTask)
-                            throw new TimeoutException("Timed out waiting for READY or InvalidSession");
-                        else if (task.IsFaulted)
-                            await task.ConfigureAwait(false);
+                        await WhenAny(tasks.Append(readySignal.Task), IdentifyTimeoutMillis, 
+                            "Timed out waiting for READY or InvalidSession").ConfigureAwait(false);
+                        if (await readySignal.Task.ConfigureAwait(false) == false)
+                            continue; // Invalid session
 
                         // Success
                         _lastSeq = 0;
@@ -229,9 +227,7 @@ namespace Wumpus
                         Connected?.Invoke();
 
                         // Wait until an exception occurs (due to cancellation or failure)
-                        task = await Task.WhenAny(tasks).ConfigureAwait(false);
-                        if (task.IsFaulted)
-                            await task.ConfigureAwait(false);
+                        await WhenAny(tasks).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {
@@ -260,19 +256,18 @@ namespace Wumpus
                             catch { } // We don't actually care if sending a close msg fails
                         }
 
-                        SetSession(null);
+                        _sendQueue = null;
                         ServerNames = null;
                         State = ConnectionState.Disconnected;
                         if (oldState == ConnectionState.Connected)
                             Disconnected?.Invoke(disconnectEx);
-
-                        if (isRecoverable)
-                        {
-                            backoffMillis = (int)(backoffMillis * (BackoffMultiplier + (jitter.NextDouble() * BackoffJitter * 2.0 - BackoffJitter)));
-                            if (backoffMillis > MaxBackoffMillis)
-                                backoffMillis = MaxBackoffMillis;
-                            await Task.Delay(backoffMillis).ConfigureAwait(false);
-                        }
+                    }
+                    if (isRecoverable)
+                    {
+                        backoffMillis = (int)(backoffMillis * (BackoffMultiplier + (jitter.NextDouble() * BackoffJitter * 2.0 - BackoffJitter)));
+                        if (backoffMillis > MaxBackoffMillis)
+                            backoffMillis = MaxBackoffMillis;
+                        await Task.Delay(backoffMillis).ConfigureAwait(false);
                     }
                 }
             }
@@ -293,21 +288,13 @@ namespace Wumpus
         {
             return Task.Run(async () =>
             {
-                try
+                while (true)
                 {
-                    _sendQueue = new BlockingCollection<GatewayPayload>();
-                    while (true)
-                    {
-                        cancelToken.ThrowIfCancellationRequested();
-                        var payload = _sendQueue.Take(cancelToken);
-                        var writer = EtfSerializer.Write(payload);
-                        await client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
-                        SentPayload?.Invoke(payload, writer.AsReadOnlyMemory());
-                    }
-                }
-                finally
-                {
-                    _sendQueue = null;
+                    cancelToken.ThrowIfCancellationRequested();
+                    var payload = _sendQueue.Take(cancelToken);
+                    var writer = EtfSerializer.Write(payload);
+                    await client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
+                    SentPayload?.Invoke(payload, writer.AsReadOnlyMemory());
                 }
             });
         }
@@ -325,6 +312,22 @@ namespace Wumpus
                     await Task.Delay(rate, cancelToken).ConfigureAwait(false);
                 }
             });
+        }
+
+        private async Task WhenAny(IEnumerable<Task> tasks)
+        {
+            var task = await Task.WhenAny(tasks).ConfigureAwait(false);
+            if (task.IsFaulted)
+                await task.ConfigureAwait(false); // Rethrow
+        }
+        private async Task WhenAny(IEnumerable<Task> tasks, int millis, string errorText)
+        {
+            var timeoutTask = Task.Delay(ConnectionTimeoutMillis);
+            var task = await Task.WhenAny(tasks.Append(timeoutTask)).ConfigureAwait(false);
+            if (task == timeoutTask)
+                throw new TimeoutException(errorText);
+            else if (task.IsFaulted)
+                await task.ConfigureAwait(false); // Rethrow
         }
 
         private bool IsRecoverable(Exception ex)
@@ -359,6 +362,8 @@ namespace Wumpus
                         }
                     }
                     break;
+                case TimeoutException _: // Caused by missing heartbeat ack
+                    return true;
             }
             return false;
         }

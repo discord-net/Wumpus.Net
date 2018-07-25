@@ -64,7 +64,7 @@ namespace Wumpus.Bot
                 if (logManager.MinSeverity >= LogSeverity.Info)
                 {
                     Gateway.Connected += () => _logger.Info("Connected to gateway");
-                    Gateway.Disconnected += ex => _logger.Info("Disconnected to gateway", ex);
+                    Gateway.Disconnected += ex => _logger.Info("Disconnected from gateway", ex);
                     Gateway.Resumed += () => _logger.Info("Resumed previous session");
                     Gateway.SessionCreated += () => _logger.Info("Created new session");
                 }
