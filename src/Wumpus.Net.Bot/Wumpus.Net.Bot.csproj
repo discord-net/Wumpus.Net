@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../Wumpus.targets" />
+  <Import Project="../Wumpus.Net.targets" />
   <PropertyGroup>
     <RootNamespace>Wumpus.Bot</RootNamespace>
     <AssemblyName>Wumpus.Net.Bot</AssemblyName>
@@ -8,7 +8,9 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../Voltaic.Logging/Voltaic.Logging.csproj" />
+    <PackageReference Include="Voltaic.Logging" Version="0.2.1-*" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="../Wumpus.Net.Rest/Wumpus.Net.Rest.csproj" />
     <ProjectReference Include="../Wumpus.Net.Gateway/Wumpus.Net.Gateway.csproj" />
   </ItemGroup>
