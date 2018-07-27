@@ -406,7 +406,7 @@ namespace Wumpus
                     {
                         Compress = false, // We don't want payload compression
                         LargeThreshold = 50,
-                        Presence = Optional.FromNullable(initialPresence),
+                        Presence = Optional.FromObject(initialPresence),
                         Properties = new IdentityConnectionProperties
                         {
                             Os = OsName,

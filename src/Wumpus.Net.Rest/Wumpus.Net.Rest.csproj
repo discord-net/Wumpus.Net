@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../Wumpus.targets" />
+  <Import Project="../Wumpus.Net.targets" />
   <PropertyGroup>
     <RootNamespace>Wumpus</RootNamespace>
     <AssemblyName>Wumpus.Net.Rest</AssemblyName>
@@ -9,9 +9,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="RestEase" Version="1.4.5" />
+    <PackageReference Include="Voltaic.Serialization.Json" Version="0.2.1-*" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../Wumpus.Net.Core/Wumpus.Net.Core.csproj" />
-    <ProjectReference Include="../Voltaic.Serialization.Json/Voltaic.Serialization.Json.csproj" />
   </ItemGroup>
 </Project>

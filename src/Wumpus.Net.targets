@@ -5,7 +5,8 @@
     <RepositoryUrl>git://github.com/RogueException/Wumpus.Net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <LangVersion>latest</LangVersion>
-    <VersionPrefix>0.2.0</VersionPrefix>
+    <VersionPrefix>0.2.1</VersionPrefix>
+    <RootNamespace>Wumpus</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(BuildNumber)' == '' ">

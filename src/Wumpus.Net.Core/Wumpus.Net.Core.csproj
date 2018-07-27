@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../Wumpus.targets" />
+  <Import Project="../Wumpus.Net.targets" />
   <PropertyGroup>
     <RootNamespace>Wumpus</RootNamespace>
     <AssemblyName>Wumpus.Net.Core</AssemblyName>
@@ -8,6 +8,6 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../Voltaic.Serialization.Json/Voltaic.Serialization.Json.csproj" />
+    <PackageReference Include="Voltaic.Serialization.Json" Version="0.2.1-*" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../Wumpus.targets" />
+  <Import Project="../Wumpus.Net.targets" />
   <PropertyGroup>
     <RootNamespace>Wumpus</RootNamespace>
     <AssemblyName>Wumpus.Net.Gateway</AssemblyName>
@@ -9,9 +9,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Net.WebSockets.Client" Version="4.3.1" />
+    <PackageReference Include="Voltaic.Serialization.Etf" Version="0.2.1-*" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../Voltaic.Serialization.Etf/Voltaic.Serialization.Etf.csproj" />
     <ProjectReference Include="../Wumpus.Net.Core/Wumpus.Net.Core.csproj" />
   </ItemGroup>
 </Project>

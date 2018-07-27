@@ -11,8 +11,8 @@
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.2" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../src\Wumpus.Net.Gateway/Wumpus.Net.Gateway.csproj" />
-    <ProjectReference Include="../../src\Wumpus.Net.Rest/Wumpus.Net.Rest.csproj" />
-    <ProjectReference Include="../../src\Wumpus.Net.Rpc/Wumpus.Net.Rpc.csproj" />
+    <ProjectReference Include="../../src/Wumpus.Net.Gateway/Wumpus.Net.Gateway.csproj" />
+    <ProjectReference Include="../../src/Wumpus.Net.Rest/Wumpus.Net.Rest.csproj" />
+    <ProjectReference Include="../../src/Wumpus.Net.Rpc/Wumpus.Net.Rpc.csproj" />
   </ItemGroup>
 </Project>
