@@ -317,8 +317,8 @@ namespace Wumpus
         private async Task WhenAny(IEnumerable<Task> tasks)
         {
             var task = await Task.WhenAny(tasks).ConfigureAwait(false);
-            if (task.IsFaulted)
-                await task.ConfigureAwait(false); // Rethrow
+            //if (task.IsFaulted)
+            await task.ConfigureAwait(false); // Return or rethrow
         }
         private async Task WhenAny(IEnumerable<Task> tasks, int millis, string errorText)
         {
@@ -326,8 +326,8 @@ namespace Wumpus
             var task = await Task.WhenAny(tasks.Append(timeoutTask)).ConfigureAwait(false);
             if (task == timeoutTask)
                 throw new TimeoutException(errorText);
-            else if (task.IsFaulted)
-                await task.ConfigureAwait(false); // Rethrow
+            //else if (task.IsFaulted)
+            await task.ConfigureAwait(false); // Return or rethrow
         }
 
         private bool IsRecoverable(Exception ex)
