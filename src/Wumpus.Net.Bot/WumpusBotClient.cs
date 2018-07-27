@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.WebSockets;
@@ -125,14 +126,14 @@ namespace Wumpus.Bot
                 }
                 while (true)
                 {
-                    GetGatewayResponse gatewayInfo = null;
-                    if (url == null)
+                    if (url == null) // Optimization: avoid an extra call in case GetBotGateway was already called
                     {
                         try
                         {
-                            gatewayInfo = await Rest.GetGatewayAsync();
+                            var gatewayInfo = await Rest.GetGatewayAsync();
+                            url = gatewayInfo.Url.ToString();
                         }
-                        catch (HttpRequestException ex)
+                        catch (Exception ex) when (IsRecoverable(ex))
                         {
                             _logger.Warning("Failed to get gateway URL", ex);
                             await Task.Delay(5000);
@@ -140,9 +141,9 @@ namespace Wumpus.Bot
                     }
                     try
                     {
-                        await Gateway.RunAsync(url ?? gatewayInfo.Url.ToString(), shardId, totalShards, initialPresence);
+                        await Gateway.RunAsync(url, shardId, totalShards, initialPresence);
                     }
-                    catch (WebSocketException ex) when (ex.InnerException is HttpRequestException)
+                    catch (Exception ex) when (IsRecoverable(ex))
                     {
                         _logger.Warning("Failed to connect to gateway URL", ex);
                         await Task.Delay(5000);
@@ -160,6 +161,22 @@ namespace Wumpus.Bot
         public async Task StopAsync()
         {
             await Gateway.StopAsync();
+        }
+
+        private bool IsRecoverable(Exception ex)
+        {
+            switch (ex)
+            {
+                case HttpRequestException _:
+                    return true;
+                case WebSocketClosedException closeEx:
+                    if (closeEx.CloseStatus == WebSocketCloseStatus.EndpointUnavailable)
+                        return true;
+                    break;
+            }
+            if (ex.InnerException != null)
+                return IsRecoverable(ex.InnerException);
+            return false;
         }
     }
 }
