@@ -11,16 +11,17 @@ namespace Wumpus.Requests
         /// <remarks> Up to 2000 characters. </remarks>
         [ModelProperty("content")]
         public Optional<Utf8String> Content { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> A nonce that can be used for optimistic message sending </summary>
         [ModelProperty("nonce")]
         public Optional<Utf8String> Nonce { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> True if this is a TTS message </summary>
         [ModelProperty("tts")]
         public Optional<bool> IsTextToSpeech { get; set; }
-        /// <summary> xxx </summary>
+        /// <summary> Embedded rich content </summary>
         [ModelProperty("embed")]
         public Optional<Embed> Embed { get; set; }
 
+        /// <summary> The contents of the file being sent </summary>
         public Optional<MultipartFile> File { get; set; }
         
         public IDictionary<string, object> GetFormData()
