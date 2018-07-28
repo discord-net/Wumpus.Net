@@ -51,8 +51,8 @@ namespace Wumpus.Net
                             var buffer = new ResizableMemory<byte>(4096); // 4 KB
                             while (true)
                             {
-                                var span = buffer.GetSpan(4096);
-                                int bytesCopied = file.Stream.Read(span);
+                                var segment = buffer.GetSegment(4096);
+                                int bytesCopied = file.Stream.Read(segment.Array, segment.Offset, segment.Count);
                                 if (bytesCopied == 0)
                                     break;
                                 buffer.Advance(bytesCopied);
