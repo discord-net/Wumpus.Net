@@ -1,8 +1,9 @@
 ﻿using RestEase;
-using System.IO;
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using Voltaic.Serialization;
 using Wumpus.Requests;
 using Wumpus.Serialization;
 
@@ -31,14 +32,33 @@ namespace Wumpus.Net
                     if (pair.Value is MultipartFile file)
                     {
                         var stream = file.Stream;
-                        if (!stream.CanSeek)
+                        if (stream.CanSeek)
                         {
-                            var memoryStream = new MemoryStream();
-                            file.Stream.CopyTo(memoryStream);
-                            memoryStream.Position = 0;
-                            stream = memoryStream;
+                            long remaining = stream.Length - stream.Position;
+                            if (remaining > int.MaxValue)
+                                throw new InvalidOperationException("Uploading files larger than Int32.MaxValue bytes is unsupported");
+                            else if (remaining <= 0)
+                            {
+                                content.Add(new ByteArrayContent(Array.Empty<byte>()), pair.Key, (string)file.Filename);
+                                continue;
+                            }
+                            var arr = new byte[remaining];
+                            stream.Read(arr, 0, arr.Length);
+                            content.Add(new ByteArrayContent(arr), pair.Key, (string)file.Filename);
                         }
-                        content.Add(new StreamContent(stream), pair.Key, (string)file.Filename);
+                        else
+                        {
+                            var buffer = new ResizableMemory<byte>(4096); // 4 KB
+                            while (true)
+                            {
+                                var span = buffer.GetSpan(4096);
+                                int bytesCopied = file.Stream.Read(span);
+                                if (bytesCopied == 0)
+                                    break;
+                                buffer.Advance(bytesCopied);
+                            }
+                            content.Add(new ByteArrayContent(buffer.ToArray()), pair.Key, (string)file.Filename);
+                        }
                     }
                     else
                         content.Add(new StringContent(_serializer.WriteUtf16String(pair.Value), Encoding.UTF8, "application/json"), pair.Key);
