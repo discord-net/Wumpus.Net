@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.WebSockets;
@@ -114,7 +115,7 @@ namespace Wumpus
         private readonly SemaphoreSlim _stateLock;
 
         // Instance
-        private ResizableMemory<byte> _receiveBuffer;
+        private readonly ResizableMemoryStream _compressed, _decompressed;
         private Task _connectionTask;
         private CancellationTokenSource _runCts;
         private Utf8String _sessionId;
@@ -126,8 +127,10 @@ namespace Wumpus
         private int? _totalShards;
 
         // Connection (For each WebSocket connection)
+        private DeflateStream _zlibStream;
         private BlockingCollection<GatewayPayload> _sendQueue;
         private bool _receivedData;
+        private bool _readZlibHeader;
 
         public AuthenticationHeaderValue Authorization { get; set; }
         public ConnectionState State { get; private set; }
@@ -137,7 +140,8 @@ namespace Wumpus
         public WumpusGatewayClient(WumpusEtfSerializer serializer = null)
         {
             EtfSerializer = serializer ?? new WumpusEtfSerializer();
-            _receiveBuffer = new ResizableMemory<byte>(10 * 1024); // 10 KB
+            _compressed = new ResizableMemoryStream(10 * 1024); // 10 KB
+            _decompressed = new ResizableMemoryStream(10 * 1024); // 10 KB
             _stateLock = new SemaphoreSlim(1, 1);
             _connectionTask = Task.CompletedTask;
             _runCts = new CancellationTokenSource();
@@ -191,8 +195,11 @@ namespace Wumpus
 
                         // Connect
                         State = ConnectionState.Connecting;
-                        var uri = new Uri(_url + $"?v={ApiVersion}&encoding=etf");// &compress=zlib-stream"); // TODO: Enable
+                        var uri = new Uri(_url + $"?v={ApiVersion}&encoding=etf&compress=zlib-stream"); // TODO: Enable
                         await client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);
+
+                        _zlibStream = new DeflateStream(_compressed, CompressionMode.Decompress, true);
+                        _readZlibHeader = false;
 
                         // Receive HELLO (timeout = ConnectionTimeoutMillis)
                         var receiveTask = ReceiveAsync(client, readySignal, cancelToken);
@@ -287,7 +294,7 @@ namespace Wumpus
                     }
                     catch (SerializationException ex)
                     {
-                        DeserializationError?.Invoke(ex)
+                        DeserializationError?.Invoke(ex);
                     }
                 }
             });
@@ -410,28 +417,48 @@ namespace Wumpus
 
         private async Task<GatewayPayload> ReceiveAsync(ClientWebSocket client, TaskCompletionSource<bool> readySignal, CancellationToken cancelToken)
         {
-            _receiveBuffer.Clear();
+            // Reset compressed stream
+            _compressed.Position = 0;
+            _compressed.SetLength(0);
 
+            // Receive compressed data
             WebSocketReceiveResult result;
             do
             {
-                var buffer = _receiveBuffer.GetSegment(10 * 1024); // 10 KB
+                var buffer = _compressed.Buffer.RequestSegment(10 * 1024); // 10 KB
                 result = await client.ReceiveAsync(buffer, cancelToken).ConfigureAwait(false);
-                _receiveBuffer.Advance(result.Count);
+                _compressed.Buffer.Advance(result.Count);
                 _receivedData = true;
 
                 if (result.CloseStatus != null)
-                    throw new WebSocketClosedException(result.CloseStatus.Value, result.CloseStatusDescription); // TODO: Exception type?
+                    throw new WebSocketClosedException(result.CloseStatus.Value, result.CloseStatusDescription);
             }
             while (!result.EndOfMessage);
 
-            var payload = EtfSerializer.Read<GatewayPayload>(_receiveBuffer.AsReadOnlySpan());
+            // Skip zlib header
+            if (!_readZlibHeader)
+            {
+                if (_compressed.Buffer.Array[0] != 0x78)
+                    throw new SerializationException("First payload is missing zlib header");
+                _compressed.Position = 2;
+                _readZlibHeader = true;
+            }
 
+            // Reset decompressed stream
+            _decompressed.Position = 0;
+            _decompressed.SetLength(0);
+
+            // Decompress
+            _zlibStream.CopyTo(_decompressed);
+
+            // Deserialize
+            var payload = EtfSerializer.Read<GatewayPayload>(_decompressed.Buffer.AsReadOnlySpan());
             if (payload.Sequence.HasValue)
                 _lastSeq = payload.Sequence.Value;
 
+            // Handle result
             HandleEvent(payload, readySignal); // Must be before event so slow user handling can't trigger our timeouts
-            ReceivedPayload?.Invoke(payload, _receiveBuffer.AsReadOnlyMemory());
+            ReceivedPayload?.Invoke(payload, _compressed.Buffer.AsReadOnlyMemory());
             return payload;
         }
         private void HandleEvent(GatewayPayload evnt, TaskCompletionSource<bool> readySignal)
