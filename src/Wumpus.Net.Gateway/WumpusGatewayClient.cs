@@ -56,6 +56,7 @@ namespace Wumpus
         public event Action<Exception> Disconnected;
         public event Action SessionCreated;
         public event Action SessionLost;
+        public event Action<SerializationException> DeserializationError;
 
         // Raw events
         public event Action<GatewayPayload, ReadOnlyMemory<byte>> ReceivedPayload;
@@ -280,7 +281,14 @@ namespace Wumpus
                 while (true)
                 {
                     cancelToken.ThrowIfCancellationRequested();
-                    await ReceiveAsync(client, readySignal, cancelToken).ConfigureAwait(false);
+                    try
+                    {
+                        await ReceiveAsync(client, readySignal, cancelToken).ConfigureAwait(false);
+                    }
+                    catch (SerializationException ex)
+                    {
+                        DeserializationError?.Invoke(ex)
+                    }
                 }
             });
         }

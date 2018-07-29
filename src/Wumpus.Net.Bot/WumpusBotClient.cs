@@ -61,6 +61,7 @@ namespace Wumpus.Bot
                 if (logManager.MinSeverity >= LogSeverity.Warning)
                 {
                     Gateway.SessionLost += () => _logger.Warning("Lost previous session");
+                    Gateway.DeserializationError += ex => _logger.Warning("Failed to parse payload", ex);
                 }
                 if (logManager.MinSeverity >= LogSeverity.Info)
                 {
