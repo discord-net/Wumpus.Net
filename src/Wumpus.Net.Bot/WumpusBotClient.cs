@@ -10,7 +10,6 @@ using Voltaic.Logging;
 using Wumpus.Events;
 using Wumpus.Net;
 using Wumpus.Requests;
-using Wumpus.Responses;
 using Wumpus.Serialization;
 
 namespace Wumpus.Bot

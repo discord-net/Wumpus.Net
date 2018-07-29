@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Voltaic;
 using Voltaic.Serialization;
 using Wumpus.Entities;
 
