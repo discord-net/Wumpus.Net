@@ -79,7 +79,7 @@ namespace Wumpus.Entities
         public Optional<bool> IsWidgetEnabled { get; set; }
         /// <summary> The <see cref="Channel"/> Id for the <see cref="Guild"/> widget. </summary>
         [ModelProperty("widget_channel_id")]
-        public Optional<Snowflake> WidgetChannelId { get; set; }
+        public Optional<Snowflake?> WidgetChannelId { get; set; }
         /// <summary> The id of the <see cref="Channel"/> to which system <see cref="Message"/> entities are sent. </summary>
         [ModelProperty("system_channel_id")]
         public Snowflake? SystemChannelId { get; set; }
