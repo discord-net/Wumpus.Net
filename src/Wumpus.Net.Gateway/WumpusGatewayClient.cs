@@ -371,6 +371,7 @@ namespace Wumpus
                         switch (wscEx.Code)
                         {
                             case 4000: // Unknown Error
+                            case 4006: // Invalid Session
                             case 4008: // Rate Limited // TODO: Handle this better
                             case 4009: // Session timeout
                                 return true;
