@@ -82,7 +82,7 @@ namespace Wumpus.Bot
                     Rest.JsonSerializer.FailedProperty += path => _logger.Debug($"Failed to deserialize JSON \"{path}\"");
                     Gateway.EtfSerializer.UnknownProperty += path => _logger.Debug($"Unknown ETF property \"{path}\"");
                     Gateway.EtfSerializer.FailedProperty += path => _logger.Debug($"Failed to deserialize ETF \"{path}\"");
-
+                    
                     Gateway.ReceivedPayload += (payload, bytes) =>
                     {
                         if (payload.Operation == GatewayOperation.Dispatch)
