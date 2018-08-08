@@ -26,16 +26,6 @@ namespace Wumpus
         Disconnecting
     }
 
-    public enum StopReason
-    {
-        Unknown,
-        AuthFailed,
-        ShardsTooSmall,
-        UrlNotFound,
-        Exception,
-        Canceled
-    }
-
     public class WumpusGatewayClient : IDisposable
     {
         public const int ApiVersion = 6;
