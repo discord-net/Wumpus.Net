@@ -50,8 +50,8 @@ namespace Wumpus
         public event Action<SerializationException> DeserializationError;
 
         // Raw events
-        public event Action<GatewayPayload, ReadOnlyMemory<byte>> ReceivedPayload;
-        public event Action<GatewayPayload, ReadOnlyMemory<byte>> SentPayload;
+        public event Action<GatewayPayload, PayloadInfo> ReceivedPayload;
+        public event Action<GatewayPayload, PayloadInfo> SentPayload;
 
         // Gateway events
         public event Action<HelloEvent> GatewayHello;
@@ -369,6 +369,8 @@ namespace Wumpus
                 case TimeoutException _: // Caused by missing heartbeat ack
                     return true;
             }
+            if (ex.InnerException != null)
+                return IsRecoverable(ex.InnerException);
             return false;
         }
 
@@ -447,7 +449,7 @@ namespace Wumpus
 
             // Handle result
             HandleEvent(payload, readySignal); // Must be before event so slow user handling can't trigger our timeouts
-            ReceivedPayload?.Invoke(payload, _compressed.Buffer.AsReadOnlyMemory());
+            ReceivedPayload?.Invoke(payload, new PayloadInfo(_decompressed.Buffer.AsReadOnlyMemory(), _compressed.Buffer.Length));
             return payload;
         }
         private void HandleEvent(GatewayPayload evnt, TaskCompletionSource<bool> readySignal)
@@ -529,7 +531,7 @@ namespace Wumpus
         {
             var writer = EtfSerializer.Write(payload);
             await client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
-            SentPayload?.Invoke(payload, writer.AsReadOnlyMemory());
+            SentPayload?.Invoke(payload, new PayloadInfo(writer.AsReadOnlyMemory(), writer.Length));
         }
 
         private void SendIdentify(UpdateStatusParams initialPresence)

@@ -3,9 +3,11 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Sockets;
 using System.Net.WebSockets;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,6 +29,12 @@ namespace Wumpus
 
     public class WumpusRpcClient : IDisposable
     {
+        public const int APIVersion = 1;
+        public static string Version { get; } =
+            typeof(WumpusRpcClient).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ??
+            typeof(WumpusRpcClient).GetTypeInfo().Assembly.GetName().Version.ToString(3) ??
+            "Unknown";
+
         public const int PortRangeStart = 6463;
         public const int PortRangeEnd = 6472;
 
@@ -38,10 +46,18 @@ namespace Wumpus
         public const int AuthenticateTimeoutMillis = 60000; // 1 min
         // Typical Backoff: 1.75s, 3.06s, 5.36s, 9.38s, 16.41s, 28.72s, 50.27s, 60s, 60s...
         
+        // Status events
         public event Action Connected;
         public event Action<Exception> Disconnected;
-        public event Action<RpcPayload, ReadOnlyMemory<byte>> ReceivedPayload;
-        public event Action<RpcPayload, ReadOnlyMemory<byte>> SentPayload;
+        public event Action SessionCreated;
+        public event Action SessionLost;
+        public event Action<SerializationException> DeserializationError;
+
+        // Raw events
+        public event Action<RpcPayload, PayloadInfo> ReceivedPayload;
+        public event Action<RpcPayload, PayloadInfo> SentPayload;
+
+        // Rpc events //TODO: Impl
 
         private readonly SemaphoreSlim _stateLock;
 
@@ -129,7 +145,7 @@ namespace Wumpus
                                 try
                                 {
                                     string url = $"ws://127.0.0.1:{port}";
-                                    var uri = new Uri(url + $"?v={DiscordRpcConstants.APIVersion}&client_id={_clientId}&encoding=etf&compress=zlib-stream");
+                                    var uri = new Uri(url + $"?v={APIVersion}&client_id={_clientId}&encoding=etf&compress=zlib-stream");
                                     await client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);
                                     _url = url;
                                     break;
@@ -142,7 +158,7 @@ namespace Wumpus
                         else
                         {
                             // Reconnect to previously found server
-                            var uri = new Uri(_url + $"?v={DiscordRpcConstants.APIVersion}&client_id={_clientId}&encoding=etf&compress=zlib-stream");
+                            var uri = new Uri(_url + $"?v={APIVersion}&client_id={_clientId}&encoding=etf&compress=zlib-stream");
                             await client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);                                        
                         }
 
@@ -186,6 +202,7 @@ namespace Wumpus
                         }
 
                         // Start tasks here since HELLO must be handled before another thread can send/receive
+                        _sendQueue = new BlockingCollection<RpcPayload>();
                         tasks = new[]
                         {
                             RunSendAsync(client, cancelToken),
@@ -252,7 +269,14 @@ namespace Wumpus
                 while (true)
                 {
                     cancelToken.ThrowIfCancellationRequested();
-                    await ReceiveAsync(client, readySignal, cancelToken).ConfigureAwait(false);
+                    try
+                    {
+                        await ReceiveAsync(client, readySignal, cancelToken).ConfigureAwait(false);
+                    }
+                    catch (SerializationException ex)
+                    {
+                        DeserializationError?.Invoke(ex);
+                    }
                 }
             });
         }
@@ -260,19 +284,11 @@ namespace Wumpus
         {
             return Task.Run(async () =>
             {
-                try
+                while (true)
                 {
-                    _sendQueue = new BlockingCollection<RpcPayload>();
-                    while (true)
-                    {
-                        cancelToken.ThrowIfCancellationRequested();
-                        var payload = _sendQueue.Take(cancelToken);
-                        await SendAsync(client, cancelToken, payload).ConfigureAwait(false);
-                    }
-                }
-                finally
-                {
-                    _sendQueue = null;
+                    cancelToken.ThrowIfCancellationRequested();
+                    var payload = _sendQueue.Take(cancelToken);
+                    await SendAsync(client, cancelToken, payload).ConfigureAwait(false);
                 }
             });
         }
@@ -297,6 +313,9 @@ namespace Wumpus
         {
             switch (ex)
             {
+                case HttpRequestException _:
+                    _url = null;
+                    return true;
                 case WebSocketException wsEx:
                     if (wsEx.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
                         return true;
@@ -311,6 +330,9 @@ namespace Wumpus
                             case WebSocketCloseStatus.InternalServerError:
                             case WebSocketCloseStatus.ProtocolError:
                                 return true;
+                            case WebSocketCloseStatus.EndpointUnavailable:
+                                _url = null;
+                                return true;
                         }
                     }
                     else
@@ -324,6 +346,8 @@ namespace Wumpus
                     }
                     break;
             }
+            if (ex.InnerException != null)
+                return IsRecoverable(ex.InnerException);
             return false;
         }
 
@@ -399,7 +423,7 @@ namespace Wumpus
 
             // Handle result
             HandleEvent(payload, readySignal); // Must be before event so slow user handling can't trigger our timeouts
-            ReceivedPayload?.Invoke(payload, _compressed.Buffer.AsReadOnlyMemory());
+            ReceivedPayload?.Invoke(payload, new PayloadInfo(_decompressed.Buffer.AsReadOnlyMemory(), _compressed.Buffer.Length));
             return payload;
         }
         private void HandleEvent(RpcPayload evnt, TaskCompletionSource<bool> readySignal)
@@ -429,7 +453,7 @@ namespace Wumpus
         {
             var writer = EtfSerializer.Write(payload);
             await client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
-            SentPayload?.Invoke(payload, writer.AsReadOnlyMemory());
+            SentPayload?.Invoke(payload, new PayloadInfo(writer.AsReadOnlyMemory(), writer.Length));
         }
     }
 }

@@ -83,19 +83,19 @@ namespace Wumpus.Bot
                     Gateway.EtfSerializer.UnknownProperty += path => _logger.Debug($"Unknown ETF property \"{path}\"");
                     Gateway.EtfSerializer.FailedProperty += path => _logger.Debug($"Failed to deserialize ETF \"{path}\"");
                     
-                    Gateway.ReceivedPayload += (payload, bytes) =>
+                    Gateway.ReceivedPayload += (payload, info) =>
                     {
                         if (payload.Operation == GatewayOperation.Dispatch)
-                            _logger.Debug($"<~ {payload.DispatchType.Value} ({bytes.Length} bytes)");
+                            _logger.Debug($"<~ {payload.DispatchType.Value} ({info.CompressedBytes} -> {info.UncompressedBytes} bytes)");
                         else
-                            _logger.Debug($"<~ {payload.Operation} ({bytes.Length} bytes)");
+                            _logger.Debug($"<~ {payload.Operation} ({info.CompressedBytes} -> {info.UncompressedBytes} bytes)");
                     };
-                    Gateway.SentPayload += (payload, bytes) =>
+                    Gateway.SentPayload += (payload, info) =>
                     {
                         if (payload.Operation == GatewayOperation.Dispatch)
-                            _logger.Debug($"~> {payload.DispatchType.Value} ({bytes.Length} bytes)");
+                            _logger.Debug($"~> {payload.DispatchType.Value} ({info.UncompressedBytes} bytes)");
                         else
-                            _logger.Debug($"~> {payload.Operation} ({bytes.Length} bytes)");
+                            _logger.Debug($"~> {payload.Operation} ({info.UncompressedBytes} bytes)");
                     };
 
                     State.Guilds.Updated += g => _logger.Verbose($"Updated guild {g.Name}");
