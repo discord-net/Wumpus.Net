@@ -37,7 +37,7 @@ namespace Wumpus.Requests
         {
             Preconditions.NotNull(Nonce, nameof(Nonce));
 
-            if (!Content.IsSpecified || Content.Value == (Utf8String)null)
+            if (!Content.IsSpecified || Content.Value is null)
                 Content = (Utf8String)"";
             Preconditions.LengthAtMost(Content, Message.MaxContentLength, nameof(Content));
             //TODO: Validate embed length

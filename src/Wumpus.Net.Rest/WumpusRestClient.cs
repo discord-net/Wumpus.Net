@@ -1,8 +1,8 @@
 ﻿using RestEase;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Threading.Tasks;
 using Voltaic;
 using Wumpus.Entities;
@@ -15,20 +15,28 @@ namespace Wumpus
 {
     public class WumpusRestClient : IDiscordRestApi, IDisposable
     {
+        public const int ApiVersion = 6;
+        public static string Version { get; } =
+            typeof(WumpusRestClient).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ??
+            typeof(WumpusRestClient).GetTypeInfo().Assembly.GetName().Version.ToString(3) ??
+            "Unknown";
+
         private readonly IDiscordRestApi _api;
-        private readonly WumpusJsonSerializer _serializer;
 
         public AuthenticationHeaderValue Authorization { get => _api.Authorization; set => _api.Authorization = value; }
+        public WumpusJsonSerializer JsonSerializer { get; }
 
         public WumpusRestClient(WumpusJsonSerializer serializer = null, IRateLimiter rateLimiter = null)
-            : this("https://discordapp.com/api/v6/", serializer) { }
+            : this($"https://discordapp.com/api/v{ApiVersion}/", serializer) { }
         public WumpusRestClient(string url, WumpusJsonSerializer serializer = null, IRateLimiter rateLimiter = null)
         {
-            _serializer = serializer ?? new WumpusJsonSerializer();
+            JsonSerializer = serializer ?? new WumpusJsonSerializer();
             rateLimiter = rateLimiter ?? new DefaultRateLimiter();
-            var httpClient = new HttpClient { BaseAddress = new Uri(url) };
-            _api = RestClient.For<IDiscordRestApi>(new WumpusRequester(httpClient, _serializer, rateLimiter));
 
+            var httpClient = new HttpClient { BaseAddress = new Uri(url) };
+            httpClient.DefaultRequestHeaders.Add("User-Agent", $"DiscordBot (https://github.com/RogueException/Wumpus.Net, v{Version})");
+
+            _api = RestClient.For<IDiscordRestApi>(new WumpusRequester(httpClient, JsonSerializer, rateLimiter));
         }
         public void Dispose() => _api.Dispose();
 

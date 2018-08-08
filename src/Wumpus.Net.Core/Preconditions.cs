@@ -37,8 +37,8 @@ namespace Wumpus
 
         public static void NotEmpty(string obj, string name, string msg = null) { if (obj != null && obj.Length == 0) throw CreateNotEmptyException(name, msg); }
         public static void NotEmpty(Optional<string> obj, string name, string msg = null) { if (obj.IsSpecified && obj.Value != null && obj.Value.Length == 0) throw CreateNotEmptyException(name, msg); }
-        public static void NotEmpty(Utf8String obj, string name, string msg = null) { if (obj != (Utf8String)null && obj.Bytes.Length == 0) throw CreateNotEmptyException(name, msg); }
-        public static void NotEmpty(Optional<Utf8String> obj, string name, string msg = null) { if (obj.IsSpecified && obj.Value != (Utf8String)null && obj.Value.Bytes.Length == 0) throw CreateNotEmptyException(name, msg); }
+        public static void NotEmpty(Utf8String obj, string name, string msg = null) { if (!(obj is null) && obj.Bytes.Length == 0) throw CreateNotEmptyException(name, msg); }
+        public static void NotEmpty(Optional<Utf8String> obj, string name, string msg = null) { if (obj.IsSpecified && !(obj.Value is null) && obj.Value.Bytes.Length == 0) throw CreateNotEmptyException(name, msg); }
         public static void NotNullOrEmpty(string obj, string name, string msg = null)
         {
             if (obj == null) throw CreateNotNullException(name, msg);
@@ -54,14 +54,14 @@ namespace Wumpus
         }
         public static void NotNullOrEmpty(Utf8String obj, string name, string msg = null)
         {
-            if (obj == (Utf8String)null) throw CreateNotNullException(name, msg);
+            if (obj is null) throw CreateNotNullException(name, msg);
             if (obj.Bytes.Length == 0) throw CreateNotEmptyException(name, msg);
         }
         public static void NotNullOrEmpty(Optional<Utf8String> obj, string name, string msg = null)
         {
             if (obj.IsSpecified)
             {
-                if (obj.Value == (Utf8String)null) throw CreateNotNullException(name, msg);
+                if (obj.Value is null) throw CreateNotNullException(name, msg);
                 if (obj.Value.Bytes.Length == 0) throw CreateNotEmptyException(name, msg);
             }
         }
@@ -80,14 +80,14 @@ namespace Wumpus
         }
         public static void NotNullOrWhitespace(Utf8String obj, string name, string msg = null)
         {
-            if (obj == (Utf8String)null) throw CreateNotNullException(name, msg);
+            if (obj is null) throw CreateNotNullException(name, msg);
             if (obj.Trim().Bytes.Length == 0) throw CreateNotEmptyException(name, msg);
         }
         public static void NotNullOrWhitespace(Optional<Utf8String> obj, string name, string msg = null)
         {
             if (obj.IsSpecified)
             {
-                if (obj.Value == (Utf8String)null) throw CreateNotNullException(name, msg);
+                if (obj.Value is null) throw CreateNotNullException(name, msg);
                 if (obj.Value.Trim().Bytes.Length == 0) throw CreateNotEmptyException(name, msg);
             }
         }

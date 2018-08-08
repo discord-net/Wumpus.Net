@@ -16,7 +16,7 @@ namespace Wumpus.Requests
 
         public void Validate()
         {
-            if (!Content.IsSpecified || Content.Value == (Utf8String)null)
+            if (!Content.IsSpecified || Content.Value is null)
                 Content = (Utf8String)"";
             if (Embed.IsSpecified && Embed.Value != null)
                 Preconditions.NotNullOrWhitespace(Content, nameof(Content));

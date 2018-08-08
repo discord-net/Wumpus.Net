@@ -44,10 +44,10 @@ namespace Wumpus.Entities
     {
         /// <summary> Unix time (in milliseconds) of when the <see cref="Activity"/> started. </summary>
         [ModelProperty("start"), Epoch(EpochType.UnixMillis)]
-        public Optional<int> Start { get; set; }
+        public Optional<DateTimeOffset> Start { get; set; }
         /// <summary> Unix time (in milliseconds) of when the <see cref="Activity"/> ends. </summary>
         [ModelProperty("end"), Epoch(EpochType.UnixMillis)]
-        public Optional<int> End { get; set; }
+        public Optional<DateTimeOffset> End { get; set; }
     }
 
     /// <summary> https://discordapp.com/developers/docs/topics/gateway#activity-object-activity-party </summary>

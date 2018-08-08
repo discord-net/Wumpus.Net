@@ -3,6 +3,7 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using Voltaic;
 using Voltaic.Serialization;
 using Wumpus.Requests;
 using Wumpus.Serialization;
@@ -51,7 +52,7 @@ namespace Wumpus.Net
                             var buffer = new ResizableMemory<byte>(4096); // 4 KB
                             while (true)
                             {
-                                var segment = buffer.GetSegment(4096);
+                                var segment = buffer.RequestSegment(4096);
                                 int bytesCopied = file.Stream.Read(segment.Array, segment.Offset, segment.Count);
                                 if (bytesCopied == 0)
                                     break;

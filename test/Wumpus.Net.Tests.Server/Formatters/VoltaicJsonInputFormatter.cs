@@ -3,6 +3,7 @@ using System;
 using System.Buffers;
 using System.Text;
 using System.Threading.Tasks;
+using Voltaic;
 using Voltaic.Serialization;
 using Voltaic.Serialization.Json;
 
@@ -38,11 +39,11 @@ namespace Wumpus.Server.Formatters
             var buffer = new ResizableMemory<byte>(1024 * 4);
             try
             {
-                var read = await request.Body.ReadAsync(buffer.GetMemory(1024 * 4));
+                var read = await request.Body.ReadAsync(buffer.RequestMemory(1024 * 4));
                 while (read > 0)
                 {
                     buffer.Advance(read);
-                    read = await request.Body.ReadAsync(buffer.GetMemory(1024 * 4));
+                    read = await request.Body.ReadAsync(buffer.RequestMemory(1024 * 4));
                 }
 
                 if (encoding == Encoding.UTF8)

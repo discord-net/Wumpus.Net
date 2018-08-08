@@ -65,14 +65,14 @@ namespace Wumpus.Net
                             RestError error = null;
                             try { error = _serializer.Read<RestError>(bytes.AsSpan()); } catch { }
                             if (error != null)
-                                throw new DiscordRestException(response.StatusCode, error.Code, error.Message);
+                                throw new WumpusRestException(response.StatusCode, error.Code, error.Message);
 
                             Utf8String msg = null;
                             try { msg = new Utf8String(bytes); } catch { }
-                            if (msg != (Utf8String)null)
-                                throw new DiscordRestException(response.StatusCode, null, msg);
+                            if (!(msg is null))
+                                throw new WumpusRestException(response.StatusCode, null, msg);
                         }
-                        throw new DiscordRestException(response.StatusCode);
+                        throw new WumpusRestException(response.StatusCode);
                 }
             }
         }

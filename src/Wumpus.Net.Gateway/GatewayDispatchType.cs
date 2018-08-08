@@ -8,6 +8,8 @@ namespace Wumpus.Events
     {
         /// <summary> Contains the initial state information. </summary>
         [ModelEnumValue("READY")] Ready,
+        /// <summary> Response to <see cref="GatewayOperation.Resume"/>. </summary>
+        [ModelEnumValue("RESUMED")] Resumed,
         /// <summary> Lazy-load for unavailable <see cref="Entities.Guild"/>, <see cref="Entities.Guild"/> became available, or a <see cref="Entities.User"/> joined a new <see cref="Entities.Guild"/>. </summary>
         [ModelEnumValue("GUILD_CREATE")] GuildCreate,
         /// <summary> <see cref="Entities.Guild"/> was updated. </summary>

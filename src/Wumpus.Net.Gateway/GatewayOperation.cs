@@ -29,7 +29,7 @@
         InvalidSession = 9,
         /// <summary> C←S - Used to provide information to the client immediately on connection. </summary>
         Hello = 10,
-        /// <summary> C←S - Used to reply to a client's heartbeat. </summary>
+        /// <summary> C↔S - Used to reply to a heartbeat. </summary>
         HeartbeatAck = 11
     }
 }

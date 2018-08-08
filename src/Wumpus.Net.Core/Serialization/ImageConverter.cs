@@ -33,7 +33,7 @@ namespace Wumpus.Serialization
 
         public override bool TryWrite(ref ResizableMemory<byte> remaining, Image value, PropertyMap propMap = null)
         {
-            if (value.Hash != (Utf8String)null)
+            if (!(value.Hash is null))
                 return _hashConverter.TryWrite(ref remaining, value.Hash, propMap);
             if (value.Stream != null)
             {
