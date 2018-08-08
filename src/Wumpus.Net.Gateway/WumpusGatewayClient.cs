@@ -449,7 +449,7 @@ namespace Wumpus
 
             // Handle result
             HandleEvent(payload, readySignal); // Must be before event so slow user handling can't trigger our timeouts
-            ReceivedPayload?.Invoke(payload, new PayloadInfo(_decompressed.Buffer.AsReadOnlyMemory(), _compressed.Buffer.Length));
+            ReceivedPayload?.Invoke(payload, new PayloadInfo(_decompressed.Buffer.Length, _compressed.Buffer.Length));
             return payload;
         }
         private void HandleEvent(GatewayPayload evnt, TaskCompletionSource<bool> readySignal)
@@ -531,7 +531,7 @@ namespace Wumpus
         {
             var writer = EtfSerializer.Write(payload);
             await client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
-            SentPayload?.Invoke(payload, new PayloadInfo(writer.AsReadOnlyMemory(), writer.Length));
+            SentPayload?.Invoke(payload, new PayloadInfo(writer.Length, writer.Length));
         }
 
         private void SendIdentify(UpdateStatusParams initialPresence)

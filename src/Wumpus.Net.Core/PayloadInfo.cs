@@ -4,13 +4,12 @@ namespace Wumpus
 {
     public struct PayloadInfo
     {
-        public ReadOnlyMemory<byte> Data { get; }
-        public int UncompressedBytes => Data.Length;
-        public int CompressedBytes { get;}
+        public int UncompressedBytes { get; }
+        public int CompressedBytes { get; }
 
-        internal PayloadInfo(ReadOnlyMemory<byte> uncompressedData, int compressedBytes)
+        internal PayloadInfo(int uncompressedBytes, int compressedBytes)
         {
-            Data = uncompressedData;
+            UncompressedBytes = uncompressedBytes;
             CompressedBytes = compressedBytes;
         }
     }
