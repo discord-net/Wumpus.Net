@@ -1,10 +1,10 @@
 ﻿using Voltaic.Serialization;
 
-namespace Wumpus.Events
+namespace Wumpus
 {
     /// <summary> xxx </summary>
     [ModelStringEnum]
-    public enum RpcEventType : byte
+    public enum RpcEvent : byte
     {
         /// <summary> xxx </summary>
         [ModelEnumValue("READY")] Ready,

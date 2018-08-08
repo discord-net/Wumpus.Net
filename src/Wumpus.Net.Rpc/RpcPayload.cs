@@ -10,7 +10,7 @@ namespace Wumpus
     {
         /// <summary> Payload command </summary>
         [ModelProperty("cmd")]
-        public RpcCommand Cmd { get; set; }
+        public RpcCommand Command { get; set; }
         /// <summary> Subscription event </summary>
         [ModelProperty("evt")]
         public Optional<RpcEvent> Event { get; set; } 
@@ -19,21 +19,17 @@ namespace Wumpus
         public Optional<Guid?> Nonce { get; set; }        
 
         /// <summary> xxx </summary>
-        [ModelProperty("args"), ModelTypeSelector(nameof(Cmd), nameof(CmdTypeSelector))]
+        [ModelProperty("args"), ModelTypeSelector(nameof(Command), nameof(CommandTypeSelector))]
         public object Args { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("args"), ModelTypeSelector(nameof(Event), nameof(EventTypeSelector))]
-        public Optional<ReadOnlyMemory<byte>> Data { get; set; }
+        public Optional<object> Data { get; set; }
         
-        private static Dictionary<RpcEventType, Type> CmdTypeSelector => new Dictionary<RpcEventType, Type>()
+        private static Dictionary<RpcCommand, Type> CommandTypeSelector => new Dictionary<RpcCommand, Type>()
         {
-            [RpcCommand.Authorize] = typeof(AuthorizeParams),
-            [RpcCommand.Authenticate] = typeof(AuthenticateParams),
         };
-        private static Dictionary<RpcEventType, Type> EventTypeSelector => new Dictionary<RpcEventType, Type>()
+        private static Dictionary<RpcEvent, Type> EventTypeSelector => new Dictionary<RpcEvent, Type>()
         {
-            [RpcEvent.Authorize] = typeof(AuthorizeResponse),
-            [RpcEvent.Authenticate] = typeof(AuthenticateResponse)
         };
     }
 }

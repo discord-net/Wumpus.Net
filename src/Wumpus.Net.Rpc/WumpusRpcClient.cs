@@ -34,8 +34,8 @@ namespace Wumpus
         public const int MaxBackoffMillis = 60000; // 1 min
         public const double BackoffMultiplier = 1.75; // 1.75x
         public const double BackoffJitter = 0.25; // 1.5x to 2.0x
-        public const int ConnectionTimeoutMillis = 30000; // 30 sec
-        public const int IdentifyTimeoutMillis = 60000; // 1 min
+        public const int AuthorizeTimeoutMillis = 300000; // 5 mins
+        public const int AuthenticateTimeoutMillis = 60000; // 1 min
         // Typical Backoff: 1.75s, 3.06s, 5.36s, 9.38s, 16.41s, 28.72s, 50.27s, 60s, 60s...
         
         public event Action Connected;
@@ -43,7 +43,6 @@ namespace Wumpus
         public event Action<RpcPayload, ReadOnlyMemory<byte>> ReceivedPayload;
         public event Action<RpcPayload, ReadOnlyMemory<byte>> SentPayload;
 
-        private readonly WumpusEtfSerializer _serializer;
         private readonly SemaphoreSlim _stateLock;
 
         // Instance
@@ -54,6 +53,7 @@ namespace Wumpus
         // Run (Start/Stop)
         private string _url;
         private string _clientId;
+        private string[] _scopes;
 
         // Connection (For each WebSocket connection)
         private DeflateStream _zlibStream;
@@ -62,11 +62,11 @@ namespace Wumpus
 
         public AuthenticationHeaderValue Authorization { get; set; }
         public ConnectionState State { get; private set; }
-        public Utf8String[] ServerNames { get; private set; }
+        public WumpusEtfSerializer EtfSerializer { get; }
 
         public WumpusRpcClient(WumpusEtfSerializer serializer = null)
         {
-            _serializer = serializer ?? new WumpusEtfSerializer();            
+            EtfSerializer = serializer ?? new WumpusEtfSerializer();            
             _compressed = new ResizableMemoryStream(10 * 1024); // 10 KB
             _decompressed = new ResizableMemoryStream(10 * 1024); // 10 KB
             _stateLock = new SemaphoreSlim(1, 1);
@@ -75,9 +75,9 @@ namespace Wumpus
             _runCts.Cancel(); // Start canceled
         }
 
-        public void Run(string clientId)
-            => RunAsync(clientId).GetAwaiter().GetResult();
-        public async Task RunAsync(string clientId)
+        public void Run(string clientId, string[] scopes)
+            => RunAsync(clientId, scopes).GetAwaiter().GetResult();
+        public async Task RunAsync(string clientId, string[] scopes)
         {
             Task exceptionSignal;
             await _stateLock.WaitAsync().ConfigureAwait(false);
@@ -87,6 +87,7 @@ namespace Wumpus
 
                 _url = null;
                 _clientId = clientId;
+                _scopes = scopes;
                 _runCts = new CancellationTokenSource();
                 
                 _connectionTask = RunTaskAsync(_runCts.Token);
@@ -148,29 +149,41 @@ namespace Wumpus
                         _zlibStream = new DeflateStream(_compressed, CompressionMode.Decompress, true);
                         _readZlibHeader = false;
 
-                        await SendAsync(new RpcPayload
+                        if (Authorization == null)
                         {
-                            Cmd = RpcCommand.Authorize,
-                            Args = new AuthorizeParams
+                            await SendAsync(client, cancelToken, new RpcPayload
                             {
-                                ClientId = _clientId,
-                                Scopes = _scopes
-                            }
-                        }).ConfigureAwait(false);
-                        var receiveTask = ReceiveAsync(client, readySignal, cancelToken);
-                        await WhenAny(new Task[] { receiveTask }, ConnectionTimeoutMillis, 
-                            "Timed out waiting for AUTHORIZE response").ConfigureAwait(false);
-                        var evnt = await receiveTask.ConfigureAwait(false);
-                        if (!(evnt.Data is AuthorizeResponse authorizeResponse))
-                            throw new Exception("Authorize response was not a AUTHORIZE cmd");
-
-
-                        receiveTask = ReceiveAsync(client, readySignal, cancelToken);
-                        await WhenAny(new Task[] { receiveTask }, ConnectionTimeoutMillis, 
-                            "Timed out waiting for HELLO").ConfigureAwait(false);
-                        evnt = await receiveTask.ConfigureAwait(false);
-                        if (!(evnt.Data is AuthenticateResponse authenticateResponse))
-                            throw new Exception("Authenticate response was not a AUTHENTICATE cmd");
+                                Command = RpcCommand.Authorize,
+                                Args = new AuthorizeParams
+                                {
+                                    ClientId = new Utf8String(_clientId),
+                                    Scopes = _scopes.Select(x => new Utf8String(x)).ToArray()
+                                }
+                            }).ConfigureAwait(false);
+                            var receiveTask = ReceiveAsync(client, readySignal, cancelToken);
+                            await WhenAny(new Task[] { receiveTask }, AuthorizeTimeoutMillis, 
+                                "Timed out waiting for AUTHORIZE response").ConfigureAwait(false);
+                            var evnt = await receiveTask.ConfigureAwait(false);
+                            if (!(evnt.Data.IsSpecified && evnt.Data.Value is AuthorizeResponse authorizeResponse))
+                                throw new Exception("Authorize response was not a AUTHORIZE cmd");
+                            Authorization = new AuthenticationHeaderValue("Bearer", authorizeResponse.Code.ToString());
+                        }
+                        {
+                            await SendAsync(client, cancelToken, new RpcPayload
+                            {
+                                Command = RpcCommand.Authenticate,
+                                Args = new AuthenticateParams
+                                {
+                                    AccessToken = new Utf8String(Authorization.Parameter)
+                                }
+                            }).ConfigureAwait(false);
+                            var receiveTask = ReceiveAsync(client, readySignal, cancelToken);
+                            await WhenAny(new Task[] { receiveTask }, AuthenticateTimeoutMillis, 
+                                "Timed out waiting for AUTHENTICATE").ConfigureAwait(false);
+                            var evnt = await receiveTask.ConfigureAwait(false);
+                            if (!(evnt.Data.IsSpecified && evnt.Data.Value is AuthenticateResponse authenticateResponse))
+                                throw new Exception("Authenticate response was not a AUTHENTICATE cmd");
+                        }
 
                         // Start tasks here since HELLO must be handled before another thread can send/receive
                         tasks = new[]
@@ -179,24 +192,13 @@ namespace Wumpus
                             RunReceiveAsync(client, readySignal, cancelToken)
                         };
 
-                        // Send IDENTIFY/RESUME (timeout = IdentifyTimeoutMillis)
-                        SendIdentify(initialPresence);
-                        timeoutTask = Task.Delay(IdentifyTimeoutMillis);
-                        // If anything in tasks fails, it'll throw an exception
-                        var task = await Task.WhenAny(tasks.Append(timeoutTask).Append(readySignal.Task)).ConfigureAwait(false);
-                        if (task == timeoutTask)
-                            throw new TimeoutException("Timed out waiting for READY or InvalidSession");
-                        else if (task.IsFaulted)
-                            await task.ConfigureAwait(false);
-
                         // Success
-                        _lastSeq = 0;
                         backoffMillis = InitialBackoffMillis;
                         State = ConnectionState.Connected;
                         Connected?.Invoke();
 
                         // Wait until an exception occurs (due to cancellation or failure)
-                        task = await Task.WhenAny(tasks).ConfigureAwait(false);
+                        var task = await Task.WhenAny(tasks).ConfigureAwait(false);
                         if (task.IsFaulted)
                             await task.ConfigureAwait(false);
                     }
@@ -227,8 +229,6 @@ namespace Wumpus
                             catch { } // We don't actually care if sending a close msg fails
                         }
 
-                        _sessionId = null;
-                        ServerNames = null;
                         State = ConnectionState.Disconnected;
                         if (oldState == ConnectionState.Connected)
                             Disconnected?.Invoke(disconnectEx);
@@ -267,9 +267,7 @@ namespace Wumpus
                     {
                         cancelToken.ThrowIfCancellationRequested();
                         var payload = _sendQueue.Take(cancelToken);
-                        var writer = _serializer.Write(payload);
-                        await client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
-                        SentPayload?.Invoke(payload, writer.AsReadOnlyMemory());
+                        await SendAsync(client, cancelToken, payload).ConfigureAwait(false);
                     }
                 }
                 finally
@@ -287,7 +285,7 @@ namespace Wumpus
         }
         private async Task WhenAny(IEnumerable<Task> tasks, int millis, string errorText)
         {
-            var timeoutTask = Task.Delay(ConnectionTimeoutMillis);
+            var timeoutTask = Task.Delay(millis);
             var task = await Task.WhenAny(tasks.Append(timeoutTask)).ConfigureAwait(false);
             if (task == timeoutTask)
                 throw new TimeoutException(errorText);
@@ -374,7 +372,6 @@ namespace Wumpus
                 var buffer = _compressed.Buffer.RequestSegment(10 * 1024); // 10 KB
                 result = await client.ReceiveAsync(buffer, cancelToken).ConfigureAwait(false);
                 _compressed.Buffer.Advance(result.Count);
-                _receivedData = true;
 
                 if (result.CloseStatus != null)
                     throw new WebSocketClosedException(result.CloseStatus.Value, result.CloseStatusDescription);
@@ -399,8 +396,6 @@ namespace Wumpus
 
             // Deserialize
             var payload = EtfSerializer.Read<RpcPayload>(_decompressed.Buffer.AsReadOnlySpan());
-            if (payload.Sequence.HasValue)
-                _lastSeq = payload.Sequence.Value;
 
             // Handle result
             HandleEvent(payload, readySignal); // Must be before event so slow user handling can't trigger our timeouts
@@ -429,6 +424,12 @@ namespace Wumpus
         {
             if (!_runCts.IsCancellationRequested)
                 _sendQueue?.Add(payload);
+        }
+        private async Task SendAsync(ClientWebSocket client, CancellationToken cancelToken, RpcPayload payload)
+        {
+            var writer = EtfSerializer.Write(payload);
+            await client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
+            SentPayload?.Invoke(payload, writer.AsReadOnlyMemory());
         }
     }
 }

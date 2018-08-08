@@ -297,9 +297,7 @@ namespace Wumpus
                 {
                     cancelToken.ThrowIfCancellationRequested();
                     var payload = _sendQueue.Take(cancelToken);
-                    var writer = EtfSerializer.Write(payload);
-                    await client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
-                    SentPayload?.Invoke(payload, writer.AsReadOnlyMemory());
+                    await SendAsync(client, cancelToken, payload).ConfigureAwait(false);
                 }
             });
         }
@@ -327,7 +325,7 @@ namespace Wumpus
         }
         private async Task WhenAny(IEnumerable<Task> tasks, int millis, string errorText)
         {
-            var timeoutTask = Task.Delay(ConnectionTimeoutMillis);
+            var timeoutTask = Task.Delay(millis);
             var task = await Task.WhenAny(tasks.Append(timeoutTask)).ConfigureAwait(false);
             if (task == timeoutTask)
                 throw new TimeoutException(errorText);
@@ -527,6 +525,13 @@ namespace Wumpus
             if (!_runCts.IsCancellationRequested)
                 _sendQueue?.Add(payload);
         }
+        private async Task SendAsync(ClientWebSocket client, CancellationToken cancelToken, GatewayPayload payload)
+        {
+            var writer = EtfSerializer.Write(payload);
+            await client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
+            SentPayload?.Invoke(payload, writer.AsReadOnlyMemory());
+        }
+
         private void SendIdentify(UpdateStatusParams initialPresence)
         {
             if (_sessionId is null) // IDENTITY
