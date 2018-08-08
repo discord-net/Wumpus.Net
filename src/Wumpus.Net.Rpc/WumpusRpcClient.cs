@@ -29,7 +29,7 @@ namespace Wumpus
 
     public class WumpusRpcClient : IDisposable
     {
-        public const int APIVersion = 1;
+        public const int ApiVersion = 1;
         public static string Version { get; } =
             typeof(WumpusRpcClient).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ??
             typeof(WumpusRpcClient).GetTypeInfo().Assembly.GetName().Version.ToString(3) ??
@@ -143,7 +143,7 @@ namespace Wumpus
                                 try
                                 {
                                     string url = $"ws://127.0.0.1:{port}";
-                                    var uri = new Uri(url + $"?v={APIVersion}&client_id={_clientId}&encoding=etf&compress=zlib-stream");
+                                    var uri = new Uri(url + $"?v={ApiVersion}&client_id={_clientId}&encoding=etf&compress=zlib-stream");
                                     await client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);
                                     _url = url;
                                     break;
@@ -156,7 +156,7 @@ namespace Wumpus
                         else
                         {
                             // Reconnect to previously found server
-                            var uri = new Uri(_url + $"?v={APIVersion}&client_id={_clientId}&encoding=etf&compress=zlib-stream");
+                            var uri = new Uri(_url + $"?v={ApiVersion}&client_id={_clientId}&encoding=etf&compress=zlib-stream");
                             await client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);                                        
                         }
 
