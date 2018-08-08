@@ -49,8 +49,6 @@ namespace Wumpus
         // Status events
         public event Action Connected;
         public event Action<Exception> Disconnected;
-        public event Action SessionCreated;
-        public event Action SessionLost;
         public event Action<SerializationException> DeserializationError;
 
         // Raw events
