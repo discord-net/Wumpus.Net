@@ -42,7 +42,7 @@ namespace Wumpus
         public const int MaxBackoffMillis = 60000; // 1 min
         public const double BackoffMultiplier = 1.75; // 1.75x
         public const double BackoffJitter = 0.25; // 1.5x to 2.0x
-        public const int AuthorizeTimeoutMillis = 300000; // 5 mins
+        public const int ConnectionTimeoutMillis = 30000; // 30 secs
         public const int AuthenticateTimeoutMillis = 60000; // 1 min
         // Typical Backoff: 1.75s, 3.06s, 5.36s, 9.38s, 16.41s, 28.72s, 50.27s, 60s, 60s...
         
@@ -60,28 +60,26 @@ namespace Wumpus
         private readonly SemaphoreSlim _stateLock;
 
         // Instance
-        private readonly ResizableMemoryStream _compressed, _decompressed;
+        private readonly ResizableMemoryStream _decompressed;
         private Task _connectionTask;
         private CancellationTokenSource _runCts;
 
         // Run (Start/Stop)
         private string _url;
-        private string _clientId;
-        private string[] _scopes;
 
         // Connection (For each WebSocket connection)
-        private DeflateStream _zlibStream;
         private BlockingCollection<RpcPayload> _sendQueue;
-        private bool _readZlibHeader;
 
+        public Snowflake ClientId { get; set; }
+        public string Origin { get; set; }
+        public string[] Scopes { get; set; }
         public AuthenticationHeaderValue Authorization { get; set; }
         public ConnectionState State { get; private set; }
-        public WumpusEtfSerializer EtfSerializer { get; }
+        public WumpusJsonSerializer JsonSerializer { get; }
 
-        public WumpusRpcClient(WumpusEtfSerializer serializer = null)
+        public WumpusRpcClient(WumpusJsonSerializer serializer = null)
         {
-            EtfSerializer = serializer ?? new WumpusEtfSerializer();            
-            _compressed = new ResizableMemoryStream(10 * 1024); // 10 KB
+            JsonSerializer = serializer ?? new WumpusJsonSerializer();
             _decompressed = new ResizableMemoryStream(10 * 1024); // 10 KB
             _stateLock = new SemaphoreSlim(1, 1);
             _connectionTask = Task.CompletedTask;
@@ -89,9 +87,9 @@ namespace Wumpus
             _runCts.Cancel(); // Start canceled
         }
 
-        public void Run(string clientId, string[] scopes)
-            => RunAsync(clientId, scopes).GetAwaiter().GetResult();
-        public async Task RunAsync(string clientId, string[] scopes)
+        public void Run()
+            => RunAsync().GetAwaiter().GetResult();
+        public async Task RunAsync()
         {
             Task exceptionSignal;
             await _stateLock.WaitAsync().ConfigureAwait(false);
@@ -100,8 +98,6 @@ namespace Wumpus
                 await StopAsyncInternal().ConfigureAwait(false);
 
                 _url = null;
-                _clientId = clientId;
-                _scopes = scopes;
                 _runCts = new CancellationTokenSource();
                 
                 _connectionTask = RunTaskAsync(_runCts.Token);
@@ -127,60 +123,32 @@ namespace Wumpus
                 var cancelToken = CancellationTokenSource.CreateLinkedTokenSource(runCancelToken, connectionCts.Token).Token;
                 using (var client = new ClientWebSocket())
                 {
+                    client.Options.SetRequestHeader("origin", Origin);
                     try
                     {
-                        runCancelToken.ThrowIfCancellationRequested();
+                        cancelToken.ThrowIfCancellationRequested();
                         var readySignal = new TaskCompletionSource<bool>();
 
                         // Connect
                         State = ConnectionState.Connecting;
 
                         if (_url == null)
-                        {
-                            // Search for RPC server
-                            for (int port = PortRangeStart; port <= PortRangeEnd; port++)
-                            {
-                                try
-                                {
-                                    string url = $"ws://127.0.0.1:{port}";
-                                    var uri = new Uri(url + $"?v={ApiVersion}&client_id={_clientId}&encoding=etf&compress=zlib-stream");
-                                    await client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);
-                                    _url = url;
-                                    break;
-                                }
-                                catch (Exception) { }
-                            }
-                            if (_url == null)
-                                throw new Exception("Failed to locate local RPC server");
-                        }
+                            await SearchForServerAsync(client, cancelToken).ConfigureAwait(false);
                         else
                         {
                             // Reconnect to previously found server
-                            var uri = new Uri(_url + $"?v={ApiVersion}&client_id={_clientId}&encoding=etf&compress=zlib-stream");
+                            string fullUrl = _url + $"?v={ApiVersion}&client_id={ClientId}&encoding=json";
+                            var uri = new Uri(fullUrl);
                             await client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);                                        
                         }
 
-                        _zlibStream = new DeflateStream(_compressed, CompressionMode.Decompress, true);
-                        _readZlibHeader = false;
-
-                        if (Authorization == null)
                         {
-                            await SendAsync(client, cancelToken, new RpcPayload
-                            {
-                                Command = RpcCommand.Authorize,
-                                Args = new AuthorizeParams
-                                {
-                                    ClientId = new Utf8String(_clientId),
-                                    Scopes = _scopes.Select(x => new Utf8String(x)).ToArray()
-                                }
-                            }).ConfigureAwait(false);
                             var receiveTask = ReceiveAsync(client, readySignal, cancelToken);
-                            await WhenAny(new Task[] { receiveTask }, AuthorizeTimeoutMillis, 
-                                "Timed out waiting for AUTHORIZE response").ConfigureAwait(false);
+                            await WhenAny(new Task[] { receiveTask }, ConnectionTimeoutMillis, 
+                                "Timed out waiting for READY").ConfigureAwait(false);
                             var evnt = await receiveTask.ConfigureAwait(false);
-                            if (!(evnt.Data.IsSpecified && evnt.Data.Value is AuthorizeResponse authorizeResponse))
-                                throw new Exception("Authorize response was not a AUTHORIZE cmd");
-                            Authorization = new AuthenticationHeaderValue("Bearer", authorizeResponse.Code.ToString());
+                            if (!(evnt.Data is ReadyEvent readyEvent))
+                                throw new Exception("First event was not a READY cmd");
                         }
                         {
                             await SendAsync(client, cancelToken, new RpcPayload
@@ -195,7 +163,7 @@ namespace Wumpus
                             await WhenAny(new Task[] { receiveTask }, AuthenticateTimeoutMillis, 
                                 "Timed out waiting for AUTHENTICATE").ConfigureAwait(false);
                             var evnt = await receiveTask.ConfigureAwait(false);
-                            if (!(evnt.Data.IsSpecified && evnt.Data.Value is AuthenticateResponse authenticateResponse))
+                            if (!(evnt.Data is AuthenticateResponse authenticateEvent))
                                 throw new Exception("Authenticate response was not a AUTHENTICATE cmd");
                         }
 
@@ -291,6 +259,62 @@ namespace Wumpus
             });
         }
 
+        public async Task<Utf8String> AuthorizeAsync(CancellationToken cancelToken)
+        {
+            using (var client = new ClientWebSocket())
+            {
+                client.Options.SetRequestHeader("origin", Origin);
+                await SearchForServerAsync(client, cancelToken).ConfigureAwait(false);
+                
+                {
+                    var receiveTask = ReceiveAsync(client, null, cancelToken);
+                    await WhenAny(new Task[] { receiveTask }, ConnectionTimeoutMillis, 
+                        "Timed out waiting for READY").ConfigureAwait(false);
+                    var evnt = await receiveTask.ConfigureAwait(false);
+                    if (!(evnt.Data is ReadyEvent readyEvent))
+                        throw new Exception("First event was not a READY cmd");
+                }
+
+                await SendAsync(client, cancelToken, new RpcPayload
+                {
+                    Command = RpcCommand.Authorize,
+                    Args = new AuthorizeParams
+                    {
+                        ClientId = new Utf8String(ClientId.ToString()),
+                        Scopes = Scopes?.Select(x => new Utf8String(x)).ToArray() ?? Array.Empty<Utf8String>()
+                    }
+                }).ConfigureAwait(false);
+                {
+                    var receiveTask = ReceiveAsync(client, null, cancelToken);
+                    await WhenAny(new Task[] { receiveTask, Task.Delay(-1, cancelToken) }).ConfigureAwait(false);
+                    var evnt = await receiveTask.ConfigureAwait(false);
+                    if (!(evnt.Data is AuthorizeResponse authorizeEvent))
+                        throw new Exception("Authorize response was not a AUTHORIZE cmd");
+                    return authorizeEvent.Code;
+                }
+            }
+        }
+
+        public async Task SearchForServerAsync(ClientWebSocket client, CancellationToken cancelToken)
+        {
+            for (int port = PortRangeStart; port <= PortRangeEnd; port++)
+            {
+                try
+                {
+                    string url = $"ws://127.0.0.1:{port}";
+                    string fullUrl = url + $"?v={ApiVersion}&client_id={ClientId}&encoding=json";
+
+                    var uri = new Uri(fullUrl);
+                    await client.ConnectAsync(uri, cancelToken).ConfigureAwait(false);
+                    _url = url;
+                    break;
+                }
+                catch (Exception) { }
+            }
+            if (_url == null)
+                throw new Exception("Failed to locate local RPC server");
+        }
+
         private async Task WhenAny(IEnumerable<Task> tasks)
         {
             var task = await Task.WhenAny(tasks).ConfigureAwait(false);
@@ -383,63 +407,44 @@ namespace Wumpus
 
         private async Task<RpcPayload> ReceiveAsync(ClientWebSocket client, TaskCompletionSource<bool> readySignal, CancellationToken cancelToken)
         {
-            // Reset compressed stream
-            _compressed.Position = 0;
-            _compressed.SetLength(0);
+            // Reset stream
+            _decompressed.Position = 0;
+            _decompressed.SetLength(0);
 
-            // Receive compressed data
+            // Receive data
             WebSocketReceiveResult result;
             do
             {
-                var buffer = _compressed.Buffer.RequestSegment(10 * 1024); // 10 KB
+                var buffer = _decompressed.Buffer.RequestSegment(10 * 1024); // 10 KB
                 result = await client.ReceiveAsync(buffer, cancelToken).ConfigureAwait(false);
-                _compressed.Buffer.Advance(result.Count);
+                _decompressed.Buffer.Advance(result.Count);
 
                 if (result.CloseStatus != null)
                     throw new WebSocketClosedException(result.CloseStatus.Value, result.CloseStatusDescription);
             }
             while (!result.EndOfMessage);
 
-            // Skip zlib header
-            if (!_readZlibHeader)
-            {
-                if (_compressed.Buffer.Array[0] != 0x78)
-                    throw new SerializationException("First payload is missing zlib header");
-                _compressed.Position = 2;
-                _readZlibHeader = true;
-            }
-
-            // Reset decompressed stream
-            _decompressed.Position = 0;
-            _decompressed.SetLength(0);
-
-            // Decompress
-            _zlibStream.CopyTo(_decompressed);
-
             // Deserialize
-            var payload = EtfSerializer.Read<RpcPayload>(_decompressed.Buffer.AsReadOnlySpan());
+            var payload = JsonSerializer.Read<RpcPayload>(_decompressed.Buffer.AsReadOnlySpan());
 
             // Handle result
             HandleEvent(payload, readySignal); // Must be before event so slow user handling can't trigger our timeouts
-            ReceivedPayload?.Invoke(payload, new PayloadInfo(_decompressed.Buffer.Length, _compressed.Buffer.Length));
+            ReceivedPayload?.Invoke(payload, new PayloadInfo(_decompressed.Buffer.Length, _decompressed.Buffer.Length));
             return payload;
         }
         private void HandleEvent(RpcPayload evnt, TaskCompletionSource<bool> readySignal)
         {
-            // switch (evnt.Operation)
-            // {
-            //     case GatewayOperation.Dispatch:
-            //         HandleDispatchEvent(evnt, readySignal);
-            //         break;
-            //     case GatewayOperation.InvalidSession:
-            //         if ((bool)evnt.Data != true) // Is resumable
-            //             _sessionId = null;
-            //         readySignal.TrySetResult(false);
-            //         break;
-            //     case GatewayOperation.Heartbeat:
-            //         SendHeartbeatAck();
-            //         break;
-            // }
+            if (evnt.Event == RpcEvent.Error)
+            {
+                var data = evnt.Data as ErrorEvent;
+                throw new WumpusRpcException(data.Code, data.Message);
+            }
+            switch (evnt.Command)
+            {
+                case RpcCommand.Authenticate:
+                    readySignal.SetResult(true);
+                    break;
+            }
         }
 
         public void Send(RpcPayload payload)
@@ -449,8 +454,9 @@ namespace Wumpus
         }
         private async Task SendAsync(ClientWebSocket client, CancellationToken cancelToken, RpcPayload payload)
         {
-            var writer = EtfSerializer.Write(payload);
-            await client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
+            payload.Nonce = Guid.NewGuid();
+            var writer = JsonSerializer.Write(payload);
+            await client.SendAsync(writer.AsSegment(), WebSocketMessageType.Text, true, cancelToken);
             SentPayload?.Invoke(payload, new PayloadInfo(writer.Length, writer.Length));
         }
     }

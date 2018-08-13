@@ -179,7 +179,7 @@ namespace Wumpus
                 {
                     try
                     {
-                        runCancelToken.ThrowIfCancellationRequested();
+                        cancelToken.ThrowIfCancellationRequested();
                         var readySignal = new TaskCompletionSource<bool>();
                         _receivedData = true;
 
