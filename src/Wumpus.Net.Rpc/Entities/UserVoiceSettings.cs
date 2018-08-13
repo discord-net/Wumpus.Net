@@ -8,7 +8,7 @@ namespace Wumpus.Entities
     public class UserVoiceSettings
     {
         /// <summary> xxx </summary>
-        [ModelProperty("userId")]
+        [ModelProperty("user_id")]
         internal Snowflake UserId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("pan")]

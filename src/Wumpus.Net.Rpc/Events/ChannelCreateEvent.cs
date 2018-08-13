@@ -4,7 +4,7 @@ using Voltaic.Serialization;
 namespace Wumpus.Entities
 {
     /// <summary> xxx </summary>
-    public class RpcGuildSummary
+    public class ChannelCreateEvent
     {
         /// <summary> xxx </summary>
         [ModelProperty("id")]
@@ -12,5 +12,8 @@ namespace Wumpus.Entities
         /// <summary> xxx </summary>
         [ModelProperty("name")]
         public Utf8String Name { get; set; }
+        /// <summary> xxx </summary>
+        [ModelProperty("type")]
+        public ChannelType Type { get; set; }
     }
 }

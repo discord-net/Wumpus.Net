@@ -8,6 +8,6 @@ namespace Wumpus.Events
     {
         /// <summary> xxx </summary>
         [ModelProperty("channels")]
-        public RpcChannelSummary[] Channels { get; set; }
+        public RpcChannel[] Channels { get; set; }
     }
 }

@@ -4,13 +4,13 @@ using Voltaic.Serialization;
 namespace Wumpus.Events
 {
     /// <summary> xxx </summary>
-    public class RpcReadyEvent
+    public class ReadyEvent
     {
         /// <summary> xxx </summary>
         [ModelProperty("v")]
         public int Version { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("config")]
-        public RpcConfig Config { get; set; }
+        public RpcServerConfig Config { get; set; }
     }
 }

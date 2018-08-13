@@ -1,12 +1,10 @@
-﻿using Voltaic.Serialization;
-using System.Collections.Generic;
 using Voltaic;
+using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
     /// <summary> xxx </summary>
-    [IgnoreProperties("members")]
-    public class RpcGuild
+    public class GuildCreateEvent
     {
         /// <summary> xxx </summary>
         [ModelProperty("id")]
@@ -14,8 +12,5 @@ namespace Wumpus.Entities
         /// <summary> xxx </summary>
         [ModelProperty("name")]
         public Utf8String Name { get; set; }
-        /// <summary> xxx </summary>
-        [ModelProperty("icon_url")]
-        public Utf8String IconUrl { get; set; }
     }
 }

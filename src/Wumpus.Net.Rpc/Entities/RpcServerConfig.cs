@@ -4,7 +4,7 @@ using Voltaic.Serialization;
 namespace Wumpus.Entities
 {
     /// <summary> xxx </summary>
-    public class RpcConfig
+    public class RpcServerConfig
     {
         /// <summary> xxx </summary>
         [ModelProperty("cdn_host")]

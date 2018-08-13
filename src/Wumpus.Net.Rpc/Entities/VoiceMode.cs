@@ -17,7 +17,7 @@ namespace Wumpus.Entities
         public Optional<float> Threshold { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("shortcut")]
-        public Optional<VoiceShortcut[]> Shortcut { get; set; }
+        public Optional<ShortcutKeyCombo[]> Shortcut { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("delay")]
         public Optional<float> Delay { get; set; }
