@@ -29,6 +29,7 @@ after_test:
 - ps: dotnet pack "src\Wumpus.Net.Gateway\Wumpus.Net.Gateway.csproj" -c "Release" -o "../../artifacts" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
 - ps: dotnet pack "src\Wumpus.Net.Rest\Wumpus.Net.Rest.csproj" -c "Release" -o "../../artifacts" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
 - ps: dotnet pack "src\Wumpus.Net.Rpc\Wumpus.Net.Rpc.csproj" -c "Release" -o "../../artifacts" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
+- ps: dotnet pack "src\Wumpus.Net.Bot\Wumpus.Net.Bot.csproj" -c "Release" -o "../../artifacts" --no-build /p:BuildNumber="$Env:BUILD" /p:IsTagBuild="$Env:APPVEYOR_REPO_TAG"
 - ps: Get-ChildItem artifacts\*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
 
 deploy:
