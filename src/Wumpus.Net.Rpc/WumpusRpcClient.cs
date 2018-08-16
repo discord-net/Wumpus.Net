@@ -312,7 +312,7 @@ namespace Wumpus
                 catch (Exception) { }
             }
             if (_url == null)
-                throw new Exception("Failed to locate local RPC server");
+                throw new WebSocketClosedException(WebSocketCloseStatus.EndpointUnavailable, "Failed to locate local RPC server"); // TODO: Make a custom exception?
         }
 
         private async Task WhenAny(IEnumerable<Task> tasks)
