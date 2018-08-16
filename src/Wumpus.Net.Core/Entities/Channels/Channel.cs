@@ -38,7 +38,7 @@ namespace Wumpus.Entities
 
         /// <summary> The id of the <see cref="Guild"/>. </summary>
         [ModelProperty("guild_id")]
-        public Optional<Snowflake> GuildId { get; set; }
+        public Optional<Snowflake?> GuildId { get; set; }
         /// <summary> Sorting position of the <see cref="Channel"/>. </summary>
         [ModelProperty("position")]
         public Optional<int> Position { get; set; }

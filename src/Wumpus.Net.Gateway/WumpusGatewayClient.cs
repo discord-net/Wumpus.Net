@@ -26,16 +26,6 @@ namespace Wumpus
         Disconnecting
     }
 
-    public enum StopReason
-    {
-        Unknown,
-        AuthFailed,
-        ShardsTooSmall,
-        UrlNotFound,
-        Exception,
-        Canceled
-    }
-
     public class WumpusGatewayClient : IDisposable
     {
         public const int ApiVersion = 6;
@@ -60,8 +50,8 @@ namespace Wumpus
         public event Action<SerializationException> DeserializationError;
 
         // Raw events
-        public event Action<GatewayPayload, ReadOnlyMemory<byte>> ReceivedPayload;
-        public event Action<GatewayPayload, ReadOnlyMemory<byte>> SentPayload;
+        public event Action<GatewayPayload, PayloadInfo> ReceivedPayload;
+        public event Action<GatewayPayload, PayloadInfo> SentPayload;
 
         // Gateway events
         public event Action<HelloEvent> GatewayHello;
@@ -189,7 +179,7 @@ namespace Wumpus
                 {
                     try
                     {
-                        runCancelToken.ThrowIfCancellationRequested();
+                        cancelToken.ThrowIfCancellationRequested();
                         var readySignal = new TaskCompletionSource<bool>();
                         _receivedData = true;
 
@@ -307,9 +297,7 @@ namespace Wumpus
                 {
                     cancelToken.ThrowIfCancellationRequested();
                     var payload = _sendQueue.Take(cancelToken);
-                    var writer = EtfSerializer.Write(payload);
-                    await client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
-                    SentPayload?.Invoke(payload, writer.AsReadOnlyMemory());
+                    await SendAsync(client, cancelToken, payload).ConfigureAwait(false);
                 }
             });
         }
@@ -337,7 +325,7 @@ namespace Wumpus
         }
         private async Task WhenAny(IEnumerable<Task> tasks, int millis, string errorText)
         {
-            var timeoutTask = Task.Delay(ConnectionTimeoutMillis);
+            var timeoutTask = Task.Delay(millis);
             var task = await Task.WhenAny(tasks.Append(timeoutTask)).ConfigureAwait(false);
             if (task == timeoutTask)
                 throw new TimeoutException(errorText);
@@ -381,6 +369,8 @@ namespace Wumpus
                 case TimeoutException _: // Caused by missing heartbeat ack
                     return true;
             }
+            if (ex.InnerException != null)
+                return IsRecoverable(ex.InnerException);
             return false;
         }
 
@@ -459,7 +449,7 @@ namespace Wumpus
 
             // Handle result
             HandleEvent(payload, readySignal); // Must be before event so slow user handling can't trigger our timeouts
-            ReceivedPayload?.Invoke(payload, _compressed.Buffer.AsReadOnlyMemory());
+            ReceivedPayload?.Invoke(payload, new PayloadInfo(_decompressed.Buffer.Length, _compressed.Buffer.Length));
             return payload;
         }
         private void HandleEvent(GatewayPayload evnt, TaskCompletionSource<bool> readySignal)
@@ -537,6 +527,13 @@ namespace Wumpus
             if (!_runCts.IsCancellationRequested)
                 _sendQueue?.Add(payload);
         }
+        private async Task SendAsync(ClientWebSocket client, CancellationToken cancelToken, GatewayPayload payload)
+        {
+            var writer = EtfSerializer.Write(payload);
+            await client.SendAsync(writer.AsSegment(), WebSocketMessageType.Binary, true, cancelToken);
+            SentPayload?.Invoke(payload, new PayloadInfo(writer.Length, writer.Length));
+        }
+
         private void SendIdentify(UpdateStatusParams initialPresence)
         {
             if (_sessionId is null) // IDENTITY

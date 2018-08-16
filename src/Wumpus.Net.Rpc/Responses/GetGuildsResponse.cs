@@ -8,6 +8,6 @@ namespace Wumpus.Events
     {
         /// <summary> xxx </summary>
         [ModelProperty("guilds")]
-        public RpcGuildSummary[] Guilds { get; set; }
+        public RpcGuild[] Guilds { get; set; }
     }
 }

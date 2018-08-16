@@ -1,10 +1,10 @@
-﻿using Voltaic;
+using Voltaic;
 using Voltaic.Serialization;
 
 namespace Wumpus.Entities
 {
     /// <summary> xxx </summary>
-    public class VoiceShortcut
+    public class ShortcutKeyCombo
     {
         /// <summary> xxx </summary>
         [ModelProperty("type")]

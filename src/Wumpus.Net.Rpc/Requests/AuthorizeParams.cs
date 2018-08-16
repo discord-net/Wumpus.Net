@@ -11,7 +11,7 @@ namespace Wumpus.Requests
         public Utf8String ClientId { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("scopes")]
-        public string[] Scopes { get; set; }
+        public Utf8String[] Scopes { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("rpc_token")]
         public Optional<Utf8String> RpcToken { get; set; }

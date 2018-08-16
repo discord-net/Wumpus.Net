@@ -10,5 +10,6 @@
   <ItemGroup>
     <PackageReference Include="Voltaic.Core" Version="0.2.3-*" />
     <PackageReference Include="Voltaic.Serialization.Json" Version="0.2.1-*" />
+    <PackageReference Include="Voltaic.Serialization.Etf" Version="0.2.1-*" />
   </ItemGroup>
 </Project>

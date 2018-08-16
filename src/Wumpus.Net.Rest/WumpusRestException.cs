@@ -2,7 +2,7 @@
 using System.Net;
 using Voltaic;
 
-namespace Wumpus.Net
+namespace Wumpus
 {
     public class WumpusRestException : Exception
     {

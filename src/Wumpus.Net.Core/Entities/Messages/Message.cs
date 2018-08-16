@@ -15,7 +15,7 @@ namespace Wumpus.Entities
         public Snowflake Id { get; set; }
         // TODO: Undocumented (https://github.com/discordapp/discord-api-docs/issues/582)
         [ModelProperty("guild_id")]
-        public Optional<Snowflake> GuildId { get; set; }
+        public Optional<Snowflake?> GuildId { get; set; }
         /// <summary> Id of the <see cref="Channel"/> the <see cref="Message"/> was in. </summary>
         [ModelProperty("channel_id")]
         public Snowflake ChannelId { get; set; }

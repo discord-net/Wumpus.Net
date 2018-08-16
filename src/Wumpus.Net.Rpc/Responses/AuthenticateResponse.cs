@@ -1,6 +1,7 @@
 ﻿using Voltaic.Serialization;
 using System;
 using Wumpus.Entities;
+using Voltaic;
 
 namespace Wumpus.Events
 {
@@ -11,13 +12,13 @@ namespace Wumpus.Events
         [ModelProperty("application")]
         public Application Application { get; set; }
         /// <summary> xxx </summary>
-        [ModelProperty("expires")]
+        [ModelProperty("expires"), StandardFormat('O')]
         public DateTimeOffset Expires { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("user")]
         public User User { get; set; }
         /// <summary> xxx </summary>
         [ModelProperty("scopes")]
-        public string[] Scopes { get; set; }
+        public Utf8String[] Scopes { get; set; }
     }
 }
