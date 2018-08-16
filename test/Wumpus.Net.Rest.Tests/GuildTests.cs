@@ -50,7 +50,7 @@ namespace Wumpus.Rest.Tests
             RunTest(c => c.GetGuildChannelsAsync(123), x =>
             {
                 foreach (var channel in x)
-                    Assert.Equal(123UL, channel.GuildId.Value.RawValue);
+                    Assert.Equal(123UL, channel.GuildId.Value?.RawValue);
             });
         }
         [Fact]
@@ -61,7 +61,7 @@ namespace Wumpus.Rest.Tests
                 // TODO: Impl
             }), x =>
             {
-                Assert.Equal(123UL, x.GuildId.Value.RawValue);
+                Assert.Equal(123UL, x.GuildId.Value?.RawValue);
                 Assert.Equal((Utf8String)"category_channel", x.Name);
                 Assert.Equal(ChannelType.Category, x.Type);
                 // TODO: Impl
@@ -75,7 +75,7 @@ namespace Wumpus.Rest.Tests
                 // TODO: Impl
             }), x =>
             {
-                Assert.Equal(123UL, x.GuildId.Value.RawValue);
+                Assert.Equal(123UL, x.GuildId.Value?.RawValue);
                 Assert.Equal((Utf8String)"text_channel", x.Name);
                 Assert.Equal(ChannelType.Text, x.Type);
                 // TODO: Impl
@@ -89,7 +89,7 @@ namespace Wumpus.Rest.Tests
                 // TODO: Impl
             }), x =>
             {
-                Assert.Equal(123UL, x.GuildId.Value.RawValue);
+                Assert.Equal(123UL, x.GuildId.Value?.RawValue);
                 Assert.Equal((Utf8String)"voice_channel", x.Name);
                 Assert.Equal(ChannelType.Voice, x.Type);
                 // TODO: Impl

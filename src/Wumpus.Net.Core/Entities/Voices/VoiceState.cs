@@ -8,7 +8,7 @@ namespace Wumpus.Entities
     {
         /// <summary> The <see cref="Guild"/> id this <see cref="VoiceState"/> is for. </summary>
         [ModelProperty("guild_id")]
-        public Optional<Snowflake> GuildId { get; set; }
+        public Optional<Snowflake?> GuildId { get; set; }
         /// <summary> The <see cref="Channel"/> id this <see cref="User"/> is connected to. </summary>
         [ModelProperty("channel_id")]
         public Optional<Snowflake?> ChannelId { get; set; }

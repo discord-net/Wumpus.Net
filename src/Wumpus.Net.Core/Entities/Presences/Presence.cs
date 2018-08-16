@@ -13,7 +13,7 @@ namespace Wumpus.Entities
         public User User { get; set; }
         /// <summary> Id of the <see cref="Guild"/>. </summary>
         [ModelProperty("guild_id")]
-        public Optional<Snowflake> GuildId { get; set; }
+        public Optional<Snowflake?> GuildId { get; set; }
         /// <summary> Either "idle", "dnd", "online", or "offline". </summary>
         [ModelProperty("status")]
         public Optional<UserStatus> Status { get; set; }
