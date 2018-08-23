@@ -1,6 +1,6 @@
 ﻿namespace Wumpus.Entities
 {
-    /// <summary> https://discordapp.com/developers/docs/resources/channel#message-object-message-activity-types </summary>
+    /// <summary> https://discordapp.com/developers/docs/resources/channel#message-object-message-types </summary>
     public enum MessageType
     {
         Default = 0,
