@@ -239,6 +239,10 @@ namespace Wumpus
                     {
                         await ReceiveAsync(client, readySignal, cancelToken).ConfigureAwait(false);
                     }
+                    catch (WumpusRpcException ex) when (ex.Code == 4005) // Unknown id
+                    {
+                        // Ignore for now - this should be sent through to the promise that cause the error
+                    }
                     catch (SerializationException ex)
                     {
                         DeserializationError?.Invoke(ex);
