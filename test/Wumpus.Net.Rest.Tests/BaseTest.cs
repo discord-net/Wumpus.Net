@@ -108,7 +108,8 @@ namespace Wumpus.Rest.Tests
                 try
                 {
                     url = $"http://localhost:{port}";
-                    server = WebHost.CreateDefaultBuilder()
+                    server = new WebHostBuilder()
+                        .UseKestrel()
                         .UseStartup<Startup>()
                         .UseUrls($"http://localhost:{port}")
                         .Build();
