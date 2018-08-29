@@ -57,10 +57,9 @@ namespace Wumpus
 
         // Rpc events //TODO: Impl
 
-        private readonly SemaphoreSlim _stateLock;
-
         // Instance
         private readonly ResizableMemoryStream _decompressed;
+        private readonly SemaphoreSlim _stateLock;
         private Task _connectionTask;
         private CancellationTokenSource _runCts;
 
