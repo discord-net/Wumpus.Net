@@ -31,6 +31,9 @@ namespace Wumpus.Requests
         /// <summary> If the <see cref="Entities.Channel"/> is nsfw. </summary>
         [ModelProperty("nsfw")]
         public Optional<bool> IsNsfw { get; set; }
+        /// <summary> The amount of seconds a <see cref="User"/> has to wait before sending another <see cref="Message"/>. </summary>
+        [ModelProperty("rate_limit_per_user")]
+        public Optional<int> RateLimitPerUser { get; set; }
 
         // Voice Channel
 
