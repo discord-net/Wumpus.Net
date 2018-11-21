@@ -13,200 +13,114 @@ using Voltaic.Serialization.Utf8;
 
 namespace Wumpus
 {
-    public class WumpusAudioDataClient
+    public class WumpusAudioDataClient : IDisposable
     {
-        private const int ConnectionTimeoutMillis = 30000;
+        private readonly IPEndPoint _endpoint;
+        private readonly ArrayPool<byte> _pool;
+        private readonly Socket _socket;
 
-        public delegate void AudioCallback(ReadOnlySpan<byte> payload);
-
-        // Raw events
-        public event AudioCallback ReceivedPayload;
-        public event AudioCallback SentPayload;
-
-        // UDP connection events
-        public event Action<IPEndPoint> ReceivedLocalEndpoint;
-
-        private readonly SemaphoreSlim _stateLock;
-
-        // Instance
-        private Task _connectionTask;
-        private CancellationTokenSource _runCts;
-        private Socket _socket;
-
-        // Run (Start/Stop)
-        private uint _ssrc;
-        private IPEndPoint _sendEndpoint;
-        private IPEndPoint _receiveEndpoint;
-
-        public WumpusAudioDataClient(ArrayPool<byte> pool = null)
+        public WumpusAudioDataClient(IPEndPoint endpoint, ArrayPool<byte> pool = null)
         {
+            _endpoint = endpoint;
+            _pool = pool;
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            _stateLock = new SemaphoreSlim(1, 1);
-            _connectionTask = Task.CompletedTask;
-            _runCts = new CancellationTokenSource();
-            _runCts.Cancel(); // Start canceled
+
+            // Bind to any available port
+            _socket.Bind(new IPEndPoint(IPAddress.Any, 0));
         }
 
-        public void Run(uint ssrc, IPEndPoint sendAddress)
-            => RunAsync(ssrc, sendAddress).GetAwaiter().GetResult();
-        public async Task RunAsync(uint ssrc, IPEndPoint sendAddress)
+        public async Task SendAsync(uint ssrc, ushort sequence, uint samplePosition, ArraySegment<byte> audio, Memory<byte> secret, IPEndPoint endpoint = null)
         {
-            Task exceptionSignal;
-            await _stateLock.WaitAsync().ConfigureAwait(false);
+            // TODO: this is broken somewhere. I don't know where.
+
+            endpoint = endpoint ?? _endpoint;
+
+            var memory = new ResizableMemory<byte>(10 * 1024, _pool);
+            WriteHeader();
+            Encrypt(audio.AsSpan(), secret.Span);
+
             try
             {
-                await StopAsyncInternal().ConfigureAwait(false);
-
-                _ssrc = ssrc;
-                _sendEndpoint = sendAddress;
-                _runCts = new CancellationTokenSource();
-
-                _connectionTask = RunTaskAsync(_runCts.Token);
-                exceptionSignal = _connectionTask;
+                await _socket.SendToAsync(memory.AsSegment(), SocketFlags.None, endpoint).ConfigureAwait(false);
             }
             finally
             {
-                _stateLock.Release();
+                memory.Return();
             }
-            await exceptionSignal.ConfigureAwait(false);
-        }
-        private async Task RunTaskAsync(CancellationToken runCancelToken)
-        {
-            using (var connectionCts = new CancellationTokenSource())
-            using (var cancelTokenCts = CancellationTokenSource.CreateLinkedTokenSource(runCancelToken, connectionCts.Token))
+
+            void WriteHeader()
             {
-                var cancelToken = cancelTokenCts.Token;
-                try
-                {
-                    cancelToken.ThrowIfCancellationRequested();
+                memory.Push(0x80); memory.Push(0x78);
 
-                    // Perform IP discovery if we do not have our local address cached already
-                    if (_receiveEndpoint == null)
-                    {
-                        await SendDiscoveryAsync().ConfigureAwait(false);
-                        var receiveTask = ReceiveDiscoveryAsync();
-                        await WhenAny(new Task[] { receiveTask }, ConnectionTimeoutMillis,
-                            "Timed out waiting for IP discovery").ConfigureAwait(false);
+                var header = memory.RequestSpan(10);
+                BinaryPrimitives.WriteUInt16BigEndian(header, sequence); // 2 bytes
+                BinaryPrimitives.WriteUInt32BigEndian(header.Slice(2), samplePosition); // 4 bytes
+                BinaryPrimitives.WriteUInt32BigEndian(header.Slice(6), ssrc); // 4 bytes
+                memory.Advance(10);
+            }
 
-                        var endpoint = await receiveTask.ConfigureAwait(false);
-                        if (endpoint == null)
-                            throw new Exception("First receive was not a discovery");
+            void Encrypt(Span<byte> data, Span<byte> key)
+            {
+                var destinationSize = SodiumPrimitives.ComputeMessageLength(data.Length);
+                var destinationSpan = memory.RequestSpan(destinationSize);
 
-                        _receiveEndpoint = endpoint;
-                        ReceivedLocalEndpoint?.Invoke(endpoint);
-                    }
+                Span<byte> nonce = stackalloc byte[SodiumPrimitives.NonceSize];
+                //SodiumPrimitives.GenerateRandomBytes(nonce.Slice(0, 4));
 
-                    await RunReceiveAsync(cancelToken).ConfigureAwait(false);
-                }
-                finally
-                {
-                    connectionCts.Cancel();
-                }
+                if (SodiumPrimitives.TryEncryptInPlace(destinationSpan, data, key, nonce))
+                    memory.Advance(destinationSize);
+
+                nonce.Slice(0, 4).CopyTo(memory.RequestSpan(4));
+                memory.Advance(4);
             }
         }
-        private async Task WhenAny(IEnumerable<Task> tasks, int millis, string errorText)
-        {
-            var timeoutTask = Task.Delay(millis);
-            var task = await Task.WhenAny(tasks.Append(timeoutTask));
-            if (task == timeoutTask)
-                throw new TimeoutException(errorText);
-            await task.ConfigureAwait(false);
-        }
 
-        public void Stop()
-            => StopAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task StopAsync()
+        public async Task<IPEndPoint> DiscoverAsync(uint ssrc, IPEndPoint endpoint = null)
         {
-            await _stateLock.WaitAsync().ConfigureAwait(false);
+            endpoint = endpoint ?? _endpoint;
+
+            var memory = new ResizableMemory<byte>(70, _pool);
+            BinaryPrimitives.WriteUInt32BigEndian(memory.RequestSpan(70), ssrc);
+            memory.Advance(70);
+
             try
             {
-                await StopAsyncInternal().ConfigureAwait(false);
+                await _socket.SendToAsync(memory.AsSegment(), SocketFlags.None, endpoint).ConfigureAwait(false);
+
+                var received = await _socket.ReceiveFromAsync(memory.AsSegment(), SocketFlags.None, endpoint).ConfigureAwait(false);
+
+                if (received.ReceivedBytes != 70)
+                    throw new Exception("Discovery response was not 70 bytes");
+
+                return ParseDiscovery(memory.AsReadOnlySpan());
             }
             finally
             {
-                _stateLock.Release();
+                memory.Return();
             }
-        }
-        private async Task StopAsyncInternal()
-        {
-            _runCts?.Cancel();
-
-            try { await _connectionTask.ConfigureAwait(false); } catch { }
-        }
-
-        public void Dispose()
-        {
-            Stop();
-            _socket?.Dispose();
-        }
-
-        private Task RunReceiveAsync(CancellationToken cancelToken)
-        {
-            return Task.Run(async () =>
-            {
-                while (true)
-                {
-                    cancelToken.ThrowIfCancellationRequested();
-                    await ReceiveAsync().ConfigureAwait(false);
-                }
-            });
-        }
-        private async Task ReceiveAsync()
-        {
-            var payload = new ResizableMemory<byte>(10 * 1024);
-            var receiveResult = await _socket.ReceiveFromAsync(
-                payload.RequestSegment(10 * 1024), SocketFlags.None, _sendEndpoint).ConfigureAwait(false);
-            payload.Advance(receiveResult.ReceivedBytes);
-
-            ReceivedPayload?.Invoke(payload.AsReadOnlySpan());
-        }
-
-        public async Task SendAsync(ArraySegment<byte> buffer)
-        {
-            await _socket.SendToAsync(buffer, SocketFlags.None, _sendEndpoint).ConfigureAwait(false);
-
-            SentPayload?.Invoke(buffer.AsSpan());
-        }
-
-        private async Task SendDiscoveryAsync()
-        {
-            var payload = new ResizableMemory<byte>(70);
-            BinaryPrimitives.WriteUInt32BigEndian(payload.RequestSpan(70), _ssrc);
-            payload.Advance(70);
-
-            await _socket.SendToAsync(
-                payload.AsSegment(), SocketFlags.None, _sendEndpoint).ConfigureAwait(false);
-        }
-        private async Task<IPEndPoint> ReceiveDiscoveryAsync()
-        {
-            var payload = new ResizableMemory<byte>(70);
-            var receiveResult = await _socket.ReceiveFromAsync(
-                payload.RequestSegment(70), SocketFlags.None, _sendEndpoint).ConfigureAwait(false);
-            payload.Advance(receiveResult.ReceivedBytes);
-
-            return ParseDiscovery(payload.AsReadOnlySpan());
 
             IPEndPoint ParseDiscovery(ReadOnlySpan<byte> discovery)
             {
-                // discovery is always of the form:
-                // <4 bytes>, <null-terminated ipv4 address>, <zero padding up to 70 bytes>, <port>
                 if (discovery.Length != 70)
                     return null;
 
                 discovery = discovery.Slice(4); // skip ssrc, it's always 0
 
-                // HACK: IPAddress does not have a TryParse which accepts Span<T>
-                // so to save on allocations until it does, we use a custom parser
                 if (!IPUtilities.TryParseIPv4Address(ref discovery, out var address))
                     return null;
 
+                // trim zeros and parse port
                 discovery = discovery.Slice(discovery.Length - 2);
-                if (!BinaryPrimitives.TryReadUInt16BigEndian(discovery, out var port))
+                if (!BinaryPrimitives.TryReadUInt16LittleEndian(discovery, out var port))
                     return null;
 
                 return new IPEndPoint(address, port);
             }
+        }
+
+        public void Dispose()
+        {
+            _socket?.Dispose();
         }
     }
 }

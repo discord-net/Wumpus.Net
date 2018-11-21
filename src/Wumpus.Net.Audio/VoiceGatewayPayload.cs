@@ -27,7 +27,7 @@ namespace Wumpus.Events
             [VoiceGatewayOperation.Resume] = typeof(VoiceResumeParams),
             [VoiceGatewayOperation.Heartbeat] = typeof(int),
 
-            [VoiceGatewayOperation.Speaking] = typeof(VoiceSpeakingEvent),
+            [VoiceGatewayOperation.Speaking] = typeof(VoiceSpeakingParams),
         };
     }
 }

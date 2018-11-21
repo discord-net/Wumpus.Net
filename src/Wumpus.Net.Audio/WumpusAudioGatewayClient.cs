@@ -55,7 +55,7 @@ namespace Wumpus
         public event Action<VoiceReadyEvent> VoiceGatewayReady;
         public event Action VoiceGatewayResumed;
         public event Action<VoiceSessionDescriptionEvent> VoiceSessionDescription;
-        public event Action<VoiceSpeakingEvent> VoiceSpeaking;
+        public event Action<VoiceSpeakingParams> VoiceSpeaking;
         public event Action VoiceGatewayHeartbeatAck;
 
         private readonly SemaphoreSlim _stateLock;
@@ -395,7 +395,7 @@ namespace Wumpus
                     VoiceGatewayResumed?.Invoke();
                     break;
                 case VoiceGatewayOperation.SessionDescription: VoiceSessionDescription?.Invoke(evnt.Data as VoiceSessionDescriptionEvent); break;
-                case VoiceGatewayOperation.Speaking: VoiceSpeaking?.Invoke(evnt.Data as VoiceSpeakingEvent); break;
+                case VoiceGatewayOperation.Speaking: VoiceSpeaking?.Invoke(evnt.Data as VoiceSpeakingParams); break;
                 case VoiceGatewayOperation.HeartbeatAck: VoiceGatewayHeartbeatAck?.Invoke(); break;
                 case VoiceGatewayOperation.Hello: VoiceGatewayHello?.Invoke(evnt.Data as VoiceHelloEvent); break;
             }
