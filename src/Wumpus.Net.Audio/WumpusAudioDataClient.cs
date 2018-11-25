@@ -31,7 +31,7 @@ namespace Wumpus
 
         public async Task SendAsync(uint ssrc, ushort sequence, uint samplePosition, ArraySegment<byte> audio, Memory<byte> secret, IPEndPoint endpoint = null)
         {
-            // TODO: this is broken somewhere. I don't know where.
+            // TODO: this only supports xsalsa20_poly1305_lite - should we support more?
 
             endpoint = endpoint ?? _endpoint;
 
@@ -50,13 +50,14 @@ namespace Wumpus
 
             void WriteHeader()
             {
-                memory.Push(0x80); memory.Push(0x78);
+                var header = memory.RequestSpan(12);
 
-                var header = memory.RequestSpan(10);
-                BinaryPrimitives.WriteUInt16BigEndian(header, sequence); // 2 bytes
-                BinaryPrimitives.WriteUInt32BigEndian(header.Slice(2), samplePosition); // 4 bytes
-                BinaryPrimitives.WriteUInt32BigEndian(header.Slice(6), ssrc); // 4 bytes
-                memory.Advance(10);
+                header[0] = 0x80; header[1] = 0x78;
+                BinaryPrimitives.WriteUInt16BigEndian(header.Slice(2), sequence); // 2 bytes
+                BinaryPrimitives.WriteUInt32BigEndian(header.Slice(4), samplePosition); // 4 bytes
+                BinaryPrimitives.WriteUInt32BigEndian(header.Slice(8), ssrc); // 4 bytes
+
+                memory.Advance(12);
             }
 
             void Encrypt(Span<byte> data, Span<byte> key)
@@ -65,10 +66,10 @@ namespace Wumpus
                 var destinationSpan = memory.RequestSpan(destinationSize);
 
                 Span<byte> nonce = stackalloc byte[SodiumPrimitives.NonceSize];
-                //SodiumPrimitives.GenerateRandomBytes(nonce.Slice(0, 4));
+                SodiumPrimitives.GenerateRandomBytes(nonce.Slice(0, 4));
 
-                if (SodiumPrimitives.TryEncryptInPlace(destinationSpan, data, key, nonce))
-                    memory.Advance(destinationSize);
+                SodiumPrimitives.TryEncryptInPlace(destinationSpan, data, nonce, key);
+                memory.Advance(destinationSize);
 
                 nonce.Slice(0, 4).CopyTo(memory.RequestSpan(4));
                 memory.Advance(4);
@@ -111,7 +112,8 @@ namespace Wumpus
 
                 // trim zeros and parse port
                 discovery = discovery.Slice(discovery.Length - 2);
-                if (!BinaryPrimitives.TryReadUInt16LittleEndian(discovery, out var port))
+                // NOTE: not little endian, like the docs say!
+                if (!BinaryPrimitives.TryReadUInt16BigEndian(discovery, out var port))
                     return null;
 
                 return new IPEndPoint(address, port);

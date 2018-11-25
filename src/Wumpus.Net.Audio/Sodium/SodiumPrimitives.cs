@@ -31,26 +31,20 @@ namespace Wumpus
         public static int ComputeMessageLength(int messageLength)
             => messageLength + MACBYTES;
 
-        public static unsafe bool TryEncryptInPlace(Span<byte> ciphertext, ReadOnlySpan<byte> message, ReadOnlySpan<byte> secret, ReadOnlySpan<byte> nonce)
+        public static unsafe bool TryEncryptInPlace(Span<byte> ciphertext, ReadOnlySpan<byte> message, ReadOnlySpan<byte> nonce, ReadOnlySpan<byte> secret)
         {
-            if (ciphertext.Length != message.Length + MACBYTES)
+            if (ciphertext.Length < message.Length + MACBYTES)
                 return false;
-            if (secret.Length != KEYBYTES)
+            if (secret.Length < KEYBYTES)
                 return false;
-            if (nonce.Length != NONCEBYTES)
+            if (nonce.Length < NONCEBYTES)
                 return false;
-
-            int status = 0;
 
             fixed(byte* c = &ciphertext.GetPinnableReference())
             fixed(byte* m = &message.GetPinnableReference())
             fixed(byte* n = &nonce.GetPinnableReference())
             fixed(byte* k = &secret.GetPinnableReference())
-                status = crypto_secretbox_easy(c,
-                    m, message.Length,
-                    n, k);
-
-            return status == 0;
+                return crypto_secretbox_easy(c, m, message.Length, n, k) == 0;
         }
 
         public static unsafe void GenerateRandomBytes(Span<byte> buffer)
