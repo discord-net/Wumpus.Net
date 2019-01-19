@@ -112,8 +112,7 @@ namespace Wumpus
 
                 // trim zeros and parse port
                 discovery = discovery.Slice(discovery.Length - 2);
-                // NOTE: not little endian, like the docs say!
-                if (!BinaryPrimitives.TryReadUInt16BigEndian(discovery, out var port))
+                if (!BinaryPrimitives.TryReadUInt16LittleEndian(discovery, out var port))
                     return null;
 
                 return new IPEndPoint(address, port);
