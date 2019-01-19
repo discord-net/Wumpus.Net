@@ -11,8 +11,8 @@ namespace Wumpus.Events
         [ModelProperty("op")]
         public VoiceGatewayOperation Operation { get; set; }
 
-        [ModelProperty("d"),
-            ModelTypeSelector(nameof(Operation), nameof(OpCodeTypeSelector))]
+        [ModelProperty("d")]
+        [ModelTypeSelector(nameof(Operation), nameof(OpCodeTypeSelector))]
         public object Data { get; set; }
 
         private static Dictionary<VoiceGatewayOperation, Type> OpCodeTypeSelector => new Dictionary<VoiceGatewayOperation, Type>()

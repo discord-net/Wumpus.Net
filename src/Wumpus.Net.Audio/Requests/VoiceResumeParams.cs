@@ -7,8 +7,10 @@ namespace Wumpus.Requests
     {
         [ModelProperty("server_id")]
         public Snowflake GuildId { get; set; }
+
         [ModelProperty("session_id")]
         public Utf8String SessionId { get; set; }
+
         [ModelProperty("token")]
         public Utf8String Token { get; set; }
     }

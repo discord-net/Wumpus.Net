@@ -14,12 +14,12 @@ namespace Wumpus
         extern static int crypto_secretbox_noncebytes();
 
         [DllImport("sodium")]
-        extern static unsafe int crypto_secretbox_easy(byte* c, byte* m, int mlen, byte* n, byte* k);
+        extern static int crypto_secretbox_easy(ref byte c, in byte m, int mlen, in byte n, in byte k);
         [DllImport("sodium")]
-        extern static unsafe int crypto_secretbox_open_easy(byte* m, byte* c, int clen, byte* n, byte* k);
+        extern static int crypto_secretbox_open_easy(ref byte m, in byte c, int clen, in byte n, in byte k);
 
         [DllImport("sodium")]
-        extern static unsafe void randombytes_buf(byte* buf, int size);
+        extern static void randombytes_buf(ref byte buf, int size);
 
         // use the functions to grab the info so it's not hardcoded in the lib
         private static readonly int MACBYTES = crypto_secretbox_macbytes();
@@ -31,7 +31,7 @@ namespace Wumpus
         public static int ComputeMessageLength(int messageLength)
             => messageLength + MACBYTES;
 
-        public static unsafe bool TryEncryptInPlace(Span<byte> ciphertext, ReadOnlySpan<byte> message, ReadOnlySpan<byte> nonce, ReadOnlySpan<byte> secret)
+        public static bool TryEncryptInPlace(Span<byte> ciphertext, ReadOnlySpan<byte> message, ReadOnlySpan<byte> nonce, ReadOnlySpan<byte> secret)
         {
             if (ciphertext.Length < message.Length + MACBYTES)
                 return false;
@@ -40,17 +40,16 @@ namespace Wumpus
             if (nonce.Length < NONCEBYTES)
                 return false;
 
-            fixed(byte* c = &ciphertext.GetPinnableReference())
-            fixed(byte* m = &message.GetPinnableReference())
-            fixed(byte* n = &nonce.GetPinnableReference())
-            fixed(byte* k = &secret.GetPinnableReference())
-                return crypto_secretbox_easy(c, m, message.Length, n, k) == 0;
+            return crypto_secretbox_easy(
+                ref ciphertext.GetPinnableReference(),
+                message.GetPinnableReference(), message.Length,
+                nonce.GetPinnableReference(),
+                secret.GetPinnableReference()) == 0;
         }
 
-        public static unsafe void GenerateRandomBytes(Span<byte> buffer)
+        public static void GenerateRandomBytes(Span<byte> buffer)
         {
-            fixed(byte* buf = &buffer.GetPinnableReference())
-                randombytes_buf(buf, buffer.Length);
+            randombytes_buf(ref buffer.GetPinnableReference(), buffer.Length);
         }
     }
 }
