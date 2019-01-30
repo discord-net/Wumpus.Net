@@ -18,7 +18,7 @@ namespace Wumpus
         public const int ApiVersion = 6;
         public const string ReasonHeader = "X-Audit-Log-Reason";
         /// <summary>
-        ///     The maximum valid length of the audit log reason string.
+        ///     The maximum valid length of the audit log reason header string.
         /// </summary>
         public const int MaxReasonHeaderLength = 512;
         public static string Version { get; } =
