@@ -16,6 +16,7 @@ namespace Wumpus
     public class WumpusRestClient : IDiscordRestApi, IDisposable
     {
         public const int ApiVersion = 6;
+        public const string ReasonHeader = "X-Audit-Log-Reason";
         public static string Version { get; } =
             typeof(WumpusRestClient).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ??
             typeof(WumpusRestClient).GetTypeInfo().Assembly.GetName().Version.ToString(3) ??
@@ -64,14 +65,14 @@ namespace Wumpus
             args.Validate();
             return _api.ReplaceChannelAsync(channelId, args);
         }
-        public Task<Channel> ModifyChannelAsync(Snowflake channelId, ModifyChannelParams args)
+        public Task<Channel> ModifyChannelAsync(Snowflake channelId, ModifyChannelParams args, string reason = null)
         {
             Preconditions.NotZero(channelId, nameof(channelId));
             Preconditions.NotNull(args, nameof(args));
             args.Validate();
             return _api.ModifyChannelAsync(channelId, args);
         }
-        public Task<Channel> DeleteChannelAsync(Snowflake channelId)
+        public Task<Channel> DeleteChannelAsync(Snowflake channelId, string reason = null)
         {
             Preconditions.NotZero(channelId, nameof(channelId));
             return _api.DeleteChannelAsync(channelId);
@@ -105,7 +106,7 @@ namespace Wumpus
             args.Validate();
             return _api.ModifyMessageAsync(channelId, messageId, args);
         }
-        public Task DeleteMessageAsync(Snowflake channelId, Snowflake messageId)
+        public Task DeleteMessageAsync(Snowflake channelId, Snowflake messageId, string reason = null)
         {
             Preconditions.NotZero(channelId, nameof(channelId));
             Preconditions.NotZero(messageId, nameof(messageId));
@@ -155,7 +156,7 @@ namespace Wumpus
             return _api.DeleteAllReactionsAsync(channelId, messageId);
         }
 
-        public Task EditChannelPermissionsAsync(Snowflake channelId, Snowflake overwriteId, ModifyChannelPermissionsParams args)
+        public Task EditChannelPermissionsAsync(Snowflake channelId, Snowflake overwriteId, ModifyChannelPermissionsParams args, string reason = null)
         {
             Preconditions.NotZero(channelId, nameof(channelId));
             Preconditions.NotZero(overwriteId, nameof(overwriteId));
@@ -163,7 +164,7 @@ namespace Wumpus
             args.Validate();
             return _api.EditChannelPermissionsAsync(channelId, overwriteId, args);
         }
-        public Task DeleteChannelPermissionsAsync(Snowflake channelId, Snowflake overwriteId)
+        public Task DeleteChannelPermissionsAsync(Snowflake channelId, Snowflake overwriteId, string reason = null)
         {
             Preconditions.NotZero(channelId, nameof(channelId));
             Preconditions.NotZero(overwriteId, nameof(overwriteId));
@@ -235,20 +236,20 @@ namespace Wumpus
             Preconditions.NotZero(emojiId, nameof(emojiId));
             return _api.GetGuildEmojiAsync(guildId, emojiId);
         }
-        public Task<Emoji> CreateGuildEmojiAsync(Snowflake guildId, CreateGuildEmojiParams args)
+        public Task<Emoji> CreateGuildEmojiAsync(Snowflake guildId, CreateGuildEmojiParams args, string reason = null)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotNull(args, nameof(args));
             return _api.CreateGuildEmojiAsync(guildId, args);
         }
-        public Task<Emoji> ModifyGuildEmojiAsync(Snowflake guildId, Snowflake emojiId, ModifyGuildEmojiParams args)
+        public Task<Emoji> ModifyGuildEmojiAsync(Snowflake guildId, Snowflake emojiId, ModifyGuildEmojiParams args, string reason = null)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotZero(emojiId, nameof(emojiId));
             Preconditions.NotNull(args, nameof(args));
             return _api.ModifyGuildEmojiAsync(guildId, emojiId, args);
         }
-        public Task DeleteGuildEmojiAsync(Snowflake guildId, Snowflake emojiId)
+        public Task DeleteGuildEmojiAsync(Snowflake guildId, Snowflake emojiId, string reason = null)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotZero(emojiId, nameof(emojiId));
@@ -279,7 +280,7 @@ namespace Wumpus
             args.Validate();
             return _api.CreateGuildAsync(args);
         }
-        public Task<Guild> ModifyGuildAsync(Snowflake guildId, ModifyGuildParams args)
+        public Task<Guild> ModifyGuildAsync(Snowflake guildId, ModifyGuildParams args, string reason = null)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotNull(args, nameof(args));
@@ -297,7 +298,7 @@ namespace Wumpus
             Preconditions.NotZero(guildId, nameof(guildId));
             return _api.GetGuildChannelsAsync(guildId);
         }
-        public Task<Channel> CreateGuildChannelAsync(Snowflake guildId, CreateGuildChannelParams args)
+        public Task<Channel> CreateGuildChannelAsync(Snowflake guildId, CreateGuildChannelParams args, string reason = null)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotNull(args, nameof(args));
@@ -334,7 +335,7 @@ namespace Wumpus
             args.Validate();
             return _api.AddGuildMemberAsync(guildId, userId, args);
         }
-        public Task RemoveGuildMemberAsync(Snowflake guildId, Snowflake userId)
+        public Task RemoveGuildMemberAsync(Snowflake guildId, Snowflake userId, string reason = null)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotZero(userId, nameof(userId));
@@ -376,7 +377,7 @@ namespace Wumpus
             Preconditions.NotZero(guildId, nameof(guildId));
             return _api.GetGuildBansAsync(guildId);
         }
-        public Task CreateGuildBanAsync(Snowflake guildId, Snowflake userId, CreateGuildBanParams args)
+        public Task CreateGuildBanAsync(Snowflake guildId, Snowflake userId, CreateGuildBanParams args, string reason = null)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotZero(userId, nameof(userId));
@@ -384,7 +385,7 @@ namespace Wumpus
             args.Validate();
             return _api.CreateGuildBanAsync(guildId, userId, args);
         }
-        public Task DeleteGuildBanAsync(Snowflake guildId, Snowflake userId)
+        public Task DeleteGuildBanAsync(Snowflake guildId, Snowflake userId, string reason = null)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotZero(userId, nameof(userId));
@@ -396,20 +397,20 @@ namespace Wumpus
             Preconditions.NotZero(guildId, nameof(guildId));
             return _api.GetGuildRolesAsync(guildId);
         }
-        public Task<Role> CreateGuildRoleAsync(Snowflake guildId, CreateGuildRoleParams args)
+        public Task<Role> CreateGuildRoleAsync(Snowflake guildId, CreateGuildRoleParams args, string reason = null)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotNull(args, nameof(args));
             args.Validate();
             return _api.CreateGuildRoleAsync(guildId, args);
         }
-        public Task<Role> DeleteGuildRoleAsync(Snowflake guildId, Snowflake roleId)
+        public Task<Role> DeleteGuildRoleAsync(Snowflake guildId, Snowflake roleId, string reason = null)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotZero(roleId, nameof(roleId));
             return _api.DeleteGuildRoleAsync(guildId, roleId);
         }
-        public Task<Role> ModifyGuildRoleAsync(Snowflake guildId, Snowflake roleId, ModifyGuildRoleParams args)
+        public Task<Role> ModifyGuildRoleAsync(Snowflake guildId, Snowflake roleId, ModifyGuildRoleParams args, string reason = null)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotZero(roleId, nameof(roleId));
@@ -433,7 +434,7 @@ namespace Wumpus
             args.Validate();
             return _api.GetGuildPruneCountAsync(guildId, args);
         }
-        public Task<GuildPruneCountResponse> PruneGuildMembersAsync(Snowflake guildId, GuildPruneParams args)
+        public Task<GuildPruneCountResponse> PruneGuildMembersAsync(Snowflake guildId, GuildPruneParams args, string reason = null)
         {
             Preconditions.NotZero(guildId, nameof(guildId));
             Preconditions.NotNull(args, nameof(args));
@@ -514,7 +515,7 @@ namespace Wumpus
             args.Validate();
             return _api.GetInviteAsync(code, args);
         }
-        public Task<Invite> DeleteInviteAsync(Utf8String code)
+        public Task<Invite> DeleteInviteAsync(Utf8String code, string reason = null)
         {
             Preconditions.NotNullOrWhitespace(code, nameof(code));
             return _api.DeleteInviteAsync(code);
@@ -598,7 +599,7 @@ namespace Wumpus
             return _api.GetWebhookAsync(webhookId, webhookToken);
         }
 
-        public Task<Webhook> CreateWebhookAsync(Snowflake channelId, CreateWebhookParams args)
+        public Task<Webhook> CreateWebhookAsync(Snowflake channelId, CreateWebhookParams args, string reason = null)
         {
             Preconditions.NotZero(channelId, nameof(channelId));
             Preconditions.NotNull(args, nameof(args));
@@ -606,26 +607,26 @@ namespace Wumpus
             return _api.CreateWebhookAsync(channelId, args);
         }
 
-        public Task DeleteWebhookAsync(Snowflake webhookId)
+        public Task DeleteWebhookAsync(Snowflake webhookId, string reason = null)
         {
             Preconditions.NotZero(webhookId, nameof(webhookId));
             return _api.DeleteWebhookAsync(webhookId);
         }
-        public Task DeleteWebhookAsync(Snowflake webhookId, Utf8String webhookToken)
+        public Task DeleteWebhookAsync(Snowflake webhookId, Utf8String webhookToken, string reason = null)
         {
             Preconditions.NotZero(webhookId, nameof(webhookId));
             Preconditions.NotNullOrWhitespace(webhookToken, nameof(webhookToken));
             return _api.DeleteWebhookAsync(webhookId, webhookToken);
         }
 
-        public Task<Webhook> ModifyWebhookAsync(Snowflake webhookId, ModifyWebhookParams args)
+        public Task<Webhook> ModifyWebhookAsync(Snowflake webhookId, ModifyWebhookParams args, string reason = null)
         {
             Preconditions.NotZero(webhookId, nameof(webhookId));
             Preconditions.NotNull(args, nameof(args));
             args.Validate();
             return _api.ModifyWebhookAsync(webhookId, args);
         }
-        public Task<Webhook> ModifyWebhookAsync(Snowflake webhookId, Utf8String webhookToken, ModifyWebhookParams args)
+        public Task<Webhook> ModifyWebhookAsync(Snowflake webhookId, Utf8String webhookToken, ModifyWebhookParams args, string reason = null)
         {
             Preconditions.NotZero(webhookId, nameof(webhookId));
             Preconditions.NotNullOrWhitespace(webhookToken, nameof(webhookToken));
