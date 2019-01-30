@@ -68,7 +68,7 @@ namespace Wumpus.Net
         [Patch("channels/{channelId}/messages/{messageId}")]
         Task<Message> ModifyMessageAsync([Path] Snowflake channelId, [Path] Snowflake messageId, [Body] ModifyMessageParams args);
         [Delete("channels/{channelId}/messages/{messageId}")]
-        Task DeleteMessageAsync([Path] Snowflake channelId, [Path] Snowflake messageId, [Header(WumpusRestClient.ReasonHeader)] string reason = null); // TODO: validate X-Audit-Log-Reason 0-512 chars
+        Task DeleteMessageAsync([Path] Snowflake channelId, [Path] Snowflake messageId, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
         [Post("channels/{channelId}/messages/bulk-delete")]
         Task DeleteMessagesAsync([Path] Snowflake channelId, [Body] DeleteMessagesParams args);
 
