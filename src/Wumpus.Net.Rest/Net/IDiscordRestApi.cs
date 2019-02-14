@@ -43,9 +43,9 @@ namespace Wumpus.Net
         ///     If modifying a category, individual Channel Update events will fire for each child channel that also changes.
         /// </summary>
         [Patch("channels/{channelId}")]
-        Task<Channel> ModifyChannelAsync([Path] Snowflake channelId, [Body] ModifyChannelParams args, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task<Channel> ModifyChannelAsync([Path] Snowflake channelId, [Body] ModifyChannelParams args, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
         [Delete("channels/{channelId}")]
-        Task<Channel> DeleteChannelAsync([Path] Snowflake channelId, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task<Channel> DeleteChannelAsync([Path] Snowflake channelId, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
 
         /// <summary>
         ///     Returns the <see cref="Entities.Message"/> for a <see cref="Entities.Channel"/>. If operating on a <see cref="Entities.Guild"/> <see cref="Entities.Channel"/>, this endpoint requires the <see cref="Entities.ChannelPermissions.ViewChannel"/> to be present on the current <see cref="Entities.User"/>.
@@ -68,7 +68,7 @@ namespace Wumpus.Net
         [Patch("channels/{channelId}/messages/{messageId}")]
         Task<Message> ModifyMessageAsync([Path] Snowflake channelId, [Path] Snowflake messageId, [Body] ModifyMessageParams args);
         [Delete("channels/{channelId}/messages/{messageId}")]
-        Task DeleteMessageAsync([Path] Snowflake channelId, [Path] Snowflake messageId, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task DeleteMessageAsync([Path] Snowflake channelId, [Path] Snowflake messageId, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
         [Post("channels/{channelId}/messages/bulk-delete")]
         Task DeleteMessagesAsync([Path] Snowflake channelId, [Body] DeleteMessagesParams args);
 
@@ -84,9 +84,9 @@ namespace Wumpus.Net
         Task DeleteAllReactionsAsync([Path] Snowflake channelId, [Path] Snowflake messageId);
 
         [Put("channels/{channelId}/permissions/{overwriteId}")]
-        Task EditChannelPermissionsAsync([Path] Snowflake channelId, [Path] Snowflake overwriteId, [Body] ModifyChannelPermissionsParams args, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task EditChannelPermissionsAsync([Path] Snowflake channelId, [Path] Snowflake overwriteId, [Body] ModifyChannelPermissionsParams args, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
         [Delete("channels/{channelId}/permissions/{overwriteId}")]
-        Task DeleteChannelPermissionsAsync([Path] Snowflake channelId, [Path] Snowflake overwriteId, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task DeleteChannelPermissionsAsync([Path] Snowflake channelId, [Path] Snowflake overwriteId, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
 
         [Get("channels/{channelId}/invites")]
         Task<Invite[]> GetChannelInvitesAsync([Path] Snowflake channelId);
@@ -115,11 +115,11 @@ namespace Wumpus.Net
         [Get("guilds/{guildId}/emoji/{emojiId}")]
         Task<Emoji> GetGuildEmojiAsync([Path] Snowflake guildId, [Path] Snowflake emojiId);
         [Post("guilds/{guildId}/emojis")]
-        Task<Emoji> CreateGuildEmojiAsync([Path] Snowflake guildId, [Body] CreateGuildEmojiParams args, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task<Emoji> CreateGuildEmojiAsync([Path] Snowflake guildId, [Body] CreateGuildEmojiParams args, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
         [Patch("guilds/{guildId}/emoji/{emojiId}")]
-        Task<Emoji> ModifyGuildEmojiAsync([Path] Snowflake guildId, [Path] Snowflake emojiId, [Body] ModifyGuildEmojiParams args, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task<Emoji> ModifyGuildEmojiAsync([Path] Snowflake guildId, [Path] Snowflake emojiId, [Body] ModifyGuildEmojiParams args, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
         [Delete("guilds/{guildId}/emoji/{emojiId}")]
-        Task DeleteGuildEmojiAsync([Path] Snowflake guildId, [Path] Snowflake emojiId, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task DeleteGuildEmojiAsync([Path] Snowflake guildId, [Path] Snowflake emojiId, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
 
         // Gateway
 
@@ -135,14 +135,14 @@ namespace Wumpus.Net
         [Post("guilds")]
         Task<Guild> CreateGuildAsync([Body] CreateGuildParams args);
         [Patch("guilds/{guildId}")]
-        Task<Guild> ModifyGuildAsync([Path] Snowflake guildId, [Body] ModifyGuildParams args, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task<Guild> ModifyGuildAsync([Path] Snowflake guildId, [Body] ModifyGuildParams args, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
         [Delete("guilds/{guildId}")]
         Task DeleteGuildAsync([Path] Snowflake guildId);
 
         [Get("guilds/{guildId}/channels")]
         Task<Channel[]> GetGuildChannelsAsync([Path] Snowflake guildId);
         [Post("guilds/{guildId}/channels")]
-        Task<Channel> CreateGuildChannelAsync([Path] Snowflake guildId, [Body] CreateGuildChannelParams args, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task<Channel> CreateGuildChannelAsync([Path] Snowflake guildId, [Body] CreateGuildChannelParams args, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
         [Patch("guilds/{guildId}/channels")]
         Task<Channel[]> ModifyGuildChannelPositionsAsync([Path] Snowflake guildId, [Body] ModifyGuildChannelPositionParams[] args);
 
@@ -153,7 +153,7 @@ namespace Wumpus.Net
         [Put("guilds/{guildId}/members/{userId}")]
         Task<GuildMember> AddGuildMemberAsync([Path] Snowflake guildId, [Path] Snowflake userId, [Body] AddGuildMemberParams args);
         [Delete("guilds/{guildId}/members/{userId}")]
-        Task RemoveGuildMemberAsync([Path] Snowflake guildId, [Path] Snowflake userId, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task RemoveGuildMemberAsync([Path] Snowflake guildId, [Path] Snowflake userId, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
         [Patch("guilds/{guildId}/members/{userId}")]
         Task ModifyGuildMemberAsync([Path] Snowflake guildId, [Path] Snowflake userId, [Body] ModifyGuildMemberParams args);
         [Patch("guilds/{guildId}/members/@me/nick")]
@@ -167,25 +167,25 @@ namespace Wumpus.Net
         [Get("guilds/{guildId}/bans")]
         Task<Ban[]> GetGuildBansAsync([Path] Snowflake guildId);
         [Put("guilds/{guildId}/bans/{userId}")]
-        Task CreateGuildBanAsync([Path] Snowflake guildId, [Path] Snowflake userId, [QueryMap] CreateGuildBanParams args, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task CreateGuildBanAsync([Path] Snowflake guildId, [Path] Snowflake userId, [QueryMap] CreateGuildBanParams args, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
         [Delete("guilds/{guildId}/bans/{userId}")]
-        Task DeleteGuildBanAsync([Path] Snowflake guildId, [Path] Snowflake userId, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task DeleteGuildBanAsync([Path] Snowflake guildId, [Path] Snowflake userId, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
 
         [Get("guilds/{guildId}/roles")]
         Task<Role[]> GetGuildRolesAsync([Path] Snowflake guildId);
         [Post("guilds/{guildId}/roles")]
-        Task<Role> CreateGuildRoleAsync([Path] Snowflake guildId, [Body] CreateGuildRoleParams args, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task<Role> CreateGuildRoleAsync([Path] Snowflake guildId, [Body] CreateGuildRoleParams args, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
         [Delete("guilds/{guildId}/roles/{roleId}")]
-        Task<Role> DeleteGuildRoleAsync([Path] Snowflake guildId, [Path] Snowflake roleId, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task<Role> DeleteGuildRoleAsync([Path] Snowflake guildId, [Path] Snowflake roleId, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
         [Patch("guilds/{guildId}/roles/{roleId}")]
-        Task<Role> ModifyGuildRoleAsync([Path] Snowflake guildId, [Path] Snowflake roleId, [Body] ModifyGuildRoleParams args, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task<Role> ModifyGuildRoleAsync([Path] Snowflake guildId, [Path] Snowflake roleId, [Body] ModifyGuildRoleParams args, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
         [Patch("guilds/{guildId}/roles")]
         Task ModifyGuildRolePositionsAsync([Path] Snowflake guildId, [Body] ModifyGuildRolePositionParams[] args);
 
         [Get("guilds/{guildId}/prune")]
         Task<GuildPruneCountResponse> GetGuildPruneCountAsync([Path] Snowflake guildId, [QueryMap] GuildPruneParams args);
         [Post("guilds/{guildId}/prune")]
-        Task<GuildPruneCountResponse> PruneGuildMembersAsync([Path] Snowflake guildId, [QueryMap] GuildPruneParams args, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task<GuildPruneCountResponse> PruneGuildMembersAsync([Path] Snowflake guildId, [QueryMap] GuildPruneParams args, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
 
         [Get("guilds/{guildId}/regions")]
         Task<VoiceRegion[]> GetGuildVoiceRegionsAsync([Path] Snowflake guildId);
@@ -217,7 +217,7 @@ namespace Wumpus.Net
         [Get("invites/{code}")]
         Task<Invite> GetInviteAsync([Path] Utf8String code, [QueryMap] GetInviteParams args);
         [Delete("invites/{code}")]
-        Task<Invite> DeleteInviteAsync([Path] Utf8String code, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task<Invite> DeleteInviteAsync([Path] Utf8String code, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
 
         // OAuth
 
@@ -265,19 +265,19 @@ namespace Wumpus.Net
         Task<Webhook> GetWebhookAsync([Path] Snowflake webhookId, [Path] Utf8String webhookToken);
 
         [Post("channels/{channelId}/webhooks")]
-        Task<Webhook> CreateWebhookAsync([Path] Snowflake channelId, [Body] CreateWebhookParams args, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task<Webhook> CreateWebhookAsync([Path] Snowflake channelId, [Body] CreateWebhookParams args, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
 
         [Delete("webhooks/{webhookId}")]
-        Task DeleteWebhookAsync([Path] Snowflake webhookId, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task DeleteWebhookAsync([Path] Snowflake webhookId, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
         [Delete("webhooks/{webhookId}/{webhookToken}")]
         [Header("Authorization", null)]
-        Task DeleteWebhookAsync([Path] Snowflake webhookId, [Path] Utf8String webhookToken, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task DeleteWebhookAsync([Path] Snowflake webhookId, [Path] Utf8String webhookToken, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
 
         [Patch("webhooks/{webhookId}")]
-        Task<Webhook> ModifyWebhookAsync([Path] Snowflake webhookId, ModifyWebhookParams args, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task<Webhook> ModifyWebhookAsync([Path] Snowflake webhookId, ModifyWebhookParams args, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
         [Patch("webhooks/{webhookId}/{webhookToken}")]
         [Header("Authorization", null)]
-        Task<Webhook> ModifyWebhookAsync([Path] Snowflake webhookId, [Path] Utf8String webhookToken, ModifyWebhookParams args, [Header(WumpusRestClient.ReasonHeader)] string reason = null);
+        Task<Webhook> ModifyWebhookAsync([Path] Snowflake webhookId, [Path] Utf8String webhookToken, ModifyWebhookParams args, [Header(WumpusRestClient.ReasonHeader)] Utf8String reason = null);
 
         [Post("webhooks/{webhookId}/{webhookToken}")]
         [Header("Authorization", null)]
