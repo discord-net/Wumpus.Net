@@ -8,7 +8,7 @@
     <AssemblyName>Wumpus.Net.Tests.Server</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/Wumpus.Net.Gateway/Wumpus.Net.Gateway.csproj" />
